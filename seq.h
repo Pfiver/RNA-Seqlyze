@@ -7,6 +7,13 @@
 #include <vector>
 #include <list>
 
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <libio.h>
+#include <ext/slist>
+
 using namespace std;
 
 typedef double Energy;
