@@ -1,0 +1,12 @@
+Version 2.0 BETA
+    - first released version of C++ rewrite 
+    - new confidence scheme
+    - more informative output
+    - better handling of overlapping genes and terminators
+    - over 10x faster
+    - more general model for gaps in hairpins
+    
+    Known issues:
+    - finding antiterminators does not work
+    - score function and scoring constants are taken from Version 1.0 and have
+      not yet been updated 
