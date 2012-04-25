@@ -7,6 +7,11 @@
       xmlns:i18n="http://genshi.edgewall.org/i18n"
       py:strip="">
 
+  <head py:match="head" py:attrs="select('@*')">
+    ${select('*|comment()|text()')}
+    <link rel="stylesheet" type="text/css" href="${href.chrome('site/style.css')}" />
+  </head>
+
   <div py:def="navigation(category)" id="${category}" class="nav">
     <ul py:if="chrome.nav[category]">
       <li py:for="idx, item in  enumerate(chrome.nav[category])"
@@ -65,17 +70,19 @@
     </div>
 
     <div id="footer" xml:lang="en"><hr/>
-      <a id="tracpowered" href="http://trac.edgewall.org/"><img
-        src="${chrome.htdocs_location}trac_logo_mini.png" height="30"
-        width="107" alt="Trac Powered"/></a>
-      <p class="left" i18n:msg="version">
-        Powered by <a href="${href.about()}"><strong>Trac ${trac.version}</strong></a><br />
-        By <a href="http://www.edgewall.org/">Edgewall Software</a>.
-      </p>
-      <p class="right">
       <a id="fhnw" href="http://www.fhnw.ch/lifesciences" title="fhnw.ch/lifesciences"><img
         src="${href.chrome('site/FHNW-logo-30.jpg')}" height="30"
         alt="fhnw.ch/lifesciences"/></a>
+      <p class="left">
+        Bachelor Thesis of <a href="http://www.patrickpfeifer.net/"><strong>Patrick Pfeifer</strong></a><br />
+        at the <a href="http://www.fhnw.ch/lifesciences">University of Applied Sciences and Arts Northwestern Switzerland | School of Life Sciences</a>.
+      </p>
+      <a id="tracpowered" href="http://trac.edgewall.org/"><img
+        src="${chrome.htdocs_location}trac_logo_mini.png" height="30"
+        width="107" alt="Trac Powered"/></a>
+      <p class="right">
+        Powered by <a href="${href.about()}"><strong>Trac ${trac.version}</strong></a><br />
+        By <a href="http://www.edgewall.org/">Edgewall Software</a>.
       </p>
     </div>
   </body></py:match>
