@@ -84,6 +84,60 @@ class DownloadsApi(Component):
 
     def _get_items(self, context, table, columns, where = '', values = (),
       order_by = '', desc = False):
+
+#	'id'
+#       'file'
+#       'description'
+#	'size'
+#	'time'
+#	'count'
+#	'author'
+#	'tags'
+#	'component'
+#       'version'
+#	'architecture'
+#	'platform'
+#	'type'
+
+#    st_mode - protection bits,
+#    st_ino - inode number,
+#    st_dev - device,
+#    st_nlink - number of hard links,
+#    st_uid - user id of owner,
+#    st_gid - group id of owner,
+#    st_size - size of file, in bytes,
+#    st_atime - time of most recent access,
+#    st_mtime - time of most recent content modification,
+#    st_ctime - platform dependent; time of most recent metadata change on Unix, or the time of creation on Windows)
+
+	import os, os.path
+
+	st_dict = {
+		'id': 'st_ino',
+		'size': 'st_size',
+		'time': 'st_mtime'
+	}
+
+        items = []
+	s0 = len(self.path) + 1
+	for root, dirs, files in os.walk(self.path):
+	    for file in files:
+		p = os.path.join(root, file)
+		s = os.stat(p)
+		d = {}
+		for c in columns:
+		    if c == 'file':
+			d[c] = p[s0:]
+		    elif c in st_dict:
+			d[c] = s.__getattribute__(st_dict[c])
+		    elif c == 'count':
+			d[c] = 0
+		    else:
+			d[c] = None
+		items.append(d)
+	return items
+
+#############################################################################################################
         sql = 'SELECT ' + ', '.join(columns) + ' FROM ' + table + (where
           and (' WHERE ' + where) or '') + (order_by and (' ORDER BY ' +
           order_by + (' ASC', ' DESC')[bool(desc)]) or '')
@@ -94,6 +148,7 @@ class DownloadsApi(Component):
             row = dict(zip(columns, row))
             items.append(row)
         return items
+#############################################################################################################
 
     def get_versions(self, context, order_by = 'name', desc = False):
         # Get versions from table.
@@ -157,6 +212,36 @@ class DownloadsApi(Component):
     # Get one item functions.
 
     def _get_item(self, context, table, columns, where = '', values = ()):
+
+	import os, os.path
+
+	st_dict = {
+		'id': 'st_ino',
+		'size': 'st_size',
+		'time': 'st_mtime'
+	}
+
+	s0 = len(self.path) + 1
+	for root, dirs, files in os.walk(self.path):
+	    for file in files:
+		p = os.path.join(root, file)
+		s = os.stat(p)
+		if (where.startswith('id =') and values[0] == s.st_ino) or \
+		   (where.startswith('file =') and values[0] == p[s0:]):
+		    d = {}
+		    for c in columns:
+			if c == 'file':
+			    d[c] = p[s0:]
+			elif c in st_dict:
+			    d[c] = s.__getattribute__(st_dict[c])
+			elif c == 'count':
+			    d[c] = 0
+			else:
+			    d[c] = None
+		    return d
+	return None
+
+#############################################################################################################
         sql = 'SELECT ' + ', '.join(columns) + ' FROM ' + table + (where
           and (' WHERE ' + where) or '')
         self.log.debug(sql % values)
@@ -165,6 +250,7 @@ class DownloadsApi(Component):
             row = dict(zip(columns, row))
             return row
         return None
+#############################################################################################################
 
     def get_download(self, context, id):
         return self._get_item(context, 'download', ('id', 'file', 'description',
@@ -453,8 +539,7 @@ class DownloadsApi(Component):
                   Resource('downloads', download['id']))
 
                 # Get download file path.
-                path = os.path.normpath(os.path.join(self.path, to_unicode(
-                  download['id']), download['file']))
+                path = os.path.normpath(os.path.join(self.path, download['file']))
                 self.log.debug('path: %s' % (path,))
 
                 # Increase downloads count.
@@ -484,12 +569,12 @@ class DownloadsApi(Component):
                     charset = mimeview.get_charset(file_data, mime_type)
                     mime_type = mime_type + '; charset=' + charset
 
-                # Return uploaded file to request.
-                context.req.send_header('Content-Disposition',
-                  'attachment;filename="%s"' % (os.path.normpath(
-                  download['file'])))
-                context.req.send_header('Content-Description',
-                  download['description'])
+#                # Return uploaded file to request.
+#                context.req.send_header('Content-Disposition',
+#                  'attachment;filename="%s"' % (os.path.normpath(
+#                  download['file'])))
+#                context.req.send_header('Content-Description',
+#                  download['description'])
                 context.req.send_file(path.encode('utf-8'), mime_type)
 
             elif action == 'downloads-list':
