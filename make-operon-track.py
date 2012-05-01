@@ -11,8 +11,13 @@ usage: %s [-f|--format FORMAT] input_path
     generates a `bed` track out of operon predictions listed in input_path
 
     FORMAT
-                'door', 'microbesonline' or 'operondb'
-                the default is 'door'
+                'door', 'operondb' or 'microbesonline'
+
+                if not specified, it is auto-detected
+                based on the extension of the input file:
+                   .opr -> door
+                   .html -> operondb
+                   .named -> microbesonline
 
     input_path
                 the path to the input file
@@ -52,8 +57,8 @@ def process_operondb(in_path):
 		coords = ht_op.xpath("table[1]/tr/td/h3")
 		confs = ht_op.xpath("table[2]/tr/td[3]/a")
 
-		# ???
-		if not len(coords): continue
+		if not len(coords):
+			continue
 
 		# coords, confidence:
 		# Directon coords:  2988382 - 2990017
@@ -116,7 +121,7 @@ def process_door(in_path):
 			begin, end = end, begin
 
 		if id not in operons:
-			operons[id] = operon(id, begin, end, strand, 1)
+			operons[id] = operon(id, begin, end, strand)
 			continue
 
 		if operons[id].begin > begin:
@@ -127,12 +132,15 @@ def process_door(in_path):
 
 	return operons.values()
 
-def output(operons, name="BED", desc="Custom BED track", confidence=False):
+def output(operons, name="BED", desc="Custom BED track", confidence=None):
 	# goal:
 	#	track name="BED" description="BED Test Track" visibility=2 itemRgb="on" 
 	#	chr     1       100     Foo     500     +       10      90      255,0,0
 	#	chr     200     250     Bar     900     +       205     245     0,255,0
 	#	chr     400     425     Baz     800     -       405     420     0,0,255
+
+	if confidence == None:
+		confidence = operons[0].confidence != None
 
 	import csv
 	sys.stdout.write( 'track name="%s" description="%s" visibility=2 itemRgb="%s"\n' %
@@ -149,7 +157,7 @@ def output(operons, name="BED", desc="Custom BED track", confidence=False):
 		import numpy
 		white = numpy.array((255,255,255))
 		def color(confidence):
-			color_array = white * (1 - op.confidence)
+			color_array = white * 0.5 * (1 - op.confidence)
 			return ",".join(str(int(v)) for v in color_array)
 		cols_0 = cols
 		cols = lambda op: cols_0(op) + (op.begin, op.end, color(op.confidence))
@@ -167,8 +175,8 @@ def main():
 
 	opts, args = getopt.getopt(sys.argv[1:], 'f:c', ["format=", "confidence"])
 
-	fmt = "door"
-	confidence = False
+	fmt = None
+	confidence = None
 
 	for opt, val in opts:
 		if opt in ("-f", "--format"):
@@ -179,6 +187,20 @@ def main():
 	if len(args) < 1:
 		sys.stderr.write(usage_text % sys.argv[0])
 		return 1
+
+	ext_fmt = {
+		"opr": "door",
+		"html": "operondb",
+		"named": "microbesonline"
+	}
+
+	if fmt == None:
+		try:
+			ext = args[0][args[0].rindex('.')+1:]
+			fmt = ext_fmt[ext]
+		except object, x:
+			print x
+			return
 
 	try:
 		name = args[0]
