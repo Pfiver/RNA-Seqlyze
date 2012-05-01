@@ -2,7 +2,7 @@ sources = $(wildcard *.opr *.html *.named)
 
 targets = $(patsubst %,%.bed,$(sources))
 
-FILTER := ../make-operon-track.py
+FILTER := ../../../Source/RNA-seqlyze/operon-tracks-filter.py
 
 all: $(targets)
 

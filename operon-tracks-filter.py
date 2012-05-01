@@ -242,18 +242,15 @@ def output(operons, name="BED", desc="Custom BED track", confidence=None):
 			 confidence and "on" or "off"))
 	writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
 
-	# standard columns (no matter if confidence is output or not)
-	cols = lambda op: ("chr", op.begin, op.end, "Operon_%d" % op.id, op.confidence, op.strand)
-
-	# if confidence should be output, add 3 extra columns
-	if confidence:
+	if not confidence:
+		cols = lambda op: ("chr", op.begin, op.end, "Operon_%d" % op.id, '.', op.strand)
+	else:
 		import numpy
 		white = numpy.array((255,255,255))
 		def color(confidence):
 			color_array = white * 0.5 * (1 - op.confidence)
 			return ",".join(str(int(v)) for v in color_array)
-		cols_0 = cols
-		cols = lambda op: cols_0(op) + (op.begin, op.end, color(op.confidence))
+		cols = lambda op: ("chr", op.begin, op.end, "Operon_%d" % op.id, op.confidence, op.strand, op.begin, op.end, color(op.confidence))
 
 	# write the operons, one per row
 	for op in operons:
