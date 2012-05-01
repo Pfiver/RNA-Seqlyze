@@ -127,37 +127,54 @@ def process_door(in_path):
 
 	return operons.values()
 
-def output(operons, name="BED", desc="Custom BED track"):
+def output(operons, name="BED", desc="Custom BED track", confidence=False):
 	# goal:
 	#	track name="BED" description="BED Test Track" visibility=2 itemRgb="on" 
 	#	chr     1       100     Foo     500     +       10      90      255,0,0
 	#	chr     200     250     Bar     900     +       205     245     0,255,0
 	#	chr     400     425     Baz     800     -       405     420     0,0,255
 
-	import csv, numpy
-	white = numpy.array((255,255,255))
-	sys.stdout.write('track name="%s" description="%s" visibility=2 itemRgb="on"\n' % (name, desc))
+	import csv
+	sys.stdout.write( 'track name="%s" description="%s" visibility=2 itemRgb="%s"\n' %
+	        (name,
+			 desc,
+			 confidence and "on" or "off"))
 	writer = csv.writer(sys.stdout, delimiter='\t')
+
+	# standard columns (no matter if confidence is output or not)
+	cols = lambda op: ("chr", op.begin, op.end, "Operon_%d" % op.id, op.confidence, op.strand)
+
+	# if confidence should be output, add 3 extra columns
+	if confidence:
+		import numpy
+		white = numpy.array((255,255,255))
+		def color(confidence):
+			color_array = white * (1 - op.confidence)
+			return ",".join(str(int(v)) for v in color_array)
+		cols_0 = cols
+		cols = lambda op: cols_0(op) + (op.begin, op.end, color(op.confidence))
+
+	# write the operons, one per row
 	for op in operons:
 		# .... FIXME !!! ... FIXME !!!
 		if op.begin > op.end:
 			log.info("op.begin > op.end ??? (%d: %d > %d)", (op.id, op.begin, op.end))
 			continue
-		color_array = white * (1 - op.confidence)
-		color = ",".join(str(int(v)) for v in color_array)
-		writer.writerow(("chr", op.begin, op.end, "Operon_%d" % op.id,
-		                op.confidence, op.strand, op.begin, op.end, color))
+		writer.writerow(cols(op))
 
 def main():
 	import getopt
 
-	opts, args = getopt.getopt(sys.argv[1:], 'f:', ["format="])
+	opts, args = getopt.getopt(sys.argv[1:], 'f:c', ["format=", "confidence"])
 
-	fmt="door"
+	fmt = "door"
+	confidence = False
 
 	for opt, val in opts:
 		if opt in ("-f", "--format"):
-			fmt=val
+			fmt = val
+		if opt in ("-c", "--confidence"):
+			confidence = True
 
 	if len(args) < 1:
 		sys.stderr.write(usage_text % sys.argv[0])
@@ -167,7 +184,7 @@ def main():
 		name = args[0]
 		desc = "Operons from %s" % args[0]
 		operons = globals()["process_" + fmt](*args)
-		output(operons, name, desc)
+		output(operons, name, desc, confidence=confidence)
 
 	except object, x:
 		log.error(x)
