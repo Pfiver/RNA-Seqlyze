@@ -4,7 +4,13 @@ targets = $(patsubst %,%.bed,$(sources))
 
 FILTER := ../../../Source/RNA-seqlyze/operon-tracks-filter.py
 
-all: $(targets)
+all: all-operons.bed
+
+clean:
+	rm all-operons.bed $(targets)
 
 %.bed: % $(FILTER)
 	$(FILTER) $< > $@
+
+all-operons.bed: $(targets)
+	cat $^ > $@
