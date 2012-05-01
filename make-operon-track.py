@@ -236,11 +236,11 @@ def output(operons, name="BED", desc="Custom BED track", confidence=None):
 		confidence = operons[0].confidence != None
 
 	import csv
-	sys.stdout.write( 'track name="%s" description="%s" visibility=2 itemRgb="%s"\n' %
+	sys.stdout.write('track name="%s" description="%s" visibility=2 itemRgb="%s"\n' %
 	        (name,
 			 desc,
 			 confidence and "on" or "off"))
-	writer = csv.writer(sys.stdout, delimiter='\t')
+	writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
 
 	# standard columns (no matter if confidence is output or not)
 	cols = lambda op: ("chr", op.begin, op.end, "Operon_%d" % op.id, op.confidence, op.strand)
