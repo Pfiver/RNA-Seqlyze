@@ -1,0 +1,10 @@
+sources = $(wildcard *.opr *.html *.named)
+
+targets = $(patsubst %,%.bed,$(sources))
+
+FILTER := ../make-operon-track.py
+
+all: $(targets)
+
+%.bed: % $(FILTER)
+	$(FILTER) $< > $@
