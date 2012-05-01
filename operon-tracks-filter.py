@@ -243,7 +243,7 @@ def output(operons, name="BED", desc="Custom BED track", confidence=None):
 	writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
 
 	if not confidence:
-		cols = lambda op: ("chr", op.begin, op.end, "Operon_%d" % op.id, '.', op.strand)
+		cols = lambda op: ("chr", op.begin, op.end, "Operon_%d" % op.id, 1, op.strand)
 	else:
 		import numpy
 		white = numpy.array((255,255,255))
