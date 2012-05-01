@@ -85,19 +85,19 @@ class DownloadsApi(Component):
     def _get_items(self, context, table, columns, where = '', values = (),
       order_by = '', desc = False):
 
-#	'id'
+#        'id'
 #       'file'
 #       'description'
-#	'size'
-#	'time'
-#	'count'
-#	'author'
-#	'tags'
-#	'component'
+#        'size'
+#        'time'
+#        'count'
+#        'author'
+#        'tags'
+#        'component'
 #       'version'
-#	'architecture'
-#	'platform'
-#	'type'
+#        'architecture'
+#        'platform'
+#        'type'
 
 #    st_mode - protection bits,
 #    st_ino - inode number,
@@ -110,32 +110,34 @@ class DownloadsApi(Component):
 #    st_mtime - time of most recent content modification,
 #    st_ctime - platform dependent; time of most recent metadata change on Unix, or the time of creation on Windows)
 
-	import os, os.path
+        import os, os.path
 
-	st_dict = {
-		'id': 'st_ino',
-		'size': 'st_size',
-		'time': 'st_mtime'
-	}
+        st_dict = {
+                'id': 'st_ino',
+                'size': 'st_size',
+                'time': 'st_mtime'
+        }
 
         items = []
-	s0 = len(self.path) + 1
-	for root, dirs, files in os.walk(self.path):
-	    for file in files:
-		p = os.path.join(root, file)
-		s = os.stat(p)
-		d = {}
-		for c in columns:
-		    if c == 'file':
-			d[c] = p[s0:]
-		    elif c in st_dict:
-			d[c] = s.__getattribute__(st_dict[c])
-		    elif c == 'count':
-			d[c] = 0
-		    else:
-			d[c] = None
-		items.append(d)
-	return items
+        s0 = len(self.path) + 1
+        for root, dirs, files in os.walk(self.path):
+            for file in files:
+                p = os.path.join(root, file)
+                s = os.stat(p)
+                d = {}
+                for c in columns:
+                    if c == 'file':
+                        d[c] = p[s0:]
+                    elif c in st_dict:
+                        d[c] = s.__getattribute__(st_dict[c])
+                    elif c == 'count':
+                        d[c] = 0
+                    else:
+                        d[c] = None
+                items.append(d)
+        if "file" in columns:
+            items.sort(lambda l, r: cmp(l["file"], r["file"]))
+        return items
 
 #############################################################################################################
         sql = 'SELECT ' + ', '.join(columns) + ' FROM ' + table + (where
@@ -213,33 +215,33 @@ class DownloadsApi(Component):
 
     def _get_item(self, context, table, columns, where = '', values = ()):
 
-	import os, os.path
+        import os, os.path
 
-	st_dict = {
-		'id': 'st_ino',
-		'size': 'st_size',
-		'time': 'st_mtime'
-	}
+        st_dict = {
+                'id': 'st_ino',
+                'size': 'st_size',
+                'time': 'st_mtime'
+        }
 
-	s0 = len(self.path) + 1
-	for root, dirs, files in os.walk(self.path):
-	    for file in files:
-		p = os.path.join(root, file)
-		s = os.stat(p)
-		if (where.startswith('id =') and values[0] == s.st_ino) or \
-		   (where.startswith('file =') and values[0] == p[s0:]):
-		    d = {}
-		    for c in columns:
-			if c == 'file':
-			    d[c] = p[s0:]
-			elif c in st_dict:
-			    d[c] = s.__getattribute__(st_dict[c])
-			elif c == 'count':
-			    d[c] = 0
-			else:
-			    d[c] = None
-		    return d
-	return None
+        s0 = len(self.path) + 1
+        for root, dirs, files in os.walk(self.path):
+            for file in files:
+                p = os.path.join(root, file)
+                s = os.stat(p)
+                if (where.startswith('id =') and values[0] == s.st_ino) or \
+                   (where.startswith('file =') and values[0] == p[s0:]):
+                    d = {}
+                    for c in columns:
+                        if c == 'file':
+                            d[c] = p[s0:]
+                        elif c in st_dict:
+                            d[c] = s.__getattribute__(st_dict[c])
+                        elif c == 'count':
+                            d[c] = 0
+                        else:
+                            d[c] = None
+                    return d
+        return None
 
 #############################################################################################################
         sql = 'SELECT ' + ', '.join(columns) + ' FROM ' + table + (where
