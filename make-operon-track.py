@@ -41,6 +41,33 @@ class operon(object):
 		self.strand = strand
 		self.confidence = confidence
 
+import csv
+class op_reader(object):
+
+	class row_obj(object):
+		def __init__(self, colnames):
+			self.colnames = colnames
+
+		def set_data(self, data):
+			self.data = data
+	
+		def __getitem__(self, name):
+			return self.data[self.colnames[name]]
+
+		def __str__(self):
+			return self.data.__str__()
+
+	def __init__(self, path):
+		self.reader = csv.reader(open(path, 'rb'), delimiter='\t')
+		cn = self.reader.next()
+		self.ro = self.row_obj(dict(zip(cn,range(len(cn)))))
+
+	def next(self):
+		self.ro.set_data(self.reader.next())
+		return self.ro
+
+	__iter__ = lambda self: self
+
 def process_operondb(in_path):
 	import itertools
 	from lxml.html import parse
@@ -131,6 +158,72 @@ def process_door(in_path):
 			operons[id].end = end
 
 	return operons.values()
+
+def process_microbesonline(in_path):
+
+	import itertools
+	gene_path = in_path[:in_path.rindex('.')] + ".genes"
+
+	#	locusId accession       GI      scaffoldId      start   stop    strand
+	reader = op_reader(gene_path)
+
+	genes = {}
+	for row in reader:
+		if row['strand'] == '+':
+			genes[row['locusId']] = tuple(row[i] for i in ('start', 'stop', 'strand'))
+		else:
+			genes[row['locusId']] = tuple(row[i] for i in ('stop', 'start', 'strand'))
+
+	# Column 	Description
+	# Gene1 	VIMSS id of 1st gene in pair
+	# SysName1 	Systematic name of 1st gene in pair
+	# Name1 	Ordinary name of 1st gene in pair
+	# Gene2 	VIMSS id of 2nd gene in pair
+	# SysName2 	Systematic name of 2nd gene in pair
+	# Name2 	Ordinary name of 2nd gene in pair
+	# bOp	 	Whether the pair is predicted to lie in the same operon or not
+	# pOp     	Estimated probability that the pair is in the same operon. Values near 1 or 0 are confident
+	#           predictions of being in the same operon or not, while values near 0.5 are low-confidence predictions.
+	# Sep 		Distance between the two genes, in base pairs
+	# MOGScore 	Conservation, ranging from 0 (not conserved) to 1 (100% conserved)
+	# GOScore 	Smallest shared GO category, as a fraction of the genome, or missing if one of the genes is not characterized
+	# COGSim 	Whether the genes share a COG category or not
+	# ExprSim 	Correlation of expression patterns (not available for most genomes)
+
+    # Gene1   Gene2   SysName1        SysName2        Name1   Name2   bOp     pOp     Sep     MOGScore        GOScore COGSim  ExprSim
+	reader = op_reader(in_path)
+
+	operons = []
+	gene_operons = {}
+	ctr = itertools.count()
+	for row in reader:
+		o1 = o2 = None
+		if row['bOp'] != 'TRUE':
+			continue
+		if row['Gene1'] in gene_operons:
+			o1 = gene_operons[row['Gene1']]
+		if row['Gene2'] in gene_operons:
+			if o1:
+				raise Exception("duplicate line ??? `%s`" % row)
+			o2 = gene_operons[row['Gene2']]
+		if o1:
+			gene_operons[row['Gene2']] = o1
+		elif o2:
+			gene_operons[row['Gene1']] = o2
+		else:
+			id = ctr.next()
+			g1 = genes[row['Gene1']]
+			g2 = genes[row['Gene2']]
+			if g1[2] != g2[2]:
+				raise Exception("operon genes not on the same strand")
+			begin = min(g1[0], g2[0])
+			end = max(g1[1], g2[1])
+			strand = g1[2]
+			op = operon(id, begin, end, strand, float(row['pOp']))
+			operons.append(op)
+			gene_operons[row['Gene1']] = gene_operons[row['Gene2']] = op
+
+	return operons
 
 def output(operons, name="BED", desc="Custom BED track", confidence=None):
 	# goal:
