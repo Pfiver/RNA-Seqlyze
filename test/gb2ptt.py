@@ -31,16 +31,11 @@ class Test(unittest.TestCase):
 		# check if the column headers match
 		self.assertEquals(cols, xcols)
 
-		# fixup functions to make the rows compareable
-		def fix_actual(row):
-			del row[7:]					# i didn't bother to fill in the "cog" row
-			return row
-
-		def fix_expect(row):
-			row[2] = str(int(row[2])+1)	# the ptt file downloaded from ncbi is buggy
-										# the length of the proteins is off by one
-			del row[7:]					# the description don't match exactly
+		# fixup function to make the rows compareable
+		def truncate_row(row):
+			del row[7:]			# i didn't bother to fill in the "cog" row (7)
+								# and the descriptions (8) don't match exactly
 			return row
 
 		# compare the rows produced by ./gb2ptt.py to those read from the reference file
-		self.assertItemsEqual(map(fix_actual, reader), map(fix_expect, xreader))
+		self.assertItemsEqual(map(truncate_row, reader), map(truncate_row, xreader))

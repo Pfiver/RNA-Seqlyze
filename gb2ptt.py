@@ -61,6 +61,7 @@ for f in seq.features:
 	if _len % 3:
 		log.info("implausible feature length (%d) in '%s'" % (_len, f.type))
 	_len //= 3 # integer division
+	_len -= 1 # omit stop codon
 
 	xrefs = dict(map(lambda s: s.split(':'), f.qualifiers['db_xref']))
 	for r in 'GI', 'GeneID':
