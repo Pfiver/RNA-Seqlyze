@@ -1,0 +1,570 @@
+LOCUS       NC_002754            2992245 bp    DNA     circular BCT 26-APR-2009
+DEFINITION  Sulfolobus solfataricus P2, complete genome.
+ACCESSION   NC_002754
+VERSION     NC_002754.1  GI:15896971
+DBLINK      Project:108
+KEYWORDS    .
+SOURCE      Sulfolobus solfataricus P2
+  ORGANISM  Sulfolobus solfataricus P2
+            Archaea; Crenarchaeota; Thermoprotei; Sulfolobales; Sulfolobaceae;
+            Sulfolobus.
+REFERENCE   1  (bases 1 to 2992245)
+  AUTHORS   She,Q., Singh,R.K., Confalonieri,F., Zivanovic,Y., Allard,G.,
+            Awayez,M.J., Chan-Weiher,C.C., Clausen,I.G., Curtis,B.A., De
+            Moors,A., Erauso,G., Fletcher,C., Gordon,P.M., Heikamp-de Jong,I.,
+            Jeffries,A.C., Kozera,C.J., Medina,N., Peng,X., Thi-Ngoc,H.P.,
+            Redder,P., Schenk,M.E., Theriault,C., Tolstrup,N., Charlebois,R.L.,
+            Doolittle,W.F., Duguet,M., Gaasterland,T., Garrett,R.A.,
+            Ragan,M.A., Sensen,C.W. and Van der Oost,J.
+  TITLE     The complete genome of the crenarchaeon Sulfolobus solfataricus P2
+  JOURNAL   Proc. Natl. Acad. Sci. U.S.A. 98 (14), 7835-7840 (2001)
+   PUBMED   11427726
+REFERENCE   2  (bases 1 to 2992245)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (03-OCT-2001) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+REFERENCE   3  (bases 1 to 2992245)
+  AUTHORS   She,Q., Singh,R.K., Confalonieri,F., Zivanovic,Y., Allard,G.,
+            Awayez,M.J., Chan-Weiher,C.C.-Y., Clausen,I.G., Curtis,B.A., De
+            Moors,A., Erauso,G., Fletcher,C., Gordon,P.M.K., Heikamp-de
+            Jong,I., Jeffries,A.C., Kozera,C.J., Medina,N., Peng,X.,
+            Thi-Ngoc,H.P., Redder,P., Schenk,M.E., Theriault,C., Tolstrup,N.,
+            Charlebois,R.L., Doolittle,W.F., Duguet,M., Gaasterland,T.,
+            Garrett,R.A., Ragan,M.A., Sensen,C.W. and Van der Oost,J.
+  CONSRTM   Europe/Canada joint project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (24-APR-2001) Copenhagen University, Denmark; Universite
+            Paris-Sud, France; Wageningen University, The Netherlands;
+            Institute for Marine Biosciences & University of Ottawa, Canada
+COMMENT     PROVISIONAL REFSEQ: This record has not yet been subject to final
+            NCBI review. The reference sequence was derived from AE006641.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..2992245
+                     /organism="Sulfolobus solfataricus P2"
+                     /mol_type="genomic DNA"
+                     /strain="P2"
+                     /db_xref="taxon:273057"
+     gene            join(2991448..2992245,1..252)
+                     /locus_tag="SSO12256"
+                     /db_xref="GeneID:1455270"
+     CDS             join(2991448..2992245,1..252)
+                     /locus_tag="SSO12256"
+                     /note="Similar to cellulose synthase homologs ydaM and
+                     icaA, probably involved in cell wall biogenesis or
+                     intercellular adhesion; Cell Envelope, Surface
+                     polysaccharides and lipopolysaccharides"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="glycosyltransferase"
+                     /protein_id="NP_341577.1"
+                     /db_xref="GI:15896972"
+                     /db_xref="GeneID:1455270"
+                     /translation="MIVPVKNEERVLPRLLDRLVNLEYDKSKYEIIVVEDGSTDRTFQ
+                     ICKEYEIKYNNLIRCYSLPRANVPNGKSRALNFALRISKGEIIGIFDGDTVPRLDILE
+                     YVEPKFEDITVGAVQGKLVPINVRESVTSRLAAIEELIYEYSIAGRAKVGLFVPIEGT
+                     CSFIRKSIIMELGGWNEYSLTEDLDISLKIVNKGCKIVYSPTTISWREVPVSLRVLIR
+                     QRLRWYRGHLEVQLGKLRKIDLRIIDGILIVLTPFFMVLNLVNYSLVLVYSSSLYIVA
+                     ASLVSLASLLSLLLIILIARRHMIEYFYMIPSFVYMNFIVALNFTAIFLELIRAPRVW
+                     VKTERSAKVTGEVMG"
+     gene            249..857
+                     /locus_tag="SSO0001"
+                     /db_xref="GeneID:1455258"
+     CDS             249..857
+                     /locus_tag="SSO0001"
+                     /note="Predicted membrane protein, conserved in archaea"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341578.1"
+                     /db_xref="GI:15896973"
+                     /db_xref="GeneID:1455258"
+                     /translation="MITEFLLKKKLEEHLSHVKEENTIYVTDLVRCPRRVRYESEYKE
+                     LAISQVYAPSAILGDILHLGLESVLKGNFNAETEVETLREINVGGKVYKIKGRADAII
+                     RNDNGKSIVIEIKTSRSDKGLPLIHHKMQLQIYLWLFSAEKGILVYITPDRIAEYEIN
+                     EPLDEATIVRLAEDTIMLQNSPRFNWECKYCIFSVICPAKLT"
+     gene            889..2091
+                     /gene="thiD-1"
+                     /locus_tag="SSO0002"
+                     /db_xref="GeneID:1455259"
+     CDS             889..2091
+                     /gene="thiD-1"
+                     /locus_tag="SSO0002"
+                     /EC_number="2.7.4.7"
+                     /note="Cofactor Biosynthesis, Thiamine"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="phosphomethylpyrimidine kinase (thiD-1)"
+                     /protein_id="NP_341579.1"
+                     /db_xref="GI:15896974"
+                     /db_xref="GeneID:1455259"
+                     /translation="MHTRPVVATIAGSDSGGGAGLQADLKTFSALGVFGTTIITGLTA
+                     QNTRTVTKVLEIPLDFIEAQFDAVCLDLHPTHAKTGMLASGKVVELVLRKIREYNIKL
+                     VLDPVMVAKSGSLLVTEDISEQIKKAMKEAIISTPNRYEAEIINKTKINSQDDVIKAA
+                     REIYSKYGNVVVKGFNGVDYAIIDGEEIELKGDYISTKNTHGSGDVFSASITAYLALG
+                     YKLKDALIRAKKFATMTVKYGLDLGGGYGPVDPFAPIESIVKREEGRNQLENLLWYLE
+                     SNLNVILKLINDTSKVNVAYMTKYNDVLSLAGGLIKYLDKLKIDGPILNNVNNEITRI
+                     MRETPDEKIGILLPFTDKILDAAEKGKIKLNKSGINGDAILRDNMVLIIAKDKDELIR
+                     KLKEVAIG"
+     gene            2088..2969
+                     /gene="rbsK-1"
+                     /locus_tag="SSO0004"
+                     /db_xref="GeneID:1455260"
+     CDS             2088..2969
+                     /gene="rbsK-1"
+                     /locus_tag="SSO0004"
+                     /EC_number="2.7.1.15"
+                     /note="Energy Metabolism"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="ribokinase (rbsK-1)"
+                     /protein_id="NP_341580.1"
+                     /db_xref="GI:15896975"
+                     /db_xref="GeneID:1455260"
+                     /translation="MIIVVGSYNVDVILKVNKIPEIGETVIADELYITHGGKGSNQAV
+                     SASRLGSHVKIIVAVGDDKHGTDAIEFWKSENIDVSKVKVKSGINTGTAYIFVDKKGR
+                     NIIVVNRGANYYLSEDDLNNSLEGDILLMQLEIRESVVKKAAKEFNGIKILNPAPANL
+                     KDTEILSLVDIITPNEIEFKELVNTDDFEYGLNLLLKKVKKAVIVTLGERGALLATRD
+                     GKKVLIPAPKVNVIDETGAGDVFNAALSVYLEKGYDLETAVEYANKVAALSVTKIGAL
+                     GPKLDEVVRFLEEIDKA"
+     gene            3057..3743
+                     /locus_tag="SSO0006"
+                     /db_xref="GeneID:1455261"
+     CDS             3057..3743
+                     /locus_tag="SSO0006"
+                     /note="Present in archaea and some bacteria and eukarya,
+                     including M. jannaschii, E. coli, B. subtilus, yeast, and
+                     human."
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341581.1"
+                     /db_xref="GI:15896976"
+                     /db_xref="GeneID:1455261"
+                     /translation="MKITFIGTGAGSSLGLKRVKSSILINDKVLLDLGPGAELRLEDL
+                     RIHPKALFITHLHIDHFSGVFDYLVQRKIRQIPELVIYSPKGFSEVLNIYTRIGNNIS
+                     AKIYESDLPSGKIDEMEIYSIQACHSIYAVSYIISDGNTRVLYTGDTKEPCNAILENI
+                     KDVDLIIHETTCVDDCSIWGHTSIKQIFELFSNKRIFATHIPAEIEEKIISLANNKIN
+                     IAFDGLSLNV"
+     gene            3736..4458
+                     /locus_tag="SSO0007"
+                     /db_xref="GeneID:1455262"
+     CDS             3736..4458
+                     /locus_tag="SSO0007"
+                     /note="Conserved in archaea"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341582.1"
+                     /db_xref="GI:15896977"
+                     /db_xref="GeneID:1455262"
+                     /translation="MCRILAFHTKGEISKEYVNALIRASRNDIFSKYGSHPDGWGLSI
+                     FLKRNDKWKVIYYRSEDPIYEDPNISYLIDIAKGEDIVGVIHARKAGRKFLTGLSHAH
+                     PYYMRANIYDLYFAHNGSVSRTSFKDSNRPFTDSYLILEEIKTLIESNMSPFDAYAIT
+                     LDKLKDCSTSLNSSLIYYNKKEGPSILIGYYYNRNRLSKETNEEYYKLYTDNKRYIFS
+                     STIKYYLGVDAEELIMGSIIHL"
+     gene            4500..5348
+                     /locus_tag="SSO0008"
+                     /db_xref="GeneID:1455263"
+     CDS             4500..5348
+                     /locus_tag="SSO0008"
+                     /note="Cannot be named yet because only one copy exists
+                     and therfore the length is unknown"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="IS605-TnpB family transposase"
+                     /protein_id="NP_341583.1"
+                     /db_xref="GI:15896978"
+                     /db_xref="GeneID:1455263"
+                     /translation="MKESLIEAKVMDYGKLKDIQKEILYYKLYVDALKKKGIKEKVDP
+                     PPTLPKSIVSSVLTGGIPRDGPLQIELVSNDVVKIKEYNTLVKIQSDSRLPLYAIVEY
+                     RDTDIRVYLAYRENPSIVGLDLGLRHLITIVAIKDTKPWKVRFFDEPKLMEKFANFLS
+                     ENQGIIKLEEMKSNAKRIIYEAVSFIEDLEPKVVAMENLEYFETKTGKGLRALQNMLE
+                     NEIRRRGIRYRKIDPYNTSRVCAKCGYKKGEILGSLFVCPACGYKADRDYNAAYNIAL
+                     KCYYTC"
+     gene            complement(5351..6334)
+                     /locus_tag="SSO0009"
+                     /db_xref="GeneID:1455264"
+     CDS             complement(5351..6334)
+                     /locus_tag="SSO0009"
+                     /note="Histone deacetylase family; Amino Acid
+                     Biosynthesis"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="deacetylase, putative"
+                     /protein_id="NP_341584.1"
+                     /db_xref="GI:15896979"
+                     /db_xref="GeneID:1455264"
+                     /translation="MITIVYDDIYKYHAPKGYHVENPSRIDKALSAINQLKVKFKKPI
+                     KVDDPQIIHSEDYVKLVEKHSKLEENLDEDTYTNRYTYESALYAMGGALEAFETNGFA
+                     LVRPPGHHAGVNGRAFGAPTLGFCIFNNVAYPIKKYKLKRVAIIDFDVHYGNGTQEIF
+                     YDDPDILHIDVHQDPRTIYPGNGFPDMIGEKDAEGTKINLLIPPLGSDDLYEELIPII
+                     QAILDDFKPAVIAYSAGFDSYMGDGLASVNATEYTFYSFGVLSNKFTKKYAVLEGGYD
+                     KGLIKGLKAFLEGFANIKMEYKKYQSNDSVRSRFMNYLSEEKNILRNYWSI"
+     gene            6376..7431
+                     /locus_tag="SSO0010"
+                     /db_xref="GeneID:1455265"
+     CDS             6376..7431
+                     /locus_tag="SSO0010"
+                     /note="Proteases"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="X-pro aminopeptidase"
+                     /protein_id="NP_341585.1"
+                     /db_xref="GI:15896980"
+                     /db_xref="GeneID:1455265"
+                     /translation="MNRIQRVQKELERANADYLITGTTSNMYYLIGFSEEQMERPLLL
+                     FITRDDYFLLVPKLYEEQLKQFPLIVYRDGEDPYSKLNLKENSNVLIDDTTFSLFTIE
+                     ILNRFKPGRIGRASRILGKLRQVKDDEELEKMEKGVKKAEQLILEFVSNIKENMTECQ
+                     IERKLKSFLIEEAGNISFDPIVTSGPNSSMPHLRCSDKKVKRGEAIVIDYGIKHDGYS
+                     TDTTRVFSLGKPNDPLILEIVEIVKTANEEAEKHVREGMRAKEIDYFAREVITNKGYG
+                     DYFIHRTGHGIGIDVHEDPYISPDNDDVIEQNMVFTIEPGIYLPGKFGIRIEDEVVVK
+                     KGYGKTLNMLQKELYII"
+     gene            7555..10479
+                     /locus_tag="SSO0011"
+                     /db_xref="GeneID:1455266"
+     CDS             7555..10479
+                     /locus_tag="SSO0011"
+                     /note="Predicted membrane protein conserved in archaea"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341586.1"
+                     /db_xref="GI:15896981"
+                     /db_xref="GeneID:1455266"
+                     /translation="MKVISVKKSLIILLFVILSPITYLTLPLSSQSTPIQGYATSSEL
+                     ITPGEIEVPITFHLINLGQTLTEVTITPADTYPFYLYPYNNGTELTHIPLWNQGQTVN
+                     VTYLFDIASTAKTGTYTDVVVVQGITTSGTQVTYDVLVPVVIAGYVNFSASSVWGTTS
+                     NPMVVGPGENNIPLTIILQNLGNSLVTNITLELNSQFPVGFLQNNATISAIPAGYYGE
+                     VTVMTSVYPNATEGLYYIKLNVIYYHNATTTVLVPIDIGSSNQVSLEDAWGTPSDPMV
+                     AAPGETLLPLTIYVKNLGENLLSNVMLILQSHYPIQFLQNYTMIGFVPAGGYNYVTVV
+                     ANVYKNVTPGVYYVPITLVAYDGGFMQTFEMPVYVLGYVNFSASSVWGTTSNPMVVGP
+                     GENNIPLTIILQNSGIVTVTNATLFLQSQYPVQFLQNNVTLGNVPAGYPIPVTVLANV
+                     YPNVTNTGVYYITAKVMYYDGVIQYVKVPIYIESLNQVSVEGIWGSLSNPILVAPGEN
+                     NVPLTLVIKNLGENLLSNVSLILQSHYPIQFLQQNASVGFVPAGSYNYVTVTANVFPN
+                     ATPGVYYIPATLVAYGGFKENIMITVDILGYVTIQAQSLWGEVTSPITVSSGETDVPL
+                     TVLLKNTGDVNILNATLVFQNVEYPLIFHQATAQIGIVPAGQENYATVTVSVFPNATP
+                     GVYYIPATLYYFNHQTTITVPITIYSPNISVNLVTIPPQVFPSYYDVRLLVILTNFGG
+                     GIAENANVSIQSPFQVISSNPLHLGALPVGVPINATFLINVPNNTVPKIYIVNITINY
+                     DGGKETYQYPLQIYPKANLIVVGVSYPSLSAGDSNVPITITLKNAGNSTAKNVIVRLG
+                     TSNLIYPHVSSSNPLQALTASEVFAGDIAPGQAINVTFVVDVSGGASAGTYPLAIALI
+                     WNQTGALFPFEQSDTFYVTISPPFYEQFFKSPIGIITIIVIIVIIIVIAAVLLRVRNK
+                     RR"
+     gene            10496..10651
+                     /locus_tag="SSO5023"
+                     /db_xref="GeneID:1455267"
+     CDS             10496..10651
+                     /locus_tag="SSO5023"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341587.1"
+                     /db_xref="GI:15896982"
+                     /db_xref="GeneID:1455267"
+                     /translation="MIRAFLLLTLFFRPIYSELALVLSLILILLILLLSSLSLLIKIL
+                     RLLKNIY"
+     gene            11143..11760
+                     /locus_tag="SSO0012"
+                     /db_xref="GeneID:1455268"
+     CDS             11143..11760
+                     /locus_tag="SSO0012"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341588.1"
+                     /db_xref="GI:15896983"
+                     /db_xref="GeneID:1455268"
+                     /translation="MYMILELLNIIGIIAFTISGSLKGTNKGLDIFGVVTLGVITSYA
+                     GGIIADILLGIYPPQILKELNYLLLSVGISIFVFYFYKWLQTNPIKMIIAISDAVGLS
+                     TFATLGASLAYSYGLNPISVGLIAAIVGTGGGVIRDVLVNEIPMVLTKEIYATAALLS
+                     GFIYYFTTPYLHHDSLFVAFLGSFLLRILSIKYNFNLPKREDNKS"
+     gene            complement(11767..11946)
+                     /locus_tag="SSO5027"
+                     /db_xref="GeneID:1455269"
+     CDS             complement(11767..11946)
+                     /locus_tag="SSO5027"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341589.1"
+                     /db_xref="GI:15896984"
+                     /db_xref="GeneID:1455269"
+                     /translation="MEDVKQSVEKIIKDREWITFNDLLKYIPYPAPEVYNALSQLIKE
+                     NKVGRRGRYFYYIKR"
+     gene            12050..12673
+                     /locus_tag="SSO0013"
+                     /db_xref="GeneID:1455271"
+     CDS             12050..12673
+                     /locus_tag="SSO0013"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341590.1"
+                     /db_xref="GI:15896985"
+                     /db_xref="GeneID:1455271"
+                     /translation="MLLYFKPTKKERDINVALEIVSELFASRIGKLMGLPILEVSLIK
+                     HGDEIGLLMDYLPDKATEQNIYNLDEIKMSLAFEEWILNIDLKEDHVLSKNGKGFIID
+                     HGHSLSAWKPLYYIIQIIDKKVSRFNLWASEDDFRDGIELLSSIDHNTISEILKESFS
+                     EVVESNFCKLFTREVAAEYMDLNIKILEKRMKYLKDGKILFTYNYRQ"
+     gene            complement(12647..13030)
+                     /locus_tag="SSO0014"
+                     /db_xref="GeneID:1455272"
+     CDS             complement(12647..13030)
+                     /locus_tag="SSO0014"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341591.1"
+                     /db_xref="GI:15896986"
+                     /db_xref="GeneID:1455272"
+                     /translation="MDFNNIIGNTLRIGVIISAIIIIFGVALLFVNNGSNGFTITQIS
+                     SSNSIVNSSIFKPSEIFSGLPKLYGLDYIYLGLMVLIATPVLRVLLGIAQFASERNKL
+                     YTIITIIVFFNLMFAIFLLPIIIGK"
+     gene            complement(13020..13880)
+                     /locus_tag="SSO0015"
+                     /db_xref="GeneID:1455273"
+     CDS             complement(13020..13880)
+                     /locus_tag="SSO0015"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341592.1"
+                     /db_xref="GI:15896987"
+                     /db_xref="GeneID:1455273"
+                     /translation="MLTPIEFFVTVVLISALSGILGALTGLGGATFLVPIYTLYLNVP
+                     IAYASGASLISTIATSSGAASAYVKDRITNVKIGMGLEIATTTGSIAGALTVAYIYAH
+                     HLEFIVYIVFGIVLLSQVYVQLAKSKFELPKPIKPDWTTRVFELYGKYYDTVLKQEVE
+                     YHGVRWWLGEIIMFFAGFISGLLGIGSGALKVLGMDWAMNLPMKVSTTTSNFMIGVTA
+                     ATGSSIYWIFGYIQPFLAAGTALGVLIGAFVGTKILVRVTNKTIRYIFTAILIFLGIQ
+                     MILRGFGYGL"
+     gene            complement(13920..15314)
+                     /locus_tag="SSO0016"
+                     /db_xref="GeneID:1455274"
+     CDS             complement(13920..15314)
+                     /locus_tag="SSO0016"
+                     /note="Transcription, RNA polymerase and transcription
+                     factors"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="transcription regulator (exsB) related protein"
+                     /protein_id="NP_341593.1"
+                     /db_xref="GI:15896988"
+                     /db_xref="GeneID:1455274"
+                     /translation="MCSVSGVLILNPKNFEKVELKLASILKKAEDRGRDSFGIVVIQK
+                     DGTVKVRKSIGKPSEKEELLYGILDEDSRVVIANNRAEPTTEYVRQKTEDDIQPFIGD
+                     RYIVTHNGIIANDLELEKKYELKRKTKIDSAILPLLLDKTWDGNLEALKGILEQIKGS
+                     FALVIGDKKNPDRIFLAQNFKPLYMAYDHSLESLFFTSLDEYFDAKPFDPVNITKLEP
+                     YSVVMVTSNKLITTLPIMEKRKKYRVLVVASGGLDSTVAATKLLREGHEVTLIHFNYH
+                     HKAEEKEREAVRKIAEYLQIPLLEINTDLFKIIGHATLIKGGGEIVKDRKGEEGAEFA
+                     HEWVPARNLIFFSVSLAIAEAYGYDAIASGINLEEAGAYPDNEMEFIRMLNKLSPYAT
+                     GPNKRIEILMPVGNLVKHEIVKLGYEIGAPLHLTWSCYEGGQKHCGKCGPCYMRKMAF
+                     RINGLKDPVEYDEE"
+     gene            15589..17808
+                     /locus_tag="SSO0017"
+                     /db_xref="GeneID:1455275"
+     CDS             15589..17808
+                     /locus_tag="SSO0017"
+                     /note="Lhr-like protein; Helicases"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="ATP-dependent helicase"
+                     /protein_id="NP_341594.1"
+                     /db_xref="GI:15896989"
+                     /db_xref="GeneID:1455275"
+                     /translation="MEILSEVNDKLKTFNAKIAHVHTETFLEPEYGPSINEIDIDDKL
+                     KKSIIEYGIERLYKYQYDAYRKIKNKENVMIISGTGTGKTEAFLIPILDLALKGERSV
+                     LVYPTKALARDQLTRVYKLARELGLNVGIFDGDTPEKERERLYRNPPHILITNPDMIH
+                     LGLALSTRFRFLLRTADHFIFDEVHVYEGVLGAHIRNLADRIKEFKNDIHIVASSATV
+                     GATKYLFEELFGVEGEIIEGIRRRKGIAIHSIIDSGNSSRWTLAAYLAAVLVKNGLKV
+                     LVFTDSQQMAELVAKIADRFRVNLEVHRAGLIAEERIKVEEKLRNGELDGVVATPTLE
+                     LGIDIGTIDAVIMAENPPSYTKYVQRAGRAGRRNNAGLVFTILGDDPIDSYYLRHPEE
+                     FFTRKIQALTFDPTNIEVIKIHALAYLAEKYRVKLNNLPPLWKKAYEILATESRAKIV
+                     GSYVLATPETKKYVATTSLRSVGPIVRIYEDKKKIGERELPAALHDLYPNAVYLISKK
+                     TYIIEEFDIDRLIAKVRKVNSELSYYTKPLYSMDLLEFNKKDEREVYGEKVEYGDMKL
+                     VMRVEGYVTYDVYSKRGKNEYFYENPISFTYNTKGLLIYHPLIDDFTLIDHMETYHAT
+                     EHVLISAARVAAGASLTDLGGISYPSGHVVIYDSSIGGSGVSKLLFERLEQAYEVALD
+                     IVKSCNCEDGCPNCVYSPYCGNNNKYLSRKKSLRLIDGLIKGTIKGVNKDREGNPIA"
+     gene            17801..19660
+                     /locus_tag="SSO0018"
+                     /db_xref="GeneID:1455276"
+     CDS             17801..19660
+                     /locus_tag="SSO0018"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341595.1"
+                     /db_xref="GI:15896990"
+                     /db_xref="GeneID:1455276"
+                     /translation="MHNNFYRILKPTKVGNVEVKNVIKYSEGISILPNAVPRYEYFRG
+                     LEGENVIDFIDYKGVDDLGDKLRVKAGTKWSEVLEKYKVEFWSNADFSIGGSVFFNDP
+                     ITGFNEFGKINGRVEVDAYLDGKYYSGRYKGGIVIHVYLKKEEKEIVYKRLYGNLSEL
+                     ISIIKSWYTSRIPVFREVSLVKKDKESYILVSYPKTREVLLQGLLSEFNEESSPIVEK
+                     IEYEYWYLGYSPLNTIDSIINLAKESQLSVIRFRKDEIAYSIYSNKRLESIRNTLEYS
+                     TIEGEGLFNGCILCGKCVSVCPYGKQTNDVFHTPLGFYSITYFEKENDLANCHMCGLC
+                     EQVCPVRLDITNELRKATKINQISPKNLLRSINSDLSSVLIITSLSEELNDQIIKSLI
+                     YLIKKGKRVGIFYLAEDFSKIVKNEFSLEGLLKFKEIYTITPEEYFYLQKLKKRTVID
+                     IYNIQLLAMNDLKMNKDNLHIPCLLGSELNESNFTCTNVFLNILNNKDNINRTIDKKV
+                     TLCPLTARELNIKTPLDLVEINLDENYISDFYKKLEIGTKDLGEDIEEDLGWYKDIED
+                     RIVDEVYSTLIDGIIKGENIENLVLLYFKLNSMDLTKNIKEILMDKLTKIIFS"
+     gene            complement(19647..20195)
+                     /gene="moaB"
+                     /locus_tag="SSO0019"
+                     /db_xref="GeneID:1455277"
+     CDS             complement(19647..20195)
+                     /gene="moaB"
+                     /locus_tag="SSO0019"
+                     /note="Cofactor Biosynthesis, Molybdopterin"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="molybdenum cofactor biosynthesis protein B
+                     (moaB)"
+                     /protein_id="NP_341596.1"
+                     /db_xref="GI:15896991"
+                     /db_xref="GeneID:1455277"
+                     /translation="MNNLMSAHKQHRQHAPTNINFYVITISTSRYEKLVRKEPLIDES
+                     GDIIKQLIIQSNYNIIGYELVPDEKVKILKAFANALDNSQTDVIISTGGTGYTQSDVT
+                     VETIRRIFDREIEGFSDVFRLVSYNDPEVKSASYLTKATAGIINDKVIFLLPGSPDAV
+                     RLAMKELILPEIGHLLYIVRRK"
+     gene            complement(20199..21008)
+                     /locus_tag="SSO0020"
+                     /db_xref="GeneID:1455278"
+     CDS             complement(20199..21008)
+                     /locus_tag="SSO0020"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341597.1"
+                     /db_xref="GI:15896992"
+                     /db_xref="GeneID:1455278"
+                     /translation="MIVEGYFLKYRDVIWSIKGCYHPDGYAVAIPRLFNGVKIKRLND
+                     ALEVVRTKFSNLLKYVDEIGFNVPLVPLNESEILDPFNAKIFNNRVREFLRFFNGDVG
+                     ITGSYLYLGKGNDMDFLSFKPEHYYVLEELRKKGITKPLSTVEESEIETLDYSSFKIL
+                     KSKRILEGIFEGRGYTFKIVQCEKFGPVREVKEFEGYVRILKSIKPFTIPVKYLVTDN
+                     HGNEYILTSFRTRFTELLPNMEIFIKGKILVRDEFNDMDLDIAEIVKLKSF"
+     gene            21513..22064
+                     /gene="soxB-like"
+                     /locus_tag="SSO0021"
+                     /db_xref="GeneID:1455279"
+     CDS             21513..22064
+                     /gene="soxB-like"
+                     /locus_tag="SSO0021"
+                     /note="Energy Metabolism"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="oxidoreductase, soxB-like, putative (soxB-like)"
+                     /protein_id="NP_341598.1"
+                     /db_xref="GI:15896993"
+                     /db_xref="GeneID:1455279"
+                     /translation="MIILSAGAWSKYLINVKLPVKTYYCWASLFLSKKKEVGSNIIYD
+                     YVNNFYSRPVIGLGFPLAIMGDGKAIETTPLQQNICIEDKNEVSARISRRLGEVKELY
+                     TSGSFCEATPDMRPAYGKIAENVYFIGGFNGYGAEVGPGLAHVLVEEILSKKEDTYFT
+                     EYRLERLNGYDGNFEIGQEPHEL"
+     gene            complement(22052..22492)
+                     /locus_tag="SSO0022"
+                     /db_xref="GeneID:1455280"
+     CDS             complement(22052..22492)
+                     /locus_tag="SSO0022"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341599.1"
+                     /db_xref="GI:15896994"
+                     /db_xref="GeneID:1455280"
+                     /translation="MISWLLGSQPSPWSFLEDLFQDYRNVAIYVDNNNIVQIVKVSDI
+                     DEFYTPFSVLIHAKYFKNYSPYYIKLEKMVAFPTTNEKVADSLLIKEGWRGIKYYYGD
+                     EFLGAWILYDCIKCRDKQRSHLEISKLSISEDETIKAHLRIYNS"
+     gene            22598..23215
+                     /locus_tag="SSO0023"
+                     /db_xref="GeneID:1455281"
+     CDS             22598..23215
+                     /locus_tag="SSO0023"
+                     /note="Similar to APE1113 (Aeoperum pernix)"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341600.1"
+                     /db_xref="GI:15896995"
+                     /db_xref="GeneID:1455281"
+                     /translation="MRSKLMFISDLEKLAKRLEELYGDIELDDIVQRLIDFYELGFTN
+                     INHSSLQLILSAYFKSLGYRVFVEYEKKGKLLDLYVSDEDMGIEVEYGYIPNSDAIDA
+                     EEYLLSRISLKILRYSSLSSKFYIAVPSFYMPPIPEELTADVKDKAKLRRVIEIIRKF
+                     YKINDVTFNDVKLAKINGIISVDISNLSISVIDIRKYKQLKDSYK"
+     gene            complement(23195..23842)
+                     /locus_tag="SSO0024"
+                     /db_xref="GeneID:1455282"
+     CDS             complement(23195..23842)
+                     /locus_tag="SSO0024"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341601.1"
+                     /db_xref="GI:15896996"
+                     /db_xref="GeneID:1455282"
+                     /translation="MLITISDIAWGIALSIWVAIVVLYISKLISKKFGAYVTRKAIHM
+                     LGGGIVAVLSPFVFNSPLVPIITSYLIMAYLITIRVLRKEMSWFMDKENLGEVFFAFS
+                     FGTVLLVMFILDPNYWTSTDLIYVAVLPLIFMSFGDGITGIIRNFVYKRRVKGLWGSM
+                     GMLIFCATVGYFVLNIPGLIAGILATVAELLPYIDDNISVPFLSFLFLYLFVRVL"
+     gene            23895..24512
+                     /locus_tag="SSO0025"
+                     /db_xref="GeneID:1455283"
+     CDS             23895..24512
+                     /locus_tag="SSO0025"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="hypothetical protein"
+                     /protein_id="NP_341602.1"
+                     /db_xref="GI:15896997"
+                     /db_xref="GeneID:1455283"
+                     /translation="MQLYKYSLKDGYLVPNENGDVTVFVEGNFISITDKNGNKIEGAR
+                     FKYLGNEYLLLEKLRYLAKLVNVDVDEDVLLAHPTLRNRTLAINKLMGELFEVFIYNL
+                     LLAKDYKVKRQFEIYPSLRKFTHTRWHNRPDFIVEDKLVIEAKIHKNDYLQTLEYSKY
+                     FKYGMAVFPFTGECRVPKGWICIFNTTKDQSRFYSLLEDLLSRVK"
+     gene            24484..25713
+                     /gene="purT"
+                     /locus_tag="SSO0026"
+                     /db_xref="GeneID:1455284"
+     CDS             24484..25713
+                     /gene="purT"
+                     /locus_tag="SSO0026"
+                     /EC_number="2.1.2.-"
+                     /note="non-folate utilizing enzyme, catalyzes the
+                     production of beta-formyl glycinamide ribonucleotide from
+                     formate, ATP, and beta-GAR and a side reaction producing
+                     acetyl phosphate and ADP from acetate and ATP; involved in
+                     de novo purine biosynthesis"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="phosphoribosylglycinamide formyltransferase 2"
+                     /protein_id="NP_341603.1"
+                     /db_xref="GI:15896998"
+                     /db_xref="GeneID:1455284"
+                     /translation="MKIYYLELSNCHMEIGTPLFEGSKKILLLGSGELGKEMAIEAQR
+                     MGLEVVALDRYDLAPAMHVAHRKYVVDMMNPNAIKAVVKRERPDAIIAEIEAINTDAL
+                     IELESNGFRVVPNANAVKACMNRIELRRFAAEKLKLPTTKYAFAENEEEVKRACKDIG
+                     FPCLIKPEMSSSGHGHVLVNKIENVEEAYRESISHARGKSRRVIVEEFVKIDTELTVL
+                     TYRYHSNSDSIITKTIEPIEHKRPSYYYVESWHPSNVSQGVKETARGIAQKVAEELGG
+                     LGIYGVEIIVSGNRILFSEVAPRPHDTGLVTLASSDINEFQIHVRSAIGLPTPEVKLV
+                     SPAASHVILAQTENVWGPKFLNIEKAMEIPGVQVRLFGKPVTYEKRRMGVVLATGNSV
+                     EEALEKVRKASSIILVK"
+     gene            complement(25702..26757)
+                     /locus_tag="SSO0028"
+                     /db_xref="GeneID:1455285"
+     CDS             complement(25702..26757)
+                     /locus_tag="SSO0028"
+                     /note="Energy Metabolism"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="acetylpolyamine aminohydrolase"
+                     /protein_id="NP_341604.1"
+                     /db_xref="GI:15896999"
+                     /db_xref="GeneID:1455285"
+                     /translation="MHKTAFIWTDEYYNYSFPDYHPFKSLRESMTKRLLEERGAFHFI
+                     TLVEPKSIPEEALQLVHSKEYIEFVKYKSKEGQGYLDDGDTPAFKGIYEAALIRVSGS
+                     VKALELIKSGEFNHTINIGGGFHHAKRNRAAGFCVFNDVALISKLGESFFSRIAIVDI
+                     DGHHADGTQELLIDDNNILKISLHMFHPNFFPGTGDVNEIGLGKGEGYTINIPLPPGT
+                     GDDGYLLAFDEIVVPAIERYKPELIILVAGGDSHFNDPLVELKLSTHGYLDVVTKIHR
+                     LVHEYSNGRLIMLGGGGYNYDATARIWTISIAEIAGIYDLEYETLHDSFSTKSSQFVM
+                     EKIRNTISLIKKIHSLN"
+ORIGIN
+//

@@ -1,0 +1,30 @@
+Sulfolobus solfataricus P2 chromosome, complete genome - 1..2992245
+2978 proteins
+Location	Strand	Length	PID	Gene	Synonym	Code	COG	Product
+249..857	+	202	15896973	-	SSO0001	-	COG1468L	hypothetical protein
+889..2091	+	400	15896974	thiD-1	SSO0002	-	COG0351H	phosphomethylpyrimidine kinase (thiD-1)
+2088..2969	+	293	15896975	rbsK-1	SSO0004	-	COG0524G	ribokinase (rbsK-1)
+3057..3743	+	228	15896976	-	SSO0006	-	COG1234R	hypothetical protein
+3736..4458	+	240	15896977	-	SSO0007	-	COG0121R	hypothetical protein
+4500..5348	+	282	15896978	-	SSO0008	-	COG0675L	IS605-TnpB family transposase
+5351..6334	-	327	15896979	-	SSO0009	-	COG0123BQ	deacetylase
+6376..7431	+	351	15896980	-	SSO0010	-	COG0006E	X-pro aminopeptidase
+7555..10479	+	974	15896981	-	SSO0011	-	COG1361M	hypothetical protein
+10496..10651	+	51	15896982	-	SSO5023	-	-	hypothetical protein
+11143..11760	+	205	15896983	-	SSO0012	-	COG2860S	hypothetical protein
+11767..11946	-	59	15896984	-	SSO5027	-	-	hypothetical protein
+12050..12673	+	207	15896985	-	SSO0013	-	-	hypothetical protein
+12647..13030	-	127	15896986	-	SSO0014	-	COG4272S	hypothetical protein
+13020..13880	-	286	15896987	-	SSO0015	-	COG0730R	hypothetical protein
+13920..15314	-	464	15896988	-	SSO0016	-	COG0603R	transcription regulator (exsB)-like protein
+15589..17808	+	739	15896989	-	SSO0017	-	COG1205R	ATP-dependent helicase
+17801..19660	+	619	15896990	-	SSO0018	-	COG1139C	hypothetical protein
+19647..20195	-	182	15896991	moaB	SSO0019	-	COG0521H	molybdenum cofactor biosynthesis protein B (moaB)
+20199..21008	-	269	15896992	-	SSO0020	-	COG1665S	hypothetical protein
+21513..22064	+	183	15896993	soxB-like	SSO0021	-	COG0665E	oxidoreductase, soxB-like, (soxB-like)
+22052..22492	-	146	15896994	-	SSO0022	-	-	hypothetical protein
+22598..23215	+	205	15896995	-	SSO0023	-	-	hypothetical protein
+23195..23842	-	215	15896996	-	SSO0024	-	-	hypothetical protein
+23895..24512	+	205	15896997	-	SSO0025	-	-	hypothetical protein
+24484..25713	+	409	15896998	purT	SSO0026	-	COG0027F	phosphoribosylglycinamide formyltransferase 2
+25702..26757	-	351	15896999	-	SSO0028	-	COG0123BQ	acetylpolyamine aminohydrolase

@@ -1,8 +1,4 @@
 #!/usr/bin/python
-#
-#  - 
-# 
-# Copyright (C) 2011  Patrick Pfeifer
 
 usage_text = """\
 
