@@ -1,1 +1,4 @@
 *.pyc
+/RNA_seqlyze.egg-info
+/distribute-0.6.26-py2.7.egg
+/distribute-0.6.26.tar.gz
