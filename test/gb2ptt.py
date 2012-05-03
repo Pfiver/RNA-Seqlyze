@@ -7,7 +7,7 @@ class Test(unittest.TestCase):
 
 		# run the converter
 		from subprocess import PIPE, Popen
-		proc = Popen("./gb2ptt.py test/data/NC_002754-partial.gb", shell=True, stdout=PIPE)
+		proc = Popen("source/gb2ptt.py test/data/NC_002754-partial.gb", shell=True, stdout=PIPE)
 
 		# read the converters standard output
 		import csv
