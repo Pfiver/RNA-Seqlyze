@@ -14,11 +14,11 @@
 # history and logs, available at http://trac.edgewall.org/log/.
 #
 # Author: Noah Kantrowitz <noah@coderanger.net>
-import os
+import os, urllib
 
 def application(environ, start_request):
     uri = "/"
-    path = environ["PATH_INFO"][len(environ["REDIRECT_RRDIR"]):]
+    path = urllib.unquote(environ["PATH_INFO"][len(environ["REDIRECT_RRDIR"]):])
     if 'HTTPS' in environ:
 	uri = path[:path.index("/", 1) + 1]
 	path = path[path.index("/", 1):]
