@@ -1,0 +1,18 @@
+sources = $(wildcard *.opr *.html *.named)
+
+targets = $(patsubst %,%.bed,$(sources))
+
+FILTER := ../../../Source/RNA-seqlyze/operon-tracks-filter.py
+
+all: $(targets)
+
+clean:
+	rm $(targets)
+
+%.bed: %
+	$(FILTER) $< > $@
+http://csbl1.bmb.uga.edu/OperonDB_10142009/downloadNCoperon.php?NC_id=NC_002754
+http://www.microbesonline.org/operons/OperonList.html
+http://operondb.cbcb.umd.edu/cgi-bin/operondb/pairs.cgi?genome_id=940
+http://www.microbesonline.org/cgi-bin/genomeInfo.cgi?tId=273057;export=tab
+http://www.microbesonline.org/operons/gnc273057.html
