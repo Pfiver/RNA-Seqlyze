@@ -1,0 +1,19 @@
+<FilesMatch 'login'>
+SSLRequireSSL
+ErrorDocument 403 https://aeshoh6c-www46.ssl.supercp.com/rna-seqlyze.pfeifer.ch/trac/
+AuthUserFile /home/aeshoh6c/.htpasswd
+AuthGroupFile /dev/null
+AuthName EnterPassword
+AuthType Basic
+require user patrick guest georglipps
+</FilesMatch>
+
+#SetEnv BLA BLA
+#AddHandler fcgid-script .fcgi
+RewriteEngine on
+#RewriteCond $0 !^trac.fcgi
+#RewriteCond $0 !^trac
+RewriteCond $0 !^trac.cgi/
+RewriteRule .* trac.cgi/$0
+
+#RewriteRule login$ https://aeshoh6c-www46.ssl.supercp.com/rna-seqlyze.pfeifer.ch/trac/$0 [R]

@@ -1,0 +1,11 @@
+SetEnv PATH /home/aeshoh6c/bin
+PassengerAppRoot /home/aeshoh6c/data/pfeifer.ch/RNA-seqlyze/wsgi-root
+
+<FilesMatch 'login'>
+	SSLRequireSSL
+	ErrorDocument 403 https://aeshoh6c-www46.ssl.supercp.com/rna-seqlyze.pfeifer.ch/
+	AuthUserFile /home/aeshoh6c/.htpasswd
+	AuthName EnterPassword
+	AuthType Basic
+	require user patrick guest georglipps
+</FilesMatch>
