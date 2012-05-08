@@ -1,0 +1,4 @@
+track name="BED" description="BED Test Track" visibility=2 itemRgb="on" 
+NC_002754.1	1	100	Foo	500	+	10	90	255,0,0
+NC_002754.1	200	250	Bar	900	+	205	245	0,255,0
+NC_002754.1	400	425	Baz	800	-	405	420	0,0,255

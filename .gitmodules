@@ -1,0 +1,18 @@
+[submodule "Source/WAF"]
+	path = Source/WAF
+	url = https://code.google.com/p/waf/
+[submodule "Source/TracEnv"]
+	path = Source/TracEnv
+	url = ./Source/TracEnv
+[submodule "Source/RNA-seqlyze"]
+	path = Source/RNA-seqlyze
+	url = ./Source/RNA-seqlyze
+[submodule "Source/TransTermHP"]
+	path = Source/TransTermHP
+	url = ./Source/TransTermHP
+[submodule "Source/OperonDB"]
+	path = Source/OperonDB
+	url = ./Source/OperonDB
+[submodule "Source/SRA_SDK"]
+	path = Source/SRA_SDK
+	url = ./Source/SRA_SDK

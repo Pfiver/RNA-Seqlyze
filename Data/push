@@ -1,0 +1,8 @@
+#!/bin/bash
+
+[[ "$0" = */* ]] && cd "${0%/*}/"
+
+rsync -av -L --delete --delete-excluded --force \
+	--exclude /push		\
+	--exclude /cache	\
+	. aeshoh6c@a2s46.a2hosting.com:data/pfeifer.ch/RNA-seqlyze-data

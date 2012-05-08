@@ -1,0 +1,18 @@
+track name="GFF" description="GFF Test Track" visibility=2
+
+# the first versions don't work
+
+#NC_002754.1	Foo	promoter	10	15	100	+	.
+NC_002754.1	Foo	start_codon	15	20	100	+	.
+
+#NC_002754.1	Foo	misc_RNA	50	100	100	+	.
+NC_002754.1	Foo	CDS		100	150	100	+	.
+
+#NC_002754.1	Foo	terminator	75	85	100	+	.
+NC_002754.1	Foo	stop_codon	175	185	100	+	.
+
+#NC_002754.1	Bar	misc_RNA	200	250	300	+	.
+#NC_002754.1	Bar	CDS		250	300	300	+	.
+
+#NC_002754.1	Baz	misc_RNA	300	325	800	-	.
+#NC_002754.1	Baz	CDS		325	350	800	-	.

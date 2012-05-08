@@ -1,0 +1,11 @@
+bt=/data/school/06_BT
+
+export WAFDIR=$bt/Source/WAF
+
+while read P
+do [[ $PATH =~ (^|:)$P(:|$) ]] || PATH+=:$P
+done <<-EOF
+	$WAFDIR
+	$bt/Source/RNA-seqlyze/scripts
+EOF
+
