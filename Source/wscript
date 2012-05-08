@@ -1,146 +1,22 @@
 #!/usr/bin/env python
-
-from waflib import Task
-from waflib import TaskGen
-from waflib import Options
-from waflib.Context import waf_dir
-from waflib.Build import BuildContext
+# encoding: utf-8
 
 top = out = '.'
 
-##########################################################
+import os
 
-def options(opt):
-	print "options"
-	pass
-	opt.add_option('--foo', action='store', default=False, help='Silly test')
-
-##########################################################
+print os.path.abspath(".")
 
 def configure(cnf):
-	print "configure"
-	print('→ the value of foo is %r' % cnf.options.foo)
-
-	import sys
-	Options.options.dtitle = 'Parallel build representation for %r' % ' '.join(sys.argv)
-	Options.options.dwidth = 800
-	Options.options.dtime = 0.009
-	Options.options.dband = 22
-	Options.options.dmaxtime = 0
-
-	cnf.load('parallel_debug', tooldir=waf_dir + '/waflib/extras')
-	pass
-
-##########################################################
-
-# from extras/parallel_debug.py
-#color2code = {
-#        'GREEN'  : '#4da74d',
-#        'YELLOW' : '#fefe44',
-#        'PINK'   : '#a751ff',
-#        'RED'    : '#cc1d1d',
-#        'BLUE'   : '#6687bb',
-#        'CYAN'   : '#34e2e2',
-#}
-
-#######################################################
-
-import time
-class unpack1(Task.Task):
-#	def __init__(self, env=bld):
-#		super(unpack1, self).__init__(env=bld.env.derive())
-	color = 'BOLD'
-	def run(self):
-		time.sleep(0.1)
-	def runnable_status(self):
-		return Task.RUN_ME
-
-#########################################################
+	print "1:", cnf.top_dir
 
 def build(bld):
-	sra_sdk_task_gen = bld(name="SRA_SDK")
 
-	t1 = unpack1(env=bld.env.derive())
-	bld.add_to_group(t1)
+	global abstop
+	abs_top = bld.top_dir
+	bld(rule=sra_sdk_build)
 
-	for i in range(10):
-		t1 = sra_sdk_task_gen.create_task("unpack1")
+def sra_sdk_build(task):
 
-	def unpack(task):
-		time.sleep(0.1)
-
-	def tweak(task):
-		time.sleep(0.1)
-
-	def build(task):
-		time.sleep(0.1)
-
-	for fun in unpack, tweak, build:
-		bld(name="sra_sdk: " + fun.__name__, rule=fun, run_after=unpack)
-
-	bld(rule="echo ls -la ${X}", shell=True, always=True)
-
-	sra_sdk_build(bld)
-
-##########################################################
-
-def sra_sdk_build(bld):
-	tg = SubBuildContext(bld, "SRA_SDK")
-	tg()
-	tg.execute()
-
-##########################################################
-
-@TaskGen.feature('*')
-@TaskGen.after('process_rule')
-def order(tg):
-	print 'order(', tg.name, ')'
-	for task in tg.tasks:
-		print ' name:', getattr(task, "name", "None")
-		print ' run_after:', getattr(tg, "run_after", "None")
-
-###########################################################
-
-#def sra_sdk(bld):
-#
-#	import re
-#	src = "sra_sdk-2.1.10.tar.gz"
-#	out = re.sub(".tar.gz$", "", src)
-#	ld_cmn = out + "/build/ld.linux.cmn.sh"
-#
-#	bld(
-#		rule="echo X1; make STATIC=false -C " + out,
-#		target=out + "/linux",
-#		source=ld_cmn+"~"
-#	)
-#
-#	bld(
-#		rule="""echo X2; sed -ri~ "/(LIBPATH)=''/\1=found/" ${TGT}""",
-#		target=ld_cmn+"~",
-#		source=ld_cmn
-#	)
-#
-#	bld(
-#		rule="echo X3; tar xf ${SRC}",
-#		target=out,
-#		source=src
-#	)
-#
-
-################################################################
-
-class SubBuildContext(BuildContext):
-	cmd = None
-	def add(self, task):
-		return super(SubBuildContext, self).append_to_group(task)
-	def __init__(self, bld, path):
-		path = bld.path.find_dir(path).abspath()
-		super(SubBuildContext, self).__init__(top_dir=path, out_dir=path)
-		self.init_dirs()
-		self.env = bld.env
-	def __call__(self, **kwargs):
-		super(SubBuildContext, self).__call__(**kwargs).post()
-	def recurse(self, dir):
-		pass
-	def store(self):
-		pass
+	top = task.generator.bld.top_dir
+	print "LD_RUN_PATH=" + top + "/SRA_SDK/linux/pub/gcc/x86_64/lib" + " make STATIC= STATICSYSLIBS=" + " cwd:" + "SRA_SDK"
