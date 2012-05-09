@@ -1,11 +1,11 @@
 bt=/data/school/06_BT
 
-export WAFDIR=$bt/Source/WAF
-
 while read P
 do [[ $PATH =~ (^|:)$P(:|$) ]] || PATH+=:$P
 done <<-EOF
 	$WAFDIR
+	$bt/Source/samtools
 	$bt/Source/RNA-seqlyze/scripts
+	$bt/Source/SRA_SDK/linux/pub/gcc/x86_64/bin
 EOF
 
