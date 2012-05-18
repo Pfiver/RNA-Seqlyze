@@ -1,11 +1,12 @@
+xpath() {
+	[[ ${!1} =~ (^|:)$2(:|$) ]] || eval ${1}+=:\$2
+}
+
 bt=/data/school/06_BT
 
-while read P
-do [[ $PATH =~ (^|:)$P(:|$) ]] || PATH+=:$P
-done <<-EOF
-	$WAFDIR
-	$bt/Source/samtools
-	$bt/Source/RNA-seqlyze/scripts
-	$bt/Source/SRA_SDK/linux/pub/gcc/x86_64/bin
-EOF
+xpath PATH $bt/Bin
+xpath PATH $bt/Source/RNA-seqlyze/scripts
+export PATH
 
+xpath PYTHONPATH $bt/Source/RNA-seqlyze/source
+export PYTHONPATH
