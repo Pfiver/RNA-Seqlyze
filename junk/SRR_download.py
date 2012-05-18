@@ -5,7 +5,7 @@ import ftplib, re, urllib
 
 host = 'ftp-trace.ncbi.nlm.nih.gov'
 
-basedir = '/sra/sra-instant/reads/ByStudy/sra/SRP/SRP001/SRP001461/'
+#basedir = '/sra/sra-instant/reads/ByStudy/sra/SRP/SRP001/SRP001461/'
 
 ftp = ftplib.FTP(host)
 ftp.login('anonymous', 'patrick.pfeifer@students.fhnw.ch')
@@ -49,7 +49,10 @@ dirwalk(ftp, collect_urls)
 
 for url in urls:
 	print "Fetching", url
-	def cb(*args):
-		print "Status", args, "\r",
-	ret = urllib.urlretrieve(url, url.split("/")[-1], cb)
-	print "Done", ret
+	def cb(blocks, bloksize, total):
+		print "Status: %d of %d\r" % (blocks*blocksize, total)
+	filename, message = urllib.urlretrieve(url, url.split("/")[-1], cb)
+	print
+	print "Done: %s" % filename
+	print message.headers
+	print message.fp.read()

@@ -1,0 +1,5 @@
+==> Source/GSM.xml.url <==
+http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM463010&form=xml
+
+==> Source/SRX.xml.url <==
+http://www.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=SRA&id=SRX013336
