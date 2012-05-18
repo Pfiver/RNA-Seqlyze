@@ -156,6 +156,7 @@ bool report_discordant_pair_alignments = false;
 
 string flt_reads = "";
 string flt_mappings = "";
+int flt_side = 2;
 
 bool fusion_search = false;
 size_t fusion_anchor_length = 20;
@@ -304,6 +305,7 @@ enum
     OPT_GTF_JUNCS,
     OPT_FILTER_READS,
     OPT_FILTER_HITS,
+    OPT_FILTER_SIDE,
     OPT_REPORT_SECONDARY_ALIGNMENTS,
     OPT_REPORT_DISCORDANT_PAIR_ALIGNMENTS,
     OPT_FUSION_SEARCH,
@@ -375,6 +377,8 @@ static struct option long_options[] = {
 {"gtf-juncs", required_argument, 0, OPT_GTF_JUNCS},
 {"flt-reads",required_argument, 0, OPT_FILTER_READS},
 {"flt-hits",required_argument, 0, OPT_FILTER_HITS},
+{"flt-side",required_argument, 0, OPT_FILTER_SIDE},
+
 {"report-secondary-alignments", no_argument, 0, OPT_REPORT_SECONDARY_ALIGNMENTS},
 {"report-discordant-pair-alignments", no_argument, 0, OPT_REPORT_DISCORDANT_PAIR_ALIGNMENTS},
 {"fusion-search", no_argument, 0, OPT_FUSION_SEARCH},
@@ -398,16 +402,30 @@ static struct option long_options[] = {
 };
 
 
+
+string str_replace(const string& base_str, const string& oldStr, const string& newStr)
+{
+  size_t pos = 0;
+  string str(base_str);
+  while((pos = str.find(oldStr, pos)) != string::npos)
+  {
+     str.replace(pos, oldStr.length(), newStr);
+     pos += newStr.length();
+  }
+  return str;
+}
+
+
 void str_appendInt(string& str, int64_t v) {
- stringstream ss;
- ss << v;
- str.append(ss.str());
+  char int_str[32] = {0};
+  sprintf(int_str, "%ld", v);
+  str += int_str;
 }
 
 void str_appendUInt(string& str, uint64_t v) {
- stringstream ss;
- ss << v;
- str.append(ss.str());
+  char uint_str[32] = {0};
+  sprintf(uint_str, "%lu", v);
+  str += uint_str;
 }
 
 bool str_endsWith(string& str, const char* suffix) {
@@ -591,6 +609,10 @@ int parse_options(int argc, char** argv, void (*print_usage)())
     case OPT_FILTER_HITS:
       flt_mappings = optarg;
       break;
+    case OPT_FILTER_SIDE:
+      flt_side = (optarg[0]=='0') ? 0 : 1;
+      break;
+
     case OPT_REPORT_SECONDARY_ALIGNMENTS:
       report_secondary_alignments = true;
       break;
@@ -1175,8 +1197,8 @@ GBamRecord::GBamRecord(const char* qname, int32_t flags, int32_t g_tid,
    static const int8_t seq_comp_table[16] = { 0, 8, 4, 12, 2, 10, 9, 14, 1, 6, 5, 13, 3, 11, 7, 15 };
    string seq;
    string squal;
-   char *qual  = (char*)bam1_qual(b);
-   char *s    = (char*)bam1_seq(b);
+   unsigned char *qual  = (unsigned char*)bam1_qual(b);
+   unsigned char *s    = (unsigned char*)bam1_seq(b);
    int i;
    //bool ismapped=((b->core.flag & BAM_FUNMAP) == 0);
    bool isreversed=((b->core.flag & BAM_FREVERSE) != 0);
@@ -1204,21 +1226,46 @@ GBamRecord::GBamRecord(const char* qname, int32_t flags, int32_t g_tid,
  		  seq[r]=c;
  		  l++;r--;
  		  }
- 	   for (i=0;i<seqlen;i++) {
- 		 seq[i]=seq_comp_table[(int)seq[i]];
- 	   }
+	   for (i=0;i<seqlen;i++) {
+	     seq[i]=seq_comp_table[(int)seq[i]];
+	   }
  	}
 
- 	for(i=0;i<seqlen;i++) {
+   if (color)
+     {
+       const static char *color_bam_nt16_rev_table = "4014244434444444";
+       seq[0] = bam_nt16_rev_table[(int)seq[0]];
+       for(i=1;i<seqlen;i++)
+	 {
+	   seq[i] = color_bam_nt16_rev_table[(int)seq[i]];
+	 }
+     }
+   else
+     {
+       for(i=0;i<seqlen;i++) {
  	  seq[i] = bam_nt16_rev_table[(int)seq[i]];
  	}
+     }
+   
   if (readquals) {
+    if (color)
+      {
+	squal.resize(seqlen - 1);
+	for(i=1;i<seqlen;i++) {
+	  if (qual[i]==0xFF)
+	    squal[i-1]='I';
+	  else squal[i-1]=qual[i]+33;
+	}
+      }
+    else
+      {
   	squal.resize(seqlen);
- 	  for(i=0;i<seqlen;i++) {
- 	    if (qual[i]==0xFF)
- 		  squal[i]='I';
- 	    else squal[i]=qual[i]+33;
- 	    }
+	for(i=0;i<seqlen;i++) {
+	  if (qual[i]==0xFF)
+	    squal[i]='I';
+	  else squal[i]=qual[i]+33;
+	}
+      }
 
  	  if (isreversed) {
  	    int l=0;

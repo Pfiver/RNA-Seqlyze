@@ -147,7 +147,7 @@ struct QReadData { //read data for the priority queue
   Read read;
   char trashCode; //ZT tag value
   int8_t matenum; //mate number (1,2) 0 if unpaired
-  QReadData():id(0),read(),trashCode(0) { }
+  QReadData():id(0),read(),trashCode(0), matenum(0) { }
   QReadData(uint64_t rid, Read& rd, bam1_t* bd=NULL):
 	 id(rid), read(rd), trashCode(0), matenum(0) {
      if (bd) {
@@ -256,6 +256,7 @@ class ReadStream {
     }
 
     void init(const string& fname, FZPipe* pquals=NULL, bool guess_packer=false) {
+        if (fname.empty()) return;
         if (fstream.openRead(fname, guess_packer)==NULL) {
           fprintf(stderr, "Warning: couldn't open file %s\n",fname.c_str());
           return;

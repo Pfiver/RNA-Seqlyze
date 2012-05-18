@@ -122,13 +122,22 @@ struct less_bam {
     ptr = bam_aux_get(second->b, "XS");
     if (ptr) strand2 = bam_aux2A(ptr);
 
-    if (strand1 == strand2)
-      return false;
+    if (strand1 != strand2)
+      {
+	if (strand1 == '+' || strand2 == 0)
+	  return true;
+	else
+	  return false;
+      }
 
-    if (strand1 == '+' || strand2 == 0)
-      return true;
-    else
-      return false;
+    // prefer more aux fields.
+    if (bowtie2)
+      {
+	if (first->b->data_len != second->b->data_len)
+	  return first->b->data_len > second->b->data_len;
+      }
+    
+    return false;
   }
 };
 
@@ -228,11 +237,10 @@ int main(int argc, char *argv[])
     CBamLine brec(lines.top()); //should have the smallest read_id
     lines.pop();
     assert (brec.fileno>=0 && brec.b!=NULL);
-    // we need to eliminate duplicate records, which can happen when using Bowtie2
-    // as we may map the same read against transcriptome, genome, and novel/known splice junctions.
-    if (last_id != brec.read_id && bam_lines.size() > 0)
+    // we need to eliminate duplicate alignments, which can happen when using Bowtie2
+    // as we may often map the same read against transcriptome, genome, and novel/known splice junctions.
+    if ((raw_merge || last_id != brec.read_id) && bam_lines.size() > 0)
        write_bam_lines(bamwriter, bam_lines);
-
     last_id = brec.read_id;
     bam_lines.push_back(brec);
     //reuse brec

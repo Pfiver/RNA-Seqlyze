@@ -130,6 +130,10 @@ extern std::string flt_reads;
 // aux_outfile; also reverses the flt_reads filter itself
 extern std::string flt_mappings;
 
+//for on-the-fly search during pre-filtering of PE reads, prep_reads will take both mates as input
+//but output only one side to stdout (into Bowtie); 0 = left, 1 = right, 2 = both
+extern int flt_side;
+
 extern bool fusion_search;
 extern size_t fusion_anchor_length;
 extern size_t fusion_min_dist;
@@ -160,6 +164,7 @@ std::string getFdir(const std::string& s); //returns file extension converted to
 bool str_endsWith(std::string& str, const char* suffix);
 void str_appendInt(std::string& str, int64_t v);
 void str_appendUInt(std::string& str, uint64_t v);
+std::string str_replace(const std::string& str, const std::string& oldStr, const std::string& newStr);
 FILE* fzOpen(std::string& fname, const char* mode);
 
 int parseIntOpt(int lower, const char *errmsg, void (*print_usage)());
@@ -583,7 +588,7 @@ class GBamWriter {
 	   pre_pos = post_block_addr << 16;
 	 }
 
-       fprintf(findex, "%lu\t%ld\n", read_id, pre_pos);
+       fprintf(findex, "%ld\t%ld\n", (long)read_id, (long)pre_pos);
        idxcount = 0;
      }
    }

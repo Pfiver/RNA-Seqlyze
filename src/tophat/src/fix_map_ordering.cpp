@@ -143,8 +143,9 @@ void driver_bam(string& fname, GBamWriter& bam_writer, GBamWriter* umbam) {
  bam_header_t* header=sam_header_read(fh);
  sam_close(fh);
  priority_queue< pair<uint64_t,bam1_t*>,
-					vector<pair<uint64_t, bam1_t*> >,
-					BamMapOrdering > map_pq;
+    vector<pair<uint64_t, bam1_t*> >,
+    BamMapOrdering > map_pq;
+ 
  GBamWriter* wmulti=NULL; //for multi-mapped prefiltering
  if (!aux_outfile.empty() && max_multihits>0) {
     wmulti=new GBamWriter(aux_outfile.c_str(), sam_header.c_str());
@@ -157,38 +158,95 @@ void driver_bam(string& fname, GBamWriter& bam_writer, GBamWriter* umbam) {
    if (new_record) {
      char *qname  = bam1_qname(b);
      uint64_t qid=(uint64_t)atol(qname);
+
+     if (color)
+       {
+	 int qname_len = strlen(qname);
+	 assert (qname_len > 3);
+	 qid = qid << 24 |
+	   (uint64_t)qname[qname_len-3] << 16 |
+	   (uint64_t)qname[qname_len-2] << 8 |
+	   (uint64_t)qname[qname_len-1];
+       }
+     
      bam1_t* bamrec=bam_dup1(b);
      map_pq.push(make_pair(qid, bamrec));
    }
 
    while (map_pq.size() > 1000000 || (!new_record && map_pq.size() > 0)) {
      uint64_t rid=map_pq.top().first;
+     char primer_tag = 0, first_color = 0, first_qual = 0;
+     if (color) {
+       primer_tag = (char)((rid >> 16) & 0xff);
+       first_color = (char)((rid >> 8) & 0xff);
+       first_qual = (char)(rid & 0xff);
+       
+       rid >>= 24;
+     }
+     
      bam1_t* tb=map_pq.top().second;
      bool unmapped = (tb->core.flag & BAM_FUNMAP) != 0;
+      
      if (unmapped) { //unmapped read
        if (umbam!=NULL)
-    	 umbam->write(tb);
+	 {
+	   // add a primer tag with the corresponding dummy quality value '!'
+	   if (color)
+	     {
+	       int l_qseq = tb->core.l_qseq + 2;
+	       int data_len = tb->data_len + 3; // one for primer tag and first color, and two for two quality values
+	       int m_data = data_len;
+	       kroundup32(m_data);
+	       
+	       uint8_t* data = (uint8_t*)calloc(m_data, 1);
+	       memset(data, 0, m_data);
+	       
+	       int copy_len = tb->core.l_qname + tb->core.n_cigar * 4;
+	       memcpy(data, tb->data, copy_len);
+	       
+	       uint8_t* data_seq = data + copy_len;
+	       uint8_t* source_seq = bam1_seq(tb);
+	       data_seq[0] = bam_nt16_table[(int)primer_tag] << 4 | bam_nt16_table[(int)first_color];
+	       memcpy(data_seq + 1, source_seq, (tb->core.l_qseq + 1) >> 1);
+	       uint8_t* data_qual = data_seq + ((l_qseq + 1) >> 1);
+	       data_qual[0] = '!' - 33;
+	       data_qual[1] = first_qual - 33;
+	       memcpy(data_qual + 2, bam1_qual(tb), tb->core.l_qseq);
+
+	       uint8_t* data_aux = data_qual + l_qseq;
+	       memcpy(data_aux, bam1_aux(tb), data_len - (data_aux - data));
+
+	       free(tb->data);
+	       tb->core.l_qseq = l_qseq;
+	       tb->data = data;
+	       tb->data_len = data_len;
+	       tb->m_data = m_data;
+	     }
+	   
+	   umbam->write(tb);
+	 }
+       
        bam_destroy1(tb);
        map_pq.pop();
-       }
+     }
      else { //mapped read
        vector<pair<uint64_t, bam1_t*> > read_hits;
-      //all mappings of a read are dealt with here
-      //if (!unmapped) {
+       //all mappings of a read are dealt with here
+       //if (!unmapped) {
        // mapped read
        //collect all hits for this read
        read_hits.push_back(map_pq.top());
        unsigned int mcount=0; //number of good scoring multi-hits
-       int tbscore=0;
+       int tbscore=0; //best mapping score for this read (first alignment reported)
        if (bowtie2) {
-          uint8_t* ptr = bam_aux_get(tb, "AS");
-          if (ptr) {
-        	    tbscore=bam_aux2i(ptr);
-        	    if (tbscore>=bowtie2_min_score) {
-        	       ++mcount;
-        	       }
-                }
-          }
+	 uint8_t* ptr = bam_aux_get(tb, "AS");
+	 if (ptr) {
+	   tbscore=bam_aux2i(ptr);
+	   if (tbscore>=bowtie2_min_score) {
+	     ++mcount;
+	   }
+	 }
+       }
        else mcount++; //bowtie 1
        map_pq.pop();
        while (map_pq.size()>0 && map_pq.top().first==rid) {
@@ -196,12 +254,13 @@ void driver_bam(string& fname, GBamWriter& bam_writer, GBamWriter* umbam) {
     	 if (bowtie2) {
            uint8_t* ptr = bam_aux_get(map_pq.top().second, "AS");
            if (ptr) {
-         	    int score=bam_aux2i(ptr);
-         	    if (score>=bowtie2_min_score) {
-         	       ++mcount;
-         	       }
-                 }
-    	    }
+	     int score=bam_aux2i(ptr);
+         	    //if (score>=bowtie2_min_score) {
+         	   if (score>=bowtie2_min_score && score>=tbscore-2) {
+	       ++mcount;
+	     }
+	   }
+	 }
     	 else mcount++;
     	 map_pq.pop();
        }
@@ -209,36 +268,58 @@ void driver_bam(string& fname, GBamWriter& bam_writer, GBamWriter* umbam) {
        if (wmulti && mcount>max_multihits) {
     	 if (num_hits>1) {
     	   bam_aux_append(tb, "NH", 'i', 4, (uint8_t*)&num_hits);
-    	   }
+	 }
     	 wmulti->write(tb);
        }
        else { //keep these mappings
-       // In case of Bowtie2, some of the mapped reads against either transcriptome or genome
-       // may have low alignment scores due to gaps, in which case we will remap those.
-       // Later, we may have better alignments that usually involve splice junctions.
+	 // In case of Bowtie2, some of the mapped reads against either transcriptome or genome
+	 // may have low alignment scores due to gaps, in which case we will remap those.
+	 // Later, we may have better alignments that usually involve splice junctions.
          if (bowtie2 && tbscore<bowtie2_min_score) {
-			 //low score for best mapping, we want to map this read later as well
-			 //unmapped = true;
-			 if (umbam!=NULL) {
-			   umbam->write(tb);
-			   }
+	   //low score for best mapping, we want to map this read later as well
+	   //unmapped = true;
+	   if (umbam!=NULL) {
+	     umbam->write(tb);
+	   }
          }
-        //-- write all hits for this read:
+
+	 //-- write all hits for this read:
          for (vector<pair<uint64_t, bam1_t*> >::size_type i=0;i<read_hits.size();++i)
-         {
-           const pair<uint64_t, bam1_t*>& v = read_hits[i];
-           if (num_hits>1)
-	    	 bam_aux_append(v.second, "NH", 'i', 4, (uint8_t*)&num_hits);
-           bam_writer.write(v.second, v.first);
-         }
+	   {
+	     pair<uint64_t, bam1_t*>& v = read_hits[i];
+	     v.second->core.flag &= ~BAM_FSECONDARY;
+
+	     // restore quality values
+	     if (bowtie2 && num_hits > 1) {
+	       if (i > 0) {
+		 const bam1_t& base_bam = *(read_hits[0].second);
+		 bam1_t& this_bam = *(v.second);
+
+		 const char *base_bq = (char*)bam1_qual(&base_bam);
+		 char *this_bq = (char*)bam1_qual(&this_bam);
+
+		 if ((base_bam.core.flag & BAM_FREVERSE) == (this_bam.core.flag & BAM_FREVERSE)) {
+		   memcpy(this_bq, base_bq, this_bam.core.l_qseq);
+		 } else {
+		   for(int i=0;i<(this_bam.core.l_qseq);i++) {
+		     this_bq[this_bam.core.l_qseq - i - 1] = base_bq[i];
+		   }
+		 }
+	       }
+	     }
+	   
+	     if (num_hits>1)
+	       bam_aux_append(v.second, "NH", 'i', 4, (uint8_t*)&num_hits);
+	     bam_writer.write(v.second, v.first);
+	   }
        }
        //free the read hits
        for (vector<pair<uint64_t, bam1_t*> >::size_type i=0;i<read_hits.size();++i)
-       {
-         const pair<uint64_t, bam1_t*>& v = read_hits[i];
-         bam_destroy1(v.second);
-       }
-      } // mapped reads
+	 {
+	   const pair<uint64_t, bam1_t*>& v = read_hits[i];
+	   bam_destroy1(v.second);
+	 }
+     } // mapped reads
    }
  } while (map_pq.size() > 0); //while SAM records
 
