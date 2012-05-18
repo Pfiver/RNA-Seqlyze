@@ -1,0 +1,5 @@
+*.pyc
+/.egg-cache
+/DownloadsPlugin-0.12/dist
+/DownloadsPlugin-0.12/build
+/DownloadsPlugin-0.12/TracDownloads.egg-info
