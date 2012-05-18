@@ -669,7 +669,7 @@ static void printUsage(ostream& out) {
 		<< "  For --end-to-end:" << endl
 		<< "   --very-fast            -D 5 -R 1 -N 0 -L 22 -i S,0,2.50" << endl
 		<< "   --fast                 -D 10 -R 2 -N 0 -L 22 -i S,0,2.50" << endl
-		<< "   --sensitive            -D 15 -R 2 -N 0 -L 22 -i S,1,1.25 (default)" << endl
+		<< "   --sensitive            -D 15 -R 2 -N 0 -L 22 -i S,1,1.15 (default)" << endl
 		<< "   --very-sensitive       -D 20 -R 3 -N 0 -L 20 -i S,1,0.50" << endl
 		<< endl
 		<< "  For --local:" << endl
@@ -681,7 +681,7 @@ static void printUsage(ostream& out) {
 	    << " Alignment:" << endl
 		<< "  -N <int>           max # mismatches in seed alignment; can be 0 or 1 (0)" << endl
 		<< "  -L <int>           length of seed substrings; must be >3, <32 (22)" << endl
-		<< "  -i <func>          interval between seed substrings w/r/t read len (S,1,1.25)" << endl
+		<< "  -i <func>          interval between seed substrings w/r/t read len (S,1,1.15)" << endl
 		<< "  --n-ceil <func>    func for max # non-A/C/G/Ts permitted in aln (L,0,0.15)" << endl
 		<< "  --dpad <int>       include <int> extra ref chars on sides of DP table (15)" << endl
 		<< "  --gbar <int>       disallow gaps within <int> nucs of read extremes (4)" << endl
@@ -703,12 +703,11 @@ static void printUsage(ostream& out) {
 		<< "                     (G,20,8 for local, L,-0.6,-0.6 for end-to-end)" << endl
 		<< endl
 	    << " Reporting:" << endl
-	    << "  -M <int>           look for up to <int>+1 alns; report best, with MAPQ (5 for" << endl
-		<< "                     --end-to-end, 2 for --local)" << endl
+	    << "  (default)          look for multiple alignments, report best, with MAPQ" << endl
 		<< "   OR" << endl
-	    << "  -k <int>           report up to <int> alns per read; MAPQ not meaningful (off)" << endl
+	    << "  -k <int>           report up to <int> alns per read; MAPQ not meaningful" << endl
 		<< "   OR" << endl
-	    << "  -a/--all           report all alignments; very slow (off)" << endl
+	    << "  -a/--all           report all alignments; very slow, MAPQ not meaningful" << endl
 		<< endl
 	    << " Effort:" << endl
 	    << "  -D <int>           give up extending after <int> failed extends in a row (15)" << endl
@@ -742,7 +741,8 @@ static void printUsage(ostream& out) {
 		<< "  --met-file <path>  send metrics to file at <path> (off)" << endl
 		<< "  --met-stderr       send metrics to stderr (off)" << endl
 		<< "  --met <int>        report internal counters & metrics every <int> secs (1)" << endl
-	    << "  --no-unal          supppress SAM records for unaligned reads" << endl
+	// Following is supported in the wrapper instead
+	//  << "  --no-unal          supppress SAM records for unaligned reads" << endl
 	    << "  --no-head          supppress header lines, i.e. lines starting with @" << endl
 	    << "  --no-sq            supppress @SQ header lines" << endl
 	    << "  --rg-id <text>     set read group id, reflected in @RG line and RG:Z: opt field" << endl
@@ -1017,6 +1017,8 @@ static void parseOption(int next_option, const char *arg) {
 			}
 			assert_eq(1, khits);
 			saw_M = true;
+			cerr << "Warning: -M is deprecated.  Use -D and -R to adjust " <<
+			        "effort instead." << endl;
 			break;
 		}
 		case ARG_EXTEND_ITERS: {

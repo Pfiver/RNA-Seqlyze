@@ -182,12 +182,14 @@ public:
 	template<typename TStr>
 	void printReadName(
 		BTString& o,
-		const TStr& name)
+		const TStr& name,
+		bool omitSlashMate)
 		const
 	{
 		size_t namelen = name.length();
-		if( namelen >= 2 &&
-			name[namelen-2] == '/' &&
+		if(omitSlashMate &&
+		   namelen >= 2 &&
+		   name[namelen-2] == '/' &&
 		   (name[namelen-1] == '1' || name[namelen-1] == '2' || name[namelen-1] == '3'))
 		{
 			namelen -= 2;
@@ -246,6 +248,7 @@ public:
 		bool first,                // first opt flag printed is first overall?
 		const Read& rd,            // the read
 		AlnRes& res,               // individual alignment result
+		StackedAln& staln,         // stacked alignment
 		const AlnFlags& flags,     // alignment flags
 		const AlnSetSumm& summ,    // summary of alignments for this read
 		const SeedAlSumm& ssm,     // seed alignment summary

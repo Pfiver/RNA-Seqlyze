@@ -771,6 +771,9 @@ void AlnSinkWrap::finishRead(
 				false,      // primary
 				true,       // opp aligned
 				rs1->fw()); // opp fw
+			// Issue: we only set the flags once, but some of the flags might
+			// vary from pair to pair among the pairs we're reporting.  For
+			// instance, whether the a given mate aligns to the forward strand.
 			SeedAlSumm ssm1, ssm2;
 			sr1->toSeedAlSumm(ssm1);
 			sr2->toSeedAlSumm(ssm2);
@@ -1639,9 +1642,14 @@ void AlnSinkSam::appendMate(
 		return;
 	}
 	char buf[1024];
+	StackedAln staln;
+	if(rs != NULL) {
+		rs->initStacked(rd, staln);
+		staln.leftAlign(false /* not past MMs */);
+	}
 	int offAdj = 0;
 	// QNAME
-	samc_.printReadName(o, rd.name);
+	samc_.printReadName(o, rd.name, flags.partOfPair());
 	o.append('\t');
 	// FLAG
 	int fl = 0;
@@ -1656,8 +1664,10 @@ void AlnSinkSam::appendMate(
 		}
 		fl |= (flags.readMate1() ?
 			SAM_FLAG_FIRST_IN_PAIR : SAM_FLAG_SECOND_IN_PAIR);
-		if(flags.mateAligned() && !flags.mateFw()) {
-			fl |= SAM_FLAG_MATE_STRAND;
+		if(flags.mateAligned() && rso != NULL) {
+			if(!rso->fw()) {
+				fl |= SAM_FLAG_MATE_STRAND;
+			}
 		}
 	}
 	if(!flags.isPrimary()) {
@@ -1723,12 +1733,8 @@ void AlnSinkSam::appendMate(
 	}
 	// CIGAR
 	if(rs != NULL) {
-		rs->printCigar(
-			false,       // like BWA, we don't distinguish = from X
-			rs->cigop,   // temporary EList to store CIGAR ops
-			rs->cigrun,  // temporary EList to store run lengths
-			&o,
-			NULL);
+		staln.buildCigar(false);
+		staln.writeCigar(&o, NULL);
 		o.append('\t');
 	} else {
 		// No alignment
@@ -1821,6 +1827,7 @@ void AlnSinkSam::appendMate(
 			true,        // first opt flag printed is first overall?
 			rd,          // read
 			*rs,         // individual alignment result
+			staln,       // stacked alignment
 			flags,       // alignment flags
 			summ,        // summary of alignments for this read
 			ssm,         // seed alignment summary
