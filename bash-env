@@ -10,3 +10,5 @@ export PATH
 
 xpath PYTHONPATH $bt/src/rna-seqlyze/source
 export PYTHONPATH
+
+export GIT_SSL_NO_VERIFY=true
