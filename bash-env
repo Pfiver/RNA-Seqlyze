@@ -4,9 +4,9 @@ xpath() {
 
 bt=/data/school/06_BT
 
-xpath PATH $bt/Bin
-xpath PATH $bt/Source/RNA-seqlyze/scripts
+xpath PATH $bt/bin
+xpath PATH $bt/src/rna-seqlyze/scripts
 export PATH
 
-xpath PYTHONPATH $bt/Source/RNA-seqlyze/source
+xpath PYTHONPATH $bt/src/rna-seqlyze/source
 export PYTHONPATH
