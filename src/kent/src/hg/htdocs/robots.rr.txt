@@ -1,0 +1,20 @@
+User-agent: *
+Disallow: /goldenPath/
+Disallow: /cgi-bin
+Disallow: //cgi-bin
+Disallow: /admin/
+Disallow: /qa/
+
+User-agent: msnbot Crawl-delay: 1200 Disallow: /
+
+User-agent: Googlebot
+Disallow: /admin/
+Disallow: /goldenPath/
+Disallow: /qa/
+Disallow: /cgi-bin/
+
+User-agent: htdig
+Disallow: /admin/
+Disallow: /goldenPath/
+Disallow: /qa/
+Disallow: /cgi-bin/
