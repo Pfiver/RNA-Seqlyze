@@ -9,6 +9,8 @@ RewriteRule ^traclogin.wsgi/logout$ /biopython/trac [R,L]
 #RewriteCond %{REQUEST_FILENAME} -f
 RewriteCond $0 !^traclogin.wsgi
 RewriteCond $0 !^trac.wsgi
+RewriteCond $0 !^webappdev.wsgi
+RewriteCond $0 !^webapp.wsgi
 RewriteCond $0 !^$
 RewriteRule .* - [R=404]
 

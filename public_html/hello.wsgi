@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 def application(environ, start_response):
     status = '200 OK'
     output = 'Hello World!'
