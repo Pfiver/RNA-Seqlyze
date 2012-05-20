@@ -1,0 +1,19 @@
+[color]
+	ui = true
+[alias]
+	lg = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)%cr%C(reset)'
+	lgm = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(yellow)%d%C(reset) %ce: %s %C(green)%cr%C(reset)'
+	llg = log --decorate --oneline --graph
+	ls = ls-tree --full-tree -rl HEAD
+	cat = "!git cat-file blob :$1 #"
+	treelog = log --diff-filter=AR -M --summary --oneline
+	expunge = "!git reflog expire --expire=now --all && git gc --prune=now #"
+
+	ssh = "!ssh -R 9418:localhost:9418"
+	servethis = "!git daemon --detach --pid-file=git-daemon.pid --syslog --verbose --export-all --base-path=$PWD #"
+	stopserving = "!kill $(cat git-daemon.pid); rm git-daemon.pid #"
+[merge]
+	tool = vimdiff
+[user]
+	email = p2000@mailinator.com
+	name = Patrick Pfeifer
