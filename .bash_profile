@@ -46,3 +46,5 @@ stty -ixon -ixoff
 export VISUAL=vim EDITOR=vim # PYTHONSTARTUP=~/.config/python/startup.py
 
 PS1='\[\033[;92m\]\u@\h\[\033[00m\]:\[\033[;94m\]\w\[\033[00m\]\$ '
+
+bt() { bt=/home/pfeifer/data/bt; cd $bt; . bash-env; }
