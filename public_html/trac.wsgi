@@ -16,6 +16,9 @@
 # Author: Noah Kantrowitz <noah@coderanger.net>
 import os
 
+import site
+site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
+
 def application(environ, start_request):
 	if not 'trac.env_parent_dir' in environ:
 		environ.setdefault('trac.env_path', '/home/pfeifer/data/bt/src/trac_env')
@@ -28,8 +31,7 @@ def application(environ, start_request):
 		os.environ['PYTHON_EGG_CACHE'] = \
 			os.path.join(environ['trac.env_parent_dir'], '.egg-cache')
 
-	import site
-	site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
+	environ["SCRIPT_NAME"] = environ["SCRIPT_NAME"][:-5]
 
 	from trac.web.main import dispatch_request
 	return dispatch_request(environ, start_request)

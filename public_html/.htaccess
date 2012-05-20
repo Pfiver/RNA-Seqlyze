@@ -1,8 +1,19 @@
+RedirectMatch ^/biopython/$ /biopython/trac
+
 AddHandler wsgi-script .wsgi
 
 RewriteEngine on
-RewriteRule trac trac.wsgi
-RewriteRule hello hello.wsgi
+RewriteRule ^trac.wsgi/login$ /biopython/traclogin [R,L]
+RewriteRule ^traclogin.wsgi/logout$ /biopython/trac [R,L]
 
-RedirectMatch /$ /biopython/trac
+#RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond $0 !^traclogin.wsgi
+RewriteCond $0 !^trac.wsgi
+RewriteRule .* - [R=404]
 
+<Files 'traclogin'>
+        AuthUserFile /home/pfeifer/public_html/.htpasswd
+        AuthName "Enter Password"
+        AuthType Basic
+        Require valid-user
+</Files>
