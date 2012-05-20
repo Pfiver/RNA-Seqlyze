@@ -45,6 +45,31 @@ stty -ixon -ixoff
 
 export VISUAL=vim EDITOR=vim # PYTHONSTARTUP=~/.config/python/startup.py
 
+pushd() {
+	if [ $# = 0 ]
+	then
+		if [ ${#DIRSTACK[@]} -le 2 ]
+		then
+			command pushd "$PWD" > /dev/null
+		else
+			cd ~-0
+			command pushd -n -0 > /dev/null
+		fi
+	elif [ -d "$1" ]
+	then
+		command pushd -n "$(readlink -f "${1%/}")" > /dev/null
+		cd ~1
+	else
+		echo no such directory: $1 >&2
+	fi
+}
+popd() {
+	command popd "$@" > /dev/null
+}
+
+PROMPT_COMMAND='dirs -v | tail -n+2'
+
+
 PS1='\[\033[;92m\]\u@\h\[\033[00m\]:\[\033[;94m\]\w\[\033[00m\]\$ '
 
 bt() { bt=/home/pfeifer/data/bt; cd $bt; . bash-env; }
