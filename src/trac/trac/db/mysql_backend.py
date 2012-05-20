@@ -36,8 +36,15 @@ try:
     
     class MySQLUnicodeCursor(MySQLdb.cursors.Cursor):
         def _convert_row(self, row):
-            return tuple(v.decode('utf-8') if isinstance(v, str) else v
-                         for v in row)
+            try:
+                return tuple(unicode(v, 'utf-8') if isinstance(v, str) else v
+                             for v in row)
+            except Exception, e:
+                try:
+                    return tuple(unicode(v, 'latin-1') if isinstance(v, str) else v
+                                 for v in row)
+                except Exception, e:
+                    raise e
         def fetchone(self):
             row = super(MySQLUnicodeCursor, self).fetchone()
             return self._convert_row(row) if row else None
