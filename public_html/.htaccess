@@ -1,11 +1,8 @@
-RewriteEngine on
-
-#RewriteRule ^$ /biopython/hello [R,L]
-
-RewriteRule hello hello.wsgi
-
-RedirectMatch /$ /biopython/hello
-
 AddHandler wsgi-script .wsgi
 
-#DirectoryIndex hello.wsgi #index.html index.wsgi index.cgi
+RewriteEngine on
+RewriteRule trac trac.wsgi
+RewriteRule hello hello.wsgi
+
+RedirectMatch /$ /biopython/trac
+
