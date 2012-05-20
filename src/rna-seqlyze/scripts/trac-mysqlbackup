@@ -1,0 +1,34 @@
+#!/usr/bin/python
+# encoding: utf-8
+
+# http://docs.python.org/library/tempfile.html?highlight=tempfile#tempfile.mkstemp
+from tempfile import mkstemp
+tmp_fd, tmp_path = mkstemp()
+
+import os
+tmp_file = os.fdopen(tmp_fd, "w")
+
+# trac-admin . config get trac database | python -c 'import sys, urlparse; parts=urlparse.urlsplit(sys.stdin.read()); print parts.username;'
+
+from subprocess import Popen, PIPE
+trac_admin = Popen("trac-admin . config get trac database", stdout=PIPE, shell=True)
+
+import urlparse
+url_parts = urlparse.urlsplit(trac_admin.stdout.read().strip())
+
+my_cnf = [
+    "[client]",
+    "host=" + url_parts.hostname,
+    "user=" + url_parts.username,
+    "password=" + url_parts.password,
+    ""
+]
+
+tmp_file.write("\n".join(my_cnf))
+tmp_file.close()
+
+mysqldump = Popen(["mysqldump", "--defaults-file=" + tmp_path, url_parts.path[1:]], stdout=PIPE)
+
+open("mysql-db-backup.sql", "w").writelines(mysqldump.stdout)
+
+os.unlink(tmp_path)
