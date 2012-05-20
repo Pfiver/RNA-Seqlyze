@@ -1,0 +1,9 @@
+SHELL=/bin/bash
+#MAILTO=patrick.pfeifer@students.fhnw.ch
+
+PATH=/home/pfeifer/.local/bin:/usr/local/bin:/usr/bin:/bin
+
+# m  h   dom mon dow command
+21,51 *  *   *   *   cd /home/pfeifer; git push -q data/bt master:biocalc-env
+22,52 *  *   *   *   cd /home/pfeifer/data/bt/src/trac_env; trac-mysqlbackup
+23,53 *  *   *   *   cd /home/pfeifer/data/bt; git push -q fhnw
