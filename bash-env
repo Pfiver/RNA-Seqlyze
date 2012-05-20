@@ -2,7 +2,7 @@ xpath() {
 	[[ ${!1} =~ (^|:)$2(:|$) ]] || eval ${1}+=:\$2
 }
 
-bt=/data/school/06_BT
+: ${bt:=/data/school/06_BT}
 
 xpath PATH $bt/bin
 xpath PATH $bt/src/rna-seqlyze/scripts
