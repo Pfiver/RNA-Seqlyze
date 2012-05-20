@@ -10,3 +10,17 @@ export PATH
 
 xpath PYTHONPATH $bt/src/rna-seqlyze/source
 export PYTHONPATH
+
+dirs=(
+	~/public_html
+	"$bt"
+	"$bt/src"
+	"$bt/src/rna-seqlyze/webapp"
+)
+dirs -c
+for ((i=${#dirs[@]};i>0;))
+do
+	pushd "${dirs[--i]}"
+done
+cd "$bt"
+unset dirs
