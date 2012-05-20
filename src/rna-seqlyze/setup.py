@@ -21,21 +21,19 @@ setup(
 	version='0.1',
 	test_suite='test',
 	license = "Mixed",
-	author_email = "patrick@patrickpfeifer.net"
+	author_email = "patrick@patrickpfeifer.net",
 	description = "RNA-seq analysis & sequence annotation enhancement web-application",
-	license = "MIT",
 	url = "http://git.pfeifer.ch/rna-seqlyze.git",
 	packages = find_packages(),
     scripts = [
 		'scripts/xml_tool',
+		'scripts/trac-mysqlbackup',
 	],
 	install_requires = [
-#		"Cython >= 0.16",
-		"pysam >= 0.6",
+		"pyramid >= 1.3.2",
 		"Trac >= 0.13dev",
-		"MySQL-python 1.2.2",	# for Trac wiki
-		"MarkupSafe >= 0.15",	# required by Trac
-		"biopython >= 1.59",
-		"bcbio_nextgen >= 0.3a",
+		"MarkupSafe >= 0.15",		# required by Trac
+		"MySQL-python >= 1.2.2",	# for the Trac wiki
+        "distribute >= 0.6.14",     # unsure if really required, but won't harm
 	],
 )
