@@ -381,7 +381,7 @@ CREATE TABLE `repository` (
 
 LOCK TABLES `repository` WRITE;
 /*!40000 ALTER TABLE `repository` DISABLE KEYS */;
-INSERT INTO `repository` VALUES (1,'description',''),(1,'url','http://git.pfeifer.ch/RNA-seqlyze.SourceCode.git'),(1,'type','git'),(1,'dir','/home/aeshoh6c/data/pfeifer.ch/RNA-seqlyze.git'),(1,'name','Source Code'),(2,'name','ProjectRoot'),(2,'dir','/home/aeshoh6c/data/pfeifer.ch/BT.git'),(2,'type','git'),(2,'url',''),(2,'description','');
+INSERT INTO `repository` VALUES (1,'description',''),(1,'url','http://git.pfeifer.ch/rna-seqlyze.git'),(1,'type','git'),(1,'dir','/home/pfeifer/data/bt/.git'),(1,'name','GitRepo');
 /*!40000 ALTER TABLE `repository` ENABLE KEYS */;
 UNLOCK TABLES;
 
