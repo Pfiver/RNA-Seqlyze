@@ -29,6 +29,24 @@ tmp_file.close()
 
 mysqldump = Popen(["mysqldump", "--defaults-file=" + tmp_path, url_parts.path[1:]], stdout=PIPE)
 
-open("mysql-db-backup.sql", "w").writelines(mysqldump.stdout)
+dump_path = "mysql-db-backup.sql"
+new_dump_path = "mysql-db-backup.new.sql"
+new_dump = open(new_dump_path, "w")
+new_dump.writelines(mysqldump.stdout)
+new_dump.close()
+
+from subprocess import call
+dump_differs = call(["diff", "-q",
+                        "-I", "^INSERT INTO `session",
+                        "-I", "^-- Dump completed on",
+                        dump_path, new_dump_path ])
+
+if dump_differs:
+    os.rename(new_dump_path, dump_path) # FIXME: won't work on windows
+else:
+    os.unlink(new_dump_path)
 
 os.unlink(tmp_path)
+
+import sys
+sys.exit(not dump_differs)  # normal (0) exit if new dump differes, false (1) if it doesn't
