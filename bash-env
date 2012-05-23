@@ -15,7 +15,7 @@ dirs=(
 	~/public_html
 	"$bt"
 	"$bt/src"
-	"$bt/src/rna-seqlyze/webapp"
+	"$bt/src/rna-seqlyze-web"
 )
 dirs -c
 for ((i=${#dirs[@]};i>0;))
