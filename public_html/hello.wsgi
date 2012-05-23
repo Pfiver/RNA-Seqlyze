@@ -1,37 +1,50 @@
 #!/usr/bin/python
 
-def application(environ, start_response):
-    status = '200 OK'
-    output = 'Hello World!'
+def application(env, start_response):
+    global environ
+    environ = env
+    start_response('200 OK', [('Content-type', 'text/plain')])
+    def flt(n):
+         return not n.startswith("__") and \
+                not n in ("application", "env")
+    funcs = filter(flt, globals())
+    if env["QUERY_STRING"] not in funcs:
+        import os.path
+        nam = os.path.basename(env["SCRIPT_NAME"])
+        return [ "usage: %s [%s]" % (nam, "|".join(funcs)) ]
+    return globals()[env["QUERY_STRING"]]()
 
-    response_headers = [('Content-type', 'text/plain')]
-#    response_headers = [('Content-type', 'text/plain'),
-#                        ('Content-Length', str(len(output)))]
+def sig_int():
+    import os, signal, subprocess
+    p = subprocess.Popen("ps axfu", stdout=subprocess.PIPE, shell=True)
+    out = p.stdout.readlines()
+    os.kill(os.getpid(), signal.SIGINT)
+    p = subprocess.Popen("ps axfu", stdout=subprocess.PIPE, shell=True)
+    out += p.stdout.readlines()
+    return out
 
-    start_response(status, response_headers)
+def ps_afux():
+    import subprocess
+    p = subprocess.Popen("ps axfu", stdout=subprocess.PIPE, shell=True)
+    return p.stdout
 
-#    import subprocess
-#    p = subprocess.Popen("ps axfu", stdout=subprocess.PIPE, shell=True)
-#
-#    return p.stdout
-
+def sys_path():
     out = []
-    import sys
+    import sys, site
     from pprint import pformat
     out.append("old path:")
     out.append(pformat(sys.path))
-
-    import site
     site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
-
     out.append("new path:")
     out.append(pformat(sys.path))
-
-    import trac
-    out.append(str(trac.__version__))
-
     return [ "\n".join(out) ]
 
-    return ("%s: %s\n" % (n,v) for n,v in environ.iteritems())
+def trac_version():
+    out = []
+    import trac
+    out.append(str(trac.__version__))
+    return [ "\n".join(out) ]
 
-    return [output]
+def printenv():
+    from pprint import pformat
+    return [ pformat(environ) ]

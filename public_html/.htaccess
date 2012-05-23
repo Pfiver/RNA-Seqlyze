@@ -1,18 +1,36 @@
+# set the default url for the directory
 RedirectMatch ^/biopython/$ /biopython/trac
 
+# auto-rewrites file to file.wsgi if file.wsgi exists
 AddHandler wsgi-script .wsgi
 
+# turn on mod_rewrite features
 RewriteEngine on
+
+# only allow access to a handful of scripts in here
+# anything else doesn't exist (backup copies, .htaccess, etc.)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond $0 !^$
+RewriteCond $0 !^trac.wsgi
+RewriteCond $0 !^traclogin.wsgi
+RewriteCond $0 !^rna-seqlyze.wsgi
+# FIXME: delete the next 3 lines in production environment
+RewriteCond $0 !^hello.wsgi
+RewriteCond $0 !^pyramid-webapp.wsgi
+RewriteCond $0 !^rna-seqlyze-dev.wsgi
+RewriteRule .* - [R=404]
+
+# rewrite (hidden redirect) requests for
+# non-existant files to pyramid-webapp.wsgi
+# FIXME: delete the next 2 lines in production environment
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^[^/]*(.*) /biopython/pyramid-webapp.wsgi$1
+
+# handle trac login / logount
+#  [R] -> issue a real 302 redirect
+#  [L] -> stop processing RewriteRules
 RewriteRule ^trac.wsgi/login$ /biopython/traclogin [R,L]
 RewriteRule ^traclogin.wsgi/logout$ /biopython/trac [R,L]
-
-#RewriteCond %{REQUEST_FILENAME} -f
-RewriteCond $0 !^traclogin.wsgi
-RewriteCond $0 !^trac.wsgi
-RewriteCond $0 !^webappdev.wsgi
-RewriteCond $0 !^webapp.wsgi
-RewriteCond $0 !^$
-RewriteRule .* - [R=404]
 
 <Files 'traclogin'>
         AuthUserFile /home/pfeifer/public_html/.htpasswd
