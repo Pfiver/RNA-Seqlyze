@@ -5,5 +5,5 @@ PATH=/home/pfeifer/.local/bin:/usr/local/bin:/usr/bin:/bin
 
 # m  h   dom mon dow command
 12,42 *  *   *   *   cd /home/pfeifer; git push -q data/bt master:biocalc-env
-   44 4  *   *   *   cd /home/pfeifer/data/bt/src/trac_env; trac-mysqlbackup && { git diff --check --quiet HEAD mysql-db-backup.sql || git commit -qm 'automatic nightly wiki backup' mysql-db-backup.sql; }
+   44 4  *   *   *   cd /home/pfeifer/data/bt/src/trac_env; trac-mysqlbackup && git commit -qm 'automatic nightly wiki backup' mysql-db-backup.sql
 18,48 *  *   *   *   cd /home/pfeifer/data/bt; git push -q fhnw
