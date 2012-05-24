@@ -36,6 +36,16 @@
 \usepackage{tabularx}
 
 \usepackage{hyperref}		% hyperlinks & -references
+\hypersetup{
+	colorlinks,%
+	urlcolor=black,%
+	citecolor=black,%
+	filecolor=black,%
+	linkcolor=black%
+}
+% in a current version of the package,
+% the above lines could be replaced with
+%\usepackage[hidelinks]{hyperref}
 
 \setlength{\parindent}{0pt}	% Keine Abschnitts-Einrückung
 
