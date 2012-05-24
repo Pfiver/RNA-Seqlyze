@@ -64,20 +64,23 @@
 %\renewcommand{\rmdefault}{pef}
 %\renewcommand{\familydefault}{\sfdefault}	% use sans-serif by default
 
-\usepackage{sectsty}				% Custom sectioning (see below)
+%\usepackage{sectsty}				% Custom sectioning (see below)
 %\allsectionsfont{%				% Change font of al section commands
 %	\usefont{OT1}{pef}{r}{i}%		% bch-b-n: CharterBT-Bold font
 %	\usefont{OT1}{bch}{b}{n}%		% bch-b-n: CharterBT-Bold font
 %	\hspace{15pt}%				% Uncomment for indentation
 %	}
-\sectionfont{%					% Change font of \section command
+%\sectionfont{%					% Change font of \section command
 %	\usefont{OT1}{bch}{b}{n}%		% bch-b-n: CharterBT-Bold font
 %	\sectionrule{0pt}{0pt}{-5pt}{0.8pt}%	% Horizontal rule below section
-}
+%}
+
+%\setsansfont{Univers LT Std}
+%\setromanfont{Egyptienne F LT Std}
 
 \usepackage{fontspec}
-\setsansfont{Univers LT Std}
-\setromanfont{Egyptienne F LT Std}
+\setsansfont[ExternalLocation=fonts/,BoldFont=UniversLTStd-Bold,ItalicFont=UniversLTStd-Obl,BoldItalicFont=UniversLTStd-BoldObl]{UniversLTStd}
+\setromanfont[ExternalLocation=fonts/,UprightFont=*-Roman,BoldFont=*-Bold,ItalicFont=EgyptienneFLTStd-Italic,BoldItalicFont=EgyptienneFLTStd-Italic]{EgyptienneFLTStd}
 
 %\usepackage{xunicode}
 %\usepackage{xltxtra}
