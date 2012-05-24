@@ -47,7 +47,7 @@
 % the above lines could be replaced with
 %\usepackage[hidelinks]{hyperref}
 
-\setlength{\parindent}{0pt}	% Keine Abschnitts-Einrückung
+\setlength{\parindent}{0pt}	% No paragraph indentaion
 
 \usepackage{scrpage2}		% headers & footers
 \usepackage{lastpage}           % needed for "page x of y" headers/footers
@@ -59,9 +59,28 @@
 \cfoot{\thepage\ / \pageref*{LastPage}}
 \ifoot[\includegraphics{fhnw_hls_e_10mm}]{}
 
-\usepackage{fontspec}
-\setsansfont[ExternalLocation=../../assets/,BoldFont=UniversLTStd-Bold,ItalicFont=UniversLTStd-Obl,BoldItalicFont=UniversLTStd-BoldObl]{UniversLTStd}
-\setromanfont[ExternalLocation=../../assets/,UprightFont=*-Roman,BoldFont=*-Bold,ItalicFont=EgyptienneFLTStd-Italic,BoldItalicFont=EgyptienneFLTStd-Italic]{EgyptienneFLTStd}
+\usepackage{ifxetex}
+
+% FHNW Fonts
+\ifxetex
+	\usepackage{fontspec}
+	\setsansfont[ExternalLocation=../../assets/,
+		BoldFont      =*-Bold,
+		ItalicFont    =*-Obl,
+		BoldItalicFont=*-BoldObl
+		]{UniversLTStd}
+	\setromanfont[ExternalLocation=../../assets/,
+		UprightFont   =*-Roman,
+		BoldFont      =*-Bold,
+		ItalicFont    =*-Italic,
+		BoldItalicFont=*-Italic
+		]{EgyptienneFLTStd}
+\else
+
+\fi
+
+% Scrict text justification
+\tolerance=10000
 
 \ifdraft
 	%\usepackage{lineno}		% Development helpers
