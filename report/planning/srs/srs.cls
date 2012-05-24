@@ -25,14 +25,10 @@
 
 % ! never blindy change the order of package imports !
 
-%\usepackage[utf8]{inputenc}	% Umlauts
-%\usepackage[german]{babel}	% ??? Line-breaks
-
 \usepackage{graphicx}		% includegraphics[widdth=...]
-\graphicspath{{.}}
-\graphicspath{{./img/}}
+\graphicspath{{./}}
+\graphicspath{{../../assets/}}
 \usepackage{scrtime}		% ??? nice \today output
-%\usepackage{microtype}		% optimierter text-satz
 
 \usepackage{xcolor}		% tables
 \usepackage{booktabs}
@@ -48,46 +44,14 @@
 \pagestyle{scrheadings}
 \clearscrheadfoot
 \setheadsepline{1pt}
-\renewcommand{\sectionmark}[1]{\markright{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ - #1}{}}
 \chead{\rightmark}
 \cfoot{\thepage\ / \pageref*{LastPage}}
-
-% font
-%\usepackage[T1]{fontenc}
-%\usepackage{fourier}
-%\usepackage{egyptienneflt}
-%\usepackage{textcomp}
-%\usepackage{lmodern}
-%\usepackage[T1]{fontenc}
-
-%\renewcommand{\sfdefault}{pefri8a}
-%\renewcommand{\rmdefault}{pef}
-%\renewcommand{\familydefault}{\sfdefault}	% use sans-serif by default
-
-%\usepackage{sectsty}				% Custom sectioning (see below)
-%\allsectionsfont{%				% Change font of al section commands
-%	\usefont{OT1}{pef}{r}{i}%		% bch-b-n: CharterBT-Bold font
-%	\usefont{OT1}{bch}{b}{n}%		% bch-b-n: CharterBT-Bold font
-%	\hspace{15pt}%				% Uncomment for indentation
-%	}
-%\sectionfont{%					% Change font of \section command
-%	\usefont{OT1}{bch}{b}{n}%		% bch-b-n: CharterBT-Bold font
-%	\sectionrule{0pt}{0pt}{-5pt}{0.8pt}%	% Horizontal rule below section
-%}
-
-%\setsansfont{Univers LT Std}
-%\setromanfont{Egyptienne F LT Std}
+\ifoot[\includegraphics{fhnw_hls_e_10mm}]{}
 
 \usepackage{fontspec}
-\setsansfont[ExternalLocation=fonts/,BoldFont=UniversLTStd-Bold,ItalicFont=UniversLTStd-Obl,BoldItalicFont=UniversLTStd-BoldObl]{UniversLTStd}
-\setromanfont[ExternalLocation=fonts/,UprightFont=*-Roman,BoldFont=*-Bold,ItalicFont=EgyptienneFLTStd-Italic,BoldItalicFont=EgyptienneFLTStd-Italic]{EgyptienneFLTStd}
-
-%\usepackage{xunicode}
-%\usepackage{xltxtra}
-%\defaultfontfeatures{Mapping=tex-text} % converts LaTeX specials (``quotes'' --- dashes etc.) to unicode
-%\setromanfont [Ligatures={Common}, BoldFont={Fontin Bold}, ItalicFont={Fontin Italic}]{Fontin}
-%\setsansfont [Ligatures={Common}, BoldFont={Fontin Sans Bold}, ItalicFont={Fontin Sans Italic}]{Fontin Sans}
-%\setmonofont[Scale=0.8]{Monaco} 
+\setsansfont[ExternalLocation=../../assets/,BoldFont=UniversLTStd-Bold,ItalicFont=UniversLTStd-Obl,BoldItalicFont=UniversLTStd-BoldObl]{UniversLTStd}
+\setromanfont[ExternalLocation=../../assets/,UprightFont=*-Roman,BoldFont=*-Bold,ItalicFont=EgyptienneFLTStd-Italic,BoldItalicFont=EgyptienneFLTStd-Italic]{EgyptienneFLTStd}
 
 \ifdraft
 	%\usepackage{lineno}		% Development helpers
@@ -98,4 +62,3 @@
 \else
 	\usepackage[disable]{todonotes}	% hide todo notes
 \fi
-
