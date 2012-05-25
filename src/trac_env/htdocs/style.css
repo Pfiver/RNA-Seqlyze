@@ -5,3 +5,27 @@
 #footer #fhnw { border: 0; float: left }
 #footer #fhnw:hover { background: transparent }
 #footer p.left { border: none !important; }
+
+
+@media print {
+	body, th, tr {
+		font: normal 6pt Verdana,Arial,'Bitstream Vera Sans',Helvetica,sans-serif;
+	}
+
+	/* Roadmap */
+	h1 { font-size: 160%; }
+	h2 { font-size: 140%; }
+	h3 { font-size: 120%; }
+	table.listing th { font-size: 100%; }
+	table.listing th h2 { font-size: 100%; }
+	.milestone .info .date { font-size: 100%; }
+	.trac-progress .legend { font-size: 90%; }
+	.trac-groupprogress th, .trac-groupprogress td { font-size: 90%; }
+
+	/* Reports */
+	.report #trac-sort-order { font-size: 100%; }
+	#filters td label { font-size: 100%; }
+	.tickets tr.trac-columns th { font-size: 100%; }
+
+
+}
