@@ -12,4 +12,6 @@ SRS-$(VERSION).pdf: main.tex $(wildcard *.tex *.cls)
 	make clean
 
 clean:
+ifneq ($(DIRT),)
 	rm $(DIRT)
+endif

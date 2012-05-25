@@ -47,7 +47,7 @@
 % the above lines could be replaced with
 %\usepackage[hidelinks]{hyperref}
 
-\setlength{\parindent}{0pt}	% No paragraph indentaion
+%\setlength{\parindent}{0pt}	% No paragraph indentaion
 
 \usepackage{scrpage2}		% headers & footers
 \usepackage{lastpage}           % needed for "page x of y" headers/footers
@@ -61,8 +61,12 @@
 
 \usepackage{ifxetex}
 
-% FHNW Fonts
 \ifxetex
+	% FHNW Fonts
+	% XeTeX needed -- this doesn't work with pdflatex
+	% if it doesn't work with xelatex,
+	% try comying the font files to ~/.fonts
+	% (mkdir ~/.fonts if that directory doesn't exist)
 	\usepackage{fontspec}
 	\setsansfont[ExternalLocation=../../assets/,
 		BoldFont      =*-Bold,
@@ -76,11 +80,14 @@
 		BoldItalicFont=*-Italic
 		]{EgyptienneFLTStd}
 \else
-
+	\usepackage[utf8]{inputenc}
+	\usepackage[T1]{fontenc}
+	\usepackage{charter}
 \fi
 
 % Scrict text justification
 \tolerance=10000
+\newcommand\nohyphenate{\linebreak[1]\hbox}
 
 \ifdraft
 	%\usepackage{lineno}		% Development helpers
