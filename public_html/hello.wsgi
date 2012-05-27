@@ -1,13 +1,12 @@
 #!/usr/bin/python
 
 def application(env, start_response):
+    def flt(n):
+         return not n.startswith("__") and n != "application"
+    funcs = filter(flt, globals())
     global environ
     environ = env
     start_response('200 OK', [('Content-type', 'text/plain')])
-    def flt(n):
-         return not n.startswith("__") and \
-                not n in ("application", "env")
-    funcs = filter(flt, globals())
     if env["QUERY_STRING"] not in funcs:
         import os.path
         nam = os.path.basename(env["SCRIPT_NAME"])
