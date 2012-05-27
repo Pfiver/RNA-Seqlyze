@@ -15,7 +15,7 @@ RewriteCond $0 !^trac.wsgi
 RewriteCond $0 !^traclogin.wsgi
 RewriteCond $0 !^rna-seqlyze.wsgi
 # FIXME: delete the next 3 lines in production environment
-RewriteCond $0 !^hello.wsgi
+RewriteCond $0 !^debug.wsgi
 RewriteCond $0 !^pyramid-webapp.wsgi
 RewriteCond $0 !^rna-seqlyze-dev.wsgi
 RewriteRule .* - [R=404]

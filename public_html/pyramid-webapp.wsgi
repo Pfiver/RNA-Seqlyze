@@ -1,18 +1,25 @@
 #!/usr/bin/python
 
-import site
-site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
-from pyramid.paster import get_app
+webapps_path = '/home/pfeifer/webapps/'
 
+import os, site
+site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
+os.environ["PYTHON_EGG_CACHE"] = "/home/pfeifer/.wsgi-egg-cache"
+
+from pyramid.paster import get_app
 def application(env, start_request):
+
     base_path_len = env['SCRIPT_NAME'].rindex("/") + 1
     try:
         script_name_len = env['REQUEST_URI'].index("/", base_path_len)
     except ValueError:
         script_name_len = len(env['REQUEST_URI'])
+
     env['SCRIPT_NAME'] = env['REQUEST_URI'][:script_name_len]
     appname = env['SCRIPT_NAME'][base_path_len:]
-    dev_ini = '/home/pfeifer/webapps/'+appname+'/development.ini'
+
+    dev_ini = webapps_path + appname + '/development.ini'
+
     import os
     if not os.path.exists(dev_ini):
         start_request('404 Not Found', [("Content-Type", "text/html")])
@@ -27,4 +34,5 @@ def application(env, start_request):
 </body></html>
 """
                 % env['REQUEST_URI'] ]
+
     return get_app(dev_ini, 'main')(env, start_request)
