@@ -117,7 +117,7 @@ CREATE TABLE `cache` (
 
 LOCK TABLES `cache` WRITE;
 /*!40000 ALTER TABLE `cache` DISABLE KEYS */;
-INSERT INTO `cache` VALUES (901198563,80,'trac.wiki.api.WikiSystem.pages'),(1722364385,1,'trac.perm.DefaultPermissionStore._all_permissions'),(660951007,36,'trac.ticket.api.TicketSystem.fields');
+INSERT INTO `cache` VALUES (901198563,80,'trac.wiki.api.WikiSystem.pages'),(1722364385,1,'trac.perm.DefaultPermissionStore._all_permissions'),(660951007,39,'trac.ticket.api.TicketSystem.fields');
 /*!40000 ALTER TABLE `cache` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -436,7 +436,7 @@ CREATE TABLE `session` (
 
 LOCK TABLES `session` WRITE;
 /*!40000 ALTER TABLE `session` DISABLE KEYS */;
-INSERT INTO `session` VALUES ('patrick',1,1337916011),('bf2abaa1a69e9b222ed0932b',0,1336181625),('guest',1,1335378183),('04e86ef88c81f89b8383735a',0,1335974753),('ac606c55507bd743d82741f0',0,1337937738);
+INSERT INTO `session` VALUES ('patrick',1,1338036780),('bf2abaa1a69e9b222ed0932b',0,1336181625),('guest',1,1335378183),('04e86ef88c81f89b8383735a',0,1335974753),('ac606c55507bd743d82741f0',0,1337937738);
 /*!40000 ALTER TABLE `session` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -462,7 +462,7 @@ CREATE TABLE `session_attribute` (
 
 LOCK TABLES `session_attribute` WRITE;
 /*!40000 ALTER TABLE `session_attribute` DISABLE KEYS */;
-INSERT INTO `session_attribute` VALUES ('04e86ef88c81f89b8383735a',0,'timeline.lastvisit','1335911972000000'),('bf2abaa1a69e9b222ed0932b',0,'timeline.lastvisit','1335988664000000'),('bf2abaa1a69e9b222ed0932b',0,'query_tickets',''),('bf2abaa1a69e9b222ed0932b',0,'accesskeys','1'),('bf2abaa1a69e9b222ed0932b',0,'query_href','/report/3?asc=1&page=1'),('04e86ef88c81f89b8383735a',0,'timeline.authors',''),('04e86ef88c81f89b8383735a',0,'timeline.daysback','30'),('bf2abaa1a69e9b222ed0932b',0,'timeline.authors',''),('04e86ef88c81f89b8383735a',0,'timeline.nextlastvisit','1335722736312898'),('bf2abaa1a69e9b222ed0932b',0,'timeline.nextlastvisit','1335911972000000'),('bf2abaa1a69e9b222ed0932b',0,'timeline.daysback','30'),('patrick',1,'timeline.lastvisit','1337916215792396'),('patrick',1,'wiki_sidebyside','1'),('ac606c55507bd743d82741f0',0,'query_href','/biopython/trac/report/2?asc=1&page=1'),('ac606c55507bd743d82741f0',0,'query_tickets','3 7 5 6 8'),('patrick',1,'query_tickets','3 7 5 6 8'),('patrick',1,'wiki_editrows','8'),('patrick',1,'query_href','/biopython/traclogin/report/2?asc=1&page=1'),('patrick',1,'timeline.nextlastvisit','1337752258000000'),('patrick',1,'timeline.authors',''),('patrick',1,'timeline.daysback','30');
+INSERT INTO `session_attribute` VALUES ('04e86ef88c81f89b8383735a',0,'timeline.lastvisit','1335911972000000'),('bf2abaa1a69e9b222ed0932b',0,'timeline.lastvisit','1335988664000000'),('bf2abaa1a69e9b222ed0932b',0,'query_tickets',''),('bf2abaa1a69e9b222ed0932b',0,'accesskeys','1'),('bf2abaa1a69e9b222ed0932b',0,'query_href','/report/3?asc=1&page=1'),('04e86ef88c81f89b8383735a',0,'timeline.authors',''),('04e86ef88c81f89b8383735a',0,'timeline.daysback','30'),('bf2abaa1a69e9b222ed0932b',0,'timeline.authors',''),('04e86ef88c81f89b8383735a',0,'timeline.nextlastvisit','1335722736312898'),('bf2abaa1a69e9b222ed0932b',0,'timeline.nextlastvisit','1335911972000000'),('bf2abaa1a69e9b222ed0932b',0,'timeline.daysback','30'),('patrick',1,'timeline.lastvisit','1337916215792396'),('patrick',1,'wiki_sidebyside','1'),('ac606c55507bd743d82741f0',0,'query_href','/biopython/trac/report/2?asc=1&page=1'),('ac606c55507bd743d82741f0',0,'query_tickets','3 7 5 6 8'),('patrick',1,'wiki_editrows','8'),('patrick',1,'query_href','/biopython/traclogin/report/2?asc=1&page=1'),('patrick',1,'query_tickets','3 7 5 6 8'),('patrick',1,'timeline.nextlastvisit','1337752258000000'),('patrick',1,'timeline.authors',''),('patrick',1,'timeline.daysback','30');
 /*!40000 ALTER TABLE `session_attribute` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -606,7 +606,7 @@ CREATE TABLE `version` (
 
 LOCK TABLES `version` WRITE;
 /*!40000 ALTER TABLE `version` DISABLE KEYS */;
-INSERT INTO `version` VALUES ('1.0',1337929631000000,NULL),('0.1',0,NULL);
+INSERT INTO `version` VALUES ('1.0',0,''),('0.1',0,NULL),('1.1',0,'');
 /*!40000 ALTER TABLE `version` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -651,4 +651,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-05-26  4:44:01
+-- Dump completed on 2012-05-27  4:44:02
