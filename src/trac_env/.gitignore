@@ -1,3 +1,4 @@
-*.pyc
-/.egg-cache
-/conf/trac.ini
+/files
+dist
+build
+*.egg-info
