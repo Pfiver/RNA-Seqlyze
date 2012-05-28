@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cat > /dev/null
+
+trac-admin ../src/trac_env repository resync "*"
+
+/home/pfeifer/buildbot-virtualenv/bin/buildbot sendchange	\
+	--master localhost:9989 --branch master			\
+		--who "$(git show -s --format=%cn)"		\
+		--comments "$(git show -s --format=%s)"

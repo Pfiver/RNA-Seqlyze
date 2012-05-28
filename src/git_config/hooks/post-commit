@@ -1,0 +1,8 @@
+#!/bin/sh
+
+trac-admin src/trac_env changeset added "(default)" "$(git rev-parse HEAD)"
+
+/home/pfeifer/buildbot-virtualenv/bin/buildbot sendchange	\
+	--master localhost:9989 --branch master			\
+		--who "$(git show -s --format=%cn)"		\
+		--comments "$(git show -s --format=%s)"
