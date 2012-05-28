@@ -1,13 +1,12 @@
 #!/usr/bin/python
 
-webapp_path = '/home/pfeifer/data/bt/src/rna-seqlyze-web/'
+webapp_path = '/home/pfeifer/data/bt/src/rna-seqlyze-web/production.ini'
 
-import os, site
+import site
 site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
-os.environ["PYTHON_EGG_CACHE"] = "/home/pfeifer/.wsgi-egg-cache"
 
-from pyramid.paster import get_app
+import pyramid.paster
 def application(environ, start_request):
     # strip the ".wsgi" ending
     environ['SCRIPT_NAME'] = environ['SCRIPT_NAME'][:-5]
-    return get_app(webapp_path + 'production.ini', 'main')(environ, start_request)
+    return pyramid.paster.get_app(webapp_path, 'main')(environ, start_request)

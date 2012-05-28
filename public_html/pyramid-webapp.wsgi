@@ -2,9 +2,8 @@
 
 webapps_path = '/home/pfeifer/webapps/'
 
-import os, site
+import site
 site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
-os.environ["PYTHON_EGG_CACHE"] = "/home/pfeifer/.wsgi-egg-cache"
 
 from pyramid.paster import get_app
 def application(env, start_request):
