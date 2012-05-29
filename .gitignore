@@ -5,3 +5,4 @@
 /.mysql_history
 /.lesshst
 /mbox
+/buildbot-virtualenv
