@@ -6,6 +6,7 @@ import site
 site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
 
 from pyramid.paster import get_app
+from paste.script.util import logging_config
 def application(env, start_request):
 
     base_path_len = env['SCRIPT_NAME'].rindex("/") + 1
@@ -34,4 +35,5 @@ def application(env, start_request):
 """
                 % env['REQUEST_URI'] ]
 
+    logging_config.fileConfig(dev_ini)
     return get_app(dev_ini, 'main')(env, start_request)
