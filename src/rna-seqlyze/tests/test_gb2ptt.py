@@ -4,9 +4,15 @@ import nose.tools as nt
 
 def test_script():
 
-    # run the converter
+    # set up the testing environment
+    import os
+    here = os.path.dirname(__file__)
+    os.environ["PYTHONPATH"] = here + '/../source'
+
+    # run the converter script
     from subprocess import PIPE, Popen
-    proc = Popen("scripts/gb2ptt tests/data/NC_002754-partial.gb", shell=True, stdout=PIPE)
+    proc = Popen([here + "/../scripts/gb2ptt",
+                  "tests/data/NC_002754-partial.gb"], stdout=PIPE)
 
     # read the converters standard output
     import csv
