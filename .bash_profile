@@ -1,22 +1,18 @@
 # history
 
 histfile=~/.pbh
-if [ -d $(dirname $histfile) -a $HISTFILE != $histfile ]
+if [ -d $(dirname $histfile) -a "$HISTFILE" != $histfile ]
 then
-	HISTSIZE=$((100*10**20))
+	HISTSIZE=1000000
         HISTFILE=$histfile
         HISTIGNORE="&:sync"
-	HISTFILESIZE=$((10*10**20))
         HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S  "
         shopt -s histappend
 
-        if [ -f "$HISTFILE" ] && [ $(wc -l < $HISTFILE) -ge $HISTFILESIZE ]
+        if [ -f "$HISTFILE" ] && [ $(wc -l < $HISTFILE) -ge $HISTSIZE ]
         then
-                echo "warning: HISTFILE ('$HISTFILE') reached size limit of $HISTFILESIZE lines"
+                echo "warning: HISTFILE ('$HISTFILE') reached size limit of $HISTSIZE lines"
         fi
-
-        history -c
-        history -r
 fi
 
 # other stuff

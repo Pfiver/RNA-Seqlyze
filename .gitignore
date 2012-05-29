@@ -1,6 +1,6 @@
 /data
 /.local
-/.pbh
+/.pbh*
 /.viminfo
 /.mysql_history
 /.lesshst
