@@ -37,5 +37,6 @@ setup(
         "MarkupSafe >= 0.15",       # required by Trac
         "MySQL-python >= 1.2.2",    # for the Trac wiki
         "distribute >= 0.6.14",     # unsure if really required, but won't harm
+        "python-daemon >= 1.6",
     ],
 )
