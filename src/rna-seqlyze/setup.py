@@ -30,6 +30,9 @@ setup(
         'scripts/xml_tool',
         'scripts/trac-mysqlbackup',
     ],
+    setup_requires=[
+
+    ],
     install_requires=[
         "nose >= 1.0",
 #       "Trac >= 0.13dev",
