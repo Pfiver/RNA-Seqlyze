@@ -33,3 +33,8 @@ buildbot ()
 	command buildbot $1 buildmaster
 	command buildslave $1 buildslave
 )
+
+sig-int ()
+{
+	curl localhost/biopython/debug?{sig_int,sig_int}
+}
