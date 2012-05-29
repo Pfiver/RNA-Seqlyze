@@ -3,10 +3,10 @@
 histfile=~/.pbh
 if [ -d $(dirname $histfile) -a $HISTFILE != $histfile ]
 then
-        HISTSIZE=1000000
+	HISTSIZE=$((100*10**20))
         HISTFILE=$histfile
         HISTIGNORE="&:sync"
-        HISTFILESIZE=1000000
+	HISTFILESIZE=$((10*10**20))
         HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S  "
         shopt -s histappend
 
