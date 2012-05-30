@@ -2,7 +2,7 @@
 
 cat > /dev/null
 
-trac-admin ../src/trac_env repository resync "*"
+/home/pfeifer/.local/bin/trac-admin ../src/trac_env repository resync "*"
 
 /home/pfeifer/buildbot-virtualenv/bin/buildbot sendchange	\
 	--master localhost:9989 --branch master			\
