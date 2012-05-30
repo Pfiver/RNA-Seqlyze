@@ -1,6 +1,6 @@
 #!/usr/bin/make
 
-VERSION = 0.1
+VERSION = 0.2
 
 DIRT = $(wildcard *.out *.toc *.aux *.ps *.eps *.log *.lof *.bib *.bbl *.blg *.dvi *.tdo *~)
 

@@ -43,14 +43,14 @@ Developers planning to contribute code are strongly encouraged to read chapter
 four as well, as it contains important information about the reliability-,
 performance- and interface-requirements and -standards that must be fulfilled.
 
-%\subsection{References}
-%This document is written in adherence to the
-%\emph{IEEE Recommended Practice for Software Requirements Specifications}:
-%\begin{itemize}
-%\item \href{http://standards.ieee.org/findstds/standard/830-1998.html}
-%	{IEEE Std 830-1998\\
-%	\url{http://standards.ieee.org/findstds/standard/830-1998.html}}
-%\end{itemize}
+\subsection{References}
+This document is written in adherence to the
+\emph{IEEE Recommended Practice for Software Requirements Specifications}:
+\begin{itemize}
+\item \href{http://standards.ieee.org/findstds/standard/830-1998.html}
+	{IEEE Std 830-1998\\
+	\url{http://standards.ieee.org/findstds/standard/830-1998.html}}
+\end{itemize}
 
 	\section{Overall Description}
 
@@ -64,8 +64,8 @@ To achieve this, the large amounts of data produced by one of the various next
 generation sequencing (NGS) platforms available on the market, have to be
 analyzed in detail. Short reads of only a few dozen base pairs (bp) have to
 mapped to a reference genome. The total number of reads mapped at each position
-in the genome is counted to produce a transcript coverage "signal". The deeper
-the coverage, the stronger, roughly, the gene is expressed in the organism.
+in the genome is counted to produce a transcript coverage "signal". The more
+more reads, the stronger, roughly, the gene is expressed in the organism.
 
 \subsection{Product Features}
 
@@ -75,7 +75,7 @@ prokaryotes. The data will be made available to the application in FASTQ
 or SRA format. In case SAM/BAM or coverage data files have already been
 produced, they can be made available to the application as well.
 
-The RNA-Seqlyze software processes this data using a novel algorithm.
+The RNA-Seqlyze software processes this data using a custom-made algorithm.
 It generates a list of transcribed sequences and assigns a confidence score to
 each of those regions. The score will be computed based on the provided input
 data as well as various other relevant information relating to the studied
