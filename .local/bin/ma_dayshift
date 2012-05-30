@@ -1,0 +1,12 @@
+#!/bin/bash
+
+begin=$(date -d 2012-04-23 +%s)
+now=$(date +%s)
+
+TODAY_OFFSET=$(dc -e "5.1216592592 $now $begin - 60 60 24 ** / * p")
+
+cd ~/data/bt/src/trac_env/htdocs
+
+sed s/@@TODAY_OFFSET@@/$TODAY_OFFSET/ \
+	> "Milestones & Activites.svg" \
+	< "Milestones & Activites_template.svg"
