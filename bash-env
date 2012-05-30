@@ -24,3 +24,17 @@ do
 done
 cd "$bt"
 unset dirs
+
+buildbot ()
+(
+	set -e
+	cd ~/buildbot-virtualenv
+	. bin/activate
+	command buildbot $1 buildmaster
+	command buildslave $1 buildslave
+)
+
+sig-int ()
+{
+	curl localhost/biopython/debug?{sig_int,sig_int}
+}
