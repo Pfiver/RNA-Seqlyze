@@ -36,5 +36,5 @@ class BuildbotStatusMacro(WikiMacroBase):
 </li>
 """ % (get_link(build["builderName"]), build["builderName"], color, status, build["blame"][0], get_time(build["times"][1])))
 
-        out.append("</li>")
+        out.append("</ul>")
         return "\n".join(out)
