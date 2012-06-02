@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-import sys, transterm
+import sys
 
-print transterm.__file__
-transterm.run(*sys.argv[1:])
+from rnaseqlyze.transterm import run
+
+run(*sys.argv[1:])

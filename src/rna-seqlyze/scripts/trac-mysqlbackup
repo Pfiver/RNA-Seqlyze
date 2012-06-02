@@ -42,7 +42,7 @@ dump_differs = call(["diff", "-q",
                         dump_path, new_dump_path ])
 
 if dump_differs:
-    os.rename(new_dump_path, dump_path) # FIXME: won't work on windows
+    os.rename(new_dump_path, dump_path)
 else:
     os.unlink(new_dump_path)
 

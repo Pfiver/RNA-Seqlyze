@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 import sys
+
 from lxml import etree
 
 if len(sys.argv) > 1:

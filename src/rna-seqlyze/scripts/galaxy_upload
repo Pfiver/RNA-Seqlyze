@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 import sys
-import galaxy
 
-galaxy.upload(sys.argv[1])
+from rnaseqlyze.galaxy import upload
 
+upload(sys.argv[1])
