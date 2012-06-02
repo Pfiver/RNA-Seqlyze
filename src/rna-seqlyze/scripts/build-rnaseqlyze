@@ -1,0 +1,8 @@
+#!/usr/bin/python
+# encoding: utf-8
+
+from os import getcwd, getenv
+
+from rnaseqlyze.build import buildall
+
+buildall(topdir=getcwd(), prefix=os.getenv('HOME') + "/.local")
