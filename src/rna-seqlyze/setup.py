@@ -19,7 +19,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 setup(
-    name='RNA-seqlyze',
+    name='rna-seqlyze',
     version='0.1',
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
