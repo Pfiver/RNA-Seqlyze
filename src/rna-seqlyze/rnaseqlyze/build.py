@@ -63,9 +63,6 @@ def buildall(topdir, prefix):
     chdir(topdir)
     os.environ["PREFIX"] = prefix
 
-    parts[2].run('install')
-    return
-
     for command in 'build', 'test', 'install':
         for part in parts:
             part.run(command)
