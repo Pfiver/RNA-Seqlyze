@@ -2,6 +2,7 @@
 /.local
 /.pbh*
 /.viminfo
+/.htoprc
 /.mysql_history
 /.lesshst
 /mbox
