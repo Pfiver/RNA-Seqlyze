@@ -33,7 +33,7 @@ setup(
             'main = rnaseqlyze.web:main',
         ],
         'console_scripts': [
-            'initialize_rna-seqlyze-web_db = rnaseqlyze.web.scripts.initializedb:main'
+            'initialize_rna-seqlyze-worker_db = rnaseqlyze.worker.scripts.initializedb:main'
         ]
     }
 )
