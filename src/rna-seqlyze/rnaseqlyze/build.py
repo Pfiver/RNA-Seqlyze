@@ -195,7 +195,7 @@ class sra_sdk(Part):
                 os.chmod(env["BINDIR"] + "/" + bin, 0775)
         dir = "linux/pub/gcc/%(ARCH)s/lib/" % env
         for lib in os.listdir(dir):
-            if re.search(r'\.so\.[0-9]+', lib):
+            if re.search(r'\.so\.[0-9]+$', lib):
                 shutil.copy(dir + lib, env["LIBDIR"])
 class tophat(Part):
     build = "./configure --prefix=$PREFIX --with-bam=$PWD/../samtools && make"
