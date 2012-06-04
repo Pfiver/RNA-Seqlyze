@@ -1,3 +1,2 @@
-/rna-seqlyze-web.db
-/rna_seqlyze_web.egg-info
-/rna-seqlyze-web.log
+/*.log
+/*.db
