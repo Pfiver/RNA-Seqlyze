@@ -32,14 +32,12 @@ setup(
         for name in os.listdir("scripts")],
     setup_requires=[
         "nose >= 1.0",
+        "distribute >= 0.6.14",     # unsure if really required, but won't harm
     ],
     install_requires=[
         "nose >= 1.0",
-#       "Trac >= 0.13dev",
         "pyramid >= 1.3.2",
-        "MarkupSafe >= 0.15",       # required by Trac
-#       "MySQL-python >= 1.2.2",    # for the Trac wiki
-        "distribute >= 0.6.14",     # unsure if really required, but won't harm
-        "python-daemon >= 1.6",
+        "MarkupSafe >= 0.15",       # in Trac
+        "MySQL-python >= 1.2.2",    # in Trac
     ],
 )
