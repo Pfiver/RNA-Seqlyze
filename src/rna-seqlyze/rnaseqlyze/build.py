@@ -1,19 +1,39 @@
 #!/usr/bin/python
 # encoding: utf-8
 
+"""
+The rna-seqlyze software consisty of several parts.  The majority of those parts
+have been developped independent of this project and have been released under a
+permissive license that allows them to be used in other (permissive licenced)
+projects like this one.
+
+This file defines a simple system and stores the commands necessary to build and
+install those third-party components.
+"""
+
+from __future__ import print_function
+
 import os, sys
-from os import chdir
-from os.path import basename, abspath
 from types import MethodType
 import subprocess, multiprocessing
 
 # a bit of infrastructure
 #########################
 
-parts = []
 class PartType(type):
-    def stock(cls, *ign):
-        parts.append(cls())
+
+    def __init__(cls, *ign):
+        """
+        auto-create and stock instances
+        upon creation of "Part" (sub)classes
+
+        appends a new instance of the
+        created class to the "parts" list, if it exists
+        """
+        try:
+            parts.append(cls())
+        except NameError:
+            pass
 
 class Part(object):
 
@@ -26,46 +46,59 @@ class Part(object):
         except AttributeError:
             self.subdir = "src/" + self.name
 
-    def run(self, command):
+    def execute(self, phase):
         try:
-            cmd = getattr(self, command)
+            cmd = getattr(self, phase)
         except AttributeError:
             return
-        print "running %s '%s' command" % (self.name, command)
+        print("#" * 80)
+        print("# executing %s '%s' phase" % (self.name, phase))
+        print("#")
         dev_null = file("/dev/null")
         tee_log = subprocess.Popen(
                     ["tee", "report/buildlogs/%s-%s.log" % (
-                                self.name, command)], stdin=subprocess.PIPE)
+                                self.name, phase)], stdin=subprocess.PIPE)
         try:
+            import time
+            envars = "PREFIX", "MACHTYPE", "NCPUS_ONLN"
+            env = filter(lambda i: i[0] in envars, os.environ.iteritems())
+            log = lambda msg="": print(msg, file=tee_log.stdin)
+            log(time.asctime())
+            log()
+            log("\n".join("%s=%s" % nv for nv in env))
+            log()
+            log("$ " + "\n  ".join(str(cmd).split("\n")))
+            log()
             if type(cmd) == str:
-                ret = subprocess.call(cmd, shell=True, cwd=self.subdir,
-                                      stdin=dev_null,
-                                      stdout=tee_log.stdin, stderr=tee_log.stdin)
+                ret = subprocess.call(cmd, shell=True,
+                        cwd=self.subdir, stdin=dev_null,
+                        stdout=tee_log.stdin, stderr=tee_log.stdin)
             elif type(cmd) == MethodType:
-                def target():
+                def tgt():
                     sys.stdin = dev_null
                     sys.stdout = sys.stderr = tee_log.stdin
                     os.chdir(self.subdir)
                     return cmd()
-                sp = multiprocessing.Process(target=target)
+                sp = multiprocessing.Process(target=tgt)
                 sp.start()
                 sp.join()
                 ret = sp.exitcode
             else:
-                raise Exception("Invalid %s command: %s" % (command, repr(cmd)))
+                raise Exception("Invalid %s phase: %s" % (phase, repr(cmd)))
+            log()
+            log(time.asctime())
             if ret != 0:
-                raise Exception("%s '%s' command failed -- exit code %d" % (
-                                    self.name, command, ret))
+                raise Exception("%s '%s' phase failed -- exit code %d" % (
+                                    self.name, phase, ret))
         finally:
             tee_log.stdin.close()
             tee_log.wait()
 
-# start auto-creating and stocking
-# "Part" instances upon creation of (sub)classes
-PartType.__init__ = PartType.stock
+# parts & phases
+################
 
-# the parts
-###########
+parts = []
+phases = 'build', 'test', 'install'
 
 class bcbb(Part):
     srcdir = "bcbb/nextgen"
@@ -127,11 +160,13 @@ class kent(Part):
 
 def buildall(topdir, prefix):
 
+    from os import chdir
+
     chdir(topdir)
     os.environ["PREFIX"] = prefix
     os.environ["MACHTYPE"] = os.uname()[4]
     os.environ["NCPUS_ONLN"] = str(os.sysconf("SC_NPROCESSORS_ONLN"))
 
-    for command in 'build', 'test', 'install':
-        for part in parts:
-            part.run(command)
+    for part in parts:
+        for phase in phases:
+            part.execute(phase)
