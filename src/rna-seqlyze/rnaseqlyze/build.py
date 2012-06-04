@@ -13,7 +13,8 @@ install those third-party components.
 
 from __future__ import print_function
 
-import os, sys
+import os, sys, shutil
+from os import environ as env
 from types import MethodType
 import subprocess, multiprocessing
 
@@ -47,36 +48,35 @@ class Part(object):
             self.subdir = "src/" + self.name
 
     def execute(self, phase):
-        try:
-            cmd = getattr(self, phase)
-        except AttributeError:
-            return
+        cmd = getattr(self, phase, None)
+        if cmd == None: return
         print("#" * 80)
         print("# executing %s '%s' phase" % (self.name, phase))
         print("#")
         dev_null = file("/dev/null")
-        tee_log = subprocess.Popen(
-                    ["tee", "report/buildlogs/%s-%s.log" % (
-                                self.name, phase)], stdin=subprocess.PIPE)
+        logdir = "report/buildlogs"
+        if not os.path.isdir(logdir): os.mkdir(logdir)
+        logpath = logdir + "/%s-%s.log" % (self.name, phase)
+        T = subprocess.Popen(["tee", logpath], stdin=subprocess.PIPE)
         try:
             import time
-            envars = "PREFIX", "MACHTYPE", "NCPUS_ONLN"
-            env = filter(lambda i: i[0] in envars, os.environ.iteritems())
-            log = lambda msg="": print(msg, file=tee_log.stdin)
+            log = lambda msg="": print(msg, file=T.stdin)
             log(time.asctime())
             log()
-            log("\n".join("%s=%s" % nv for nv in env))
+            log("\n".join("%s=%s" % nv
+                for nv in filter(lambda i: i[0] in (
+                    "PREFIX", "MACHTYPE", "NCPUS_ONLN"), env.iteritems())))
             log()
+            log("$ cd " + self.subdir)
             log("$ " + "\n  ".join(str(cmd).split("\n")))
             log()
             if type(cmd) == str:
-                ret = subprocess.call(cmd, shell=True,
-                        cwd=self.subdir, stdin=dev_null,
-                        stdout=tee_log.stdin, stderr=tee_log.stdin)
+                ret = subprocess.call(cmd, shell=True, cwd=self.subdir,
+                            stdin=dev_null, stdout=T.stdin, stderr=T.stdin)
             elif type(cmd) == MethodType:
                 def tgt():
                     sys.stdin = dev_null
-                    sys.stdout = sys.stderr = tee_log.stdin
+                    sys.stdout = sys.stderr = T.stdin
                     os.chdir(self.subdir)
                     return cmd()
                 sp = multiprocessing.Process(target=tgt)
@@ -91,8 +91,8 @@ class Part(object):
                 raise Exception("%s '%s' phase failed -- exit code %d" % (
                                     self.name, phase, ret))
         finally:
-            tee_log.stdin.close()
-            tee_log.wait()
+            T.stdin.close()
+            T.wait()
 
 # parts & phases
 ################
@@ -103,11 +103,14 @@ phases = 'build', 'test', 'install'
 class bcbb(Part):
     srcdir = "bcbb/nextgen"
     build = "python setup.py build"
+# save some time
 #    test = "nosetests"
+# not working: gfortran missing
 #    install = "python setup.py install --user"
 
 class biopython(Part):
     build = "python setup.py build"
+# save some time
 #    test = "python setup.py test"
     install = "python setup.py install --user"
 
@@ -120,10 +123,9 @@ class bowtie2(Part):
         the makefile, so the binaries need to be installed manually
         """
         import shutil
-        dst = os.environ["PREFIX"] + "/bin"
         for f in ("bowtie2" + x for x in ("", "-align", "-build", "-inspect")):
-            shutil.copy(f, dst)
-            os.chmod(os.path.join(dst, f), 0775)
+            shutil.copy(f, env["BINDIR"])
+            os.chmod(env["BINDIR"] + "/" + f, 0775)
 
 class samtools(Part):
     # the samtools 'build' command
@@ -147,25 +149,79 @@ class kent(Part):
     build = "make -C src/lib"
     def install(self):
         """
-        the kent utils install function
-        was created because to install those it is
-        easiest to employ make with some boilerplate arguments
+        the kent install function
+        was created because to install the few ulities required from that tree,
+        the easiest way to do that is to run "make" with custom arguments for each one
         """
         for util in "bigWigToWig wigToBigWig".split(" "):
-            if subprocess.call("make BINDIR=$PREFIX/bin -C src/utils/" + util, shell=True) != 0:
+            if subprocess.call("make -C src/utils/" + util, shell=True) != 0:
                 raise Exception("kent.install(): couldn't install '%s' util" % util)
+
+class pysam(Part):
+    build = "python setup.py build"
+    # tests failing atm
+# neither working
+#    test = "cd tests; nosetests --exe"
+#    test = "cd tests; ./pysam_test.py"
+    install = "python setup.py install --user"
+
+class rna_seqlyze_web(Part):
+    srcdir = "rna-seqlyze-web"
+# not working: boostrap symlink
+#    build = "python setup.py build"
+# not yet implemented
+#    test = "python setup.py test"
+    install = "python setup.py develop --user"
+
+# not yet implemented
+#class rna_seqlyze_worker(Part):
+#    srcdir = "rna-seqlyze-worker"
+#    build = "python setup.py build"
+#    test = "python setup.py test"
+#    install = "python setup.py develop --user"
+
+class tophat(Part):
+    build = "./configure --prefix=$PREFIX --with-bam=$PWD/../samtools && make"
+    install = "make install"
+
+class trac(Part):
+    build = "python setup.py build"
+# save some time
+#    test = "python setup.py test"
+    install = "python setup.py install --user"
+
+class trac_env(Part):
+    def install(self):
+        print("\n".join((
+            "This needs to be done manually:",
+            " 1) Set up a database",
+            " 2) Restore the backup:",
+            "    $ cd " + os.path.abspath("."),
+            "    $ mysql -uUSERNAME -pPASSWORD DATABASE < mysql-db-backup.sql",
+            " 4) Adjust the 'database' variable in the [trac] section in 'conf/trac.ini':",
+            "    database = mysql://USERNAME:PASSWORD@localhost/DATABSE",
+        )))
+
+class transterm_hp(Part):
+    build = "make"
+    def install(self):
+        prog = "transterm"
+        data = "expterm.dat"
+        shutil.copy(prog, env["BINDIR"])
+        os.chmod(env["BINDIR"] + "/" + prog, 0775)
+        shutil.copy(data, env["LIBDIR"])
 
 # main routine
 ##############
 
 def buildall(topdir, prefix):
 
-    from os import chdir
-
-    chdir(topdir)
-    os.environ["PREFIX"] = prefix
-    os.environ["MACHTYPE"] = os.uname()[4]
-    os.environ["NCPUS_ONLN"] = str(os.sysconf("SC_NPROCESSORS_ONLN"))
+    os.chdir(topdir)
+    env["PREFIX"] = prefix
+    env["BINDIR"] = prefix + "/bin"
+    env["LIBDIR"] = prefix + "/lib"
+    env["MACHTYPE"] = os.uname()[4]
+    env["NCPUS_ONLN"] = str(os.sysconf("SC_NPROCESSORS_ONLN"))
 
     for part in parts:
         for phase in phases:
