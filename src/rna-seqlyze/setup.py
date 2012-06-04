@@ -32,7 +32,7 @@ setup(
         "distribute >= 0.6.14",     # unsure if really required, but won't harm
     ],
     install_requires=[
-        "nose >= 1.0",
+        "nose >= 1.1.2",
         "pyramid >= 1.3.2",
         "MarkupSafe >= 0.15",       # in Trac
         "MySQL-python >= 1.2.2",    # in Trac

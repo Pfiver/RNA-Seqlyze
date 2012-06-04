@@ -12,12 +12,12 @@ setup(
     description="RNA-seq analysis | worker daemon",
     license="Mixed",
     packages=find_packages(),
-    namespace_packages = ['rnaseqlyze']
+    namespace_packages = ['rnaseqlyze'],
     test_suite='rnaseqlyze.worker',
     include_package_data=True,
     zip_safe=False,
     setup_requires=[
-        "nose >= 1.0",
+        "nose >= 1.1.2",
         "rna-seqlyze >= 0.1",
         "distribute >= 0.6.14",
     ],
