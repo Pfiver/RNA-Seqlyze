@@ -1,2 +1,5 @@
+*.egg-info
+build
+dist
 *.pyc
-/litrature
+*.o
