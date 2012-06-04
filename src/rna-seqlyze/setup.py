@@ -3,7 +3,7 @@
 
 # this "distrubute" setup script depends on
 
-    # "distribute" 0.6.26, by Tarek Ziadé
+    # "distribute" 0.6.26
     # - source code: https://bitbucket.org/tarek/distribute
     # - documentation: http://pypi.python.org/pypi/distribute
 
@@ -14,22 +14,19 @@
     #     $ python distribute_setup.py --user
 
 import os
-
-from setuptools import setup
-from setuptools import find_packages
+from setuptools import setup, find_packages
 
 setup(
     name='rna-seqlyze',
     version='0.1',
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
-    description="RNA-seq analysis & sequence annotation enhancement web-application",
-    url="http://git.pfeifer.ch/rna-seqlyze.git",
+    description="RNA-seq analysis | core features",
+    long_description="RNA-seq analysis & sequence annotation enhancement web-application",
     license="Mixed",
     packages=find_packages(),
     test_suite='nose.collector',
-    scripts=['scripts/' + name
-        for name in os.listdir("scripts")],
+    scripts=['scripts/' + name for name in os.listdir("scripts")],
     setup_requires=[
         "nose >= 1.0",
         "distribute >= 0.6.14",     # unsure if really required, but won't harm
