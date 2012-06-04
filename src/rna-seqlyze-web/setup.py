@@ -20,6 +20,7 @@ setup(
         "nose >= 1.1.2",
         "rna-seqlyze >= 0.1",
         "distribute >= 0.6.14",
+        "setuptools_git >= 0.3",
     ],
     install_requires=[
         'pyramid',
