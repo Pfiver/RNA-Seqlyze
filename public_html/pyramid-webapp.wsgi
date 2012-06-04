@@ -18,7 +18,8 @@ def application(env, start_request):
     env['SCRIPT_NAME'] = env['REQUEST_URI'][:script_name_len]
     appname = env['SCRIPT_NAME'][base_path_len:]
 
-    dev_ini = webapps_path + appname + '/development.ini'
+    basedir = webapps_path + appname
+    dev_ini = basedir + '/development.ini'
 
     import os
     if not os.path.exists(dev_ini):
@@ -35,5 +36,5 @@ def application(env, start_request):
 """
                 % env['REQUEST_URI'] ]
 
-    logging_config.fileConfig(dev_ini)
+    logging_config.fileConfig(dev_ini, {'here': basedir})
     return get_app(dev_ini, 'main')(env, start_request)
