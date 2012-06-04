@@ -13,7 +13,7 @@ install those third-party components.
 
 from __future__ import print_function
 
-import os, sys, shutil
+import os, sys, re, shutil
 from os import environ as env
 from types import MethodType
 import subprocess, multiprocessing
@@ -180,6 +180,23 @@ class rna_seqlyze_web(Part):
 #    test = "python setup.py test"
 #    install = "python setup.py develop --user"
 
+class sra_sdk(Part):
+# 1) created a symlink src/sra_sdk/libxml2.so
+#    pointing to /usr/lib/libxml2.so.2 and added
+#    LDFLAGS=-L$PWD to avoid installing libxml2-dev
+# 2) replaced the content of src/sra_sdk/libs/ext/Makefile
+#    with "all:" to skip unnesessary downloading of zlib and libbz2
+    build = "LD_RUN_PATH=$LIBDIR make STATIC= STATICSYSLIBS= LDFLAGS=-L$PWD"
+    def install(self):
+        dir = "linux/pub/gcc/%(ARCH)s/bin/" % env
+        for bin in os.listdir(dir):
+            if not re.search(r'[0-9]$', bin):
+                shutil.copy(dir + bin, env["BINDIR"])
+                os.chmod(env["BINDIR"] + "/" + bin, 0775)
+        dir = "linux/pub/gcc/%(ARCH)s/lib/" % env
+        for lib in os.listdir(dir):
+            if re.search(r'\.so\.[0-9]+', lib):
+                shutil.copy(dir + lib, env["LIBDIR"])
 class tophat(Part):
     build = "./configure --prefix=$PREFIX --with-bam=$PWD/../samtools && make"
     install = "make install"
@@ -221,6 +238,7 @@ def buildall(topdir, prefix):
     env["BINDIR"] = prefix + "/bin"
     env["LIBDIR"] = prefix + "/lib"
     env["MACHTYPE"] = os.uname()[4]
+    env["ARCH"] = re.sub('i.86', 'i386', env["MACHTYPE"])
     env["NCPUS_ONLN"] = str(os.sysconf("SC_NPROCESSORS_ONLN"))
 
     for part in parts:
