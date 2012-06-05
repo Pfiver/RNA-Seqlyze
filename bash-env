@@ -12,10 +12,11 @@ xpath PYTHONPATH $bt/src/rna-seqlyze/source
 export PYTHONPATH
 
 dirs=(
-	~/public_html
 	"$bt"
-	"$bt/src"
+	"$bt/src/rna-seqlyze"
+	"$bt/src/rna-seqlyze-cli"
 	"$bt/src/rna-seqlyze-web"
+	"$bt/src/rna-seqlyze-worker"
 )
 dirs -c
 for ((i=${#dirs[@]};i>0;))
