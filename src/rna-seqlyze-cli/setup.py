@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import os
+from pkgutil import iter_modules
 from setuptools import setup, find_packages
 
 setup(
@@ -14,10 +14,15 @@ setup(
     packages=find_packages(),
     namespace_packages = ['rnaseqlyze'],
     test_suite='nose.collector',
-    scripts=['scripts/' + name for name in os.listdir("scripts")],
     setup_requires=[
         "nose >= 1.1.2",
         "rna-seqlyze >= 0.1",
         "distribute >= 0.6.14",
     ],
+    entry_points={
+        'console_scripts': [
+            '%s = rnaseqlyze.cli.%s:main' % (n.replace("_", "-"), n) \
+                for l, n, p in iter_modules(["rnaseqlyze/cli"]) if not p
+        ]
+    }
 )

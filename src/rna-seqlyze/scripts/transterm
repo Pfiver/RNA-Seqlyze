@@ -1,7 +1,0 @@
-#!/usr/bin/python
-
-import sys
-
-from rnaseqlyze.transterm import run
-
-run(*sys.argv[1:])
