@@ -8,9 +8,6 @@ xpath PATH $bt/bin
 xpath PATH $bt/src/rna-seqlyze/scripts
 export PATH
 
-xpath PYTHONPATH $bt/src/rna-seqlyze/source
-export PYTHONPATH
-
 dirs=(
 	"$bt"
 	"$bt/src/rna-seqlyze"
