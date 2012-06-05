@@ -1,46 +1,48 @@
-#!/usr/bin/python
+# encoding: utf-8
 
-import nose.tools as nt
+from nose.tools import *
+def check_rows(actual, expected):
 
-def test_script():
+    # line 1
+    # description: "Sulfolobus solfataricus P2"
+    assert_equals(actual()[0][:26], expected()[0][:26])
+    yield
 
-    # set up the testing environment
-    import os
-    here = os.path.dirname(__file__)
-    os.environ["PYTHONPATH"] = here + '/../source'
+    # line 2
+    # 'nnn Proteins' - not implemented
+    assert_equals(actual(), [])
+    expected() # discard
+    yield
 
-    # run the converter script
-    from subprocess import PIPE, Popen
-    proc = Popen([here + "/../scripts/gb2ptt",
-                  "tests/data/NC_002754-partial.gb"], stdout=PIPE)
+    # line 3
+    # column headers
+    assert_equals(actual(), expected())
+    yield
 
-    # read the converters standard output
-    import csv
-    reader = csv.reader(proc.stdout, delimiter='\t')
+    # line 4
+    # the wrapping around gene SSO12256 (clycotransferase)
+    # comes first here but not in the ncbi file
+    actual() # discard
+    yield
 
-    # get the first 4 lines of output
-    # and run some rudimentary checks on them
-    nt.assert_regexp_matches(reader.next()[0], "Sulfolobus solfataricus P2.*")
-    nt.assert_equals(reader.next(), [])
-    cols = reader.next() # column headings
-    reader.next() # the wrapping around gene SSO12256 (clycotransferase)
-                  # comes first here but not in the ncbi file / discard it for now
+    # lines > 4
+    while True:
+        # i didn't bother to fill in the "cog" in column #7
+        # and the descriptions in column #8 don't match exactly
+        assert_equals(actual()[:7], expected()[:7])
+        yield
 
-    # open the reference (eXpected) ptt file
-    # discard the first 2 lines and safe the column headers
-    xreader = csv.reader(open("tests/data/NC_002754-partial.ptt"), delimiter='\t')
-    xreader.next() # first line
-    xreader.next() # second line
-    xcols = xreader.next() # column headings
+class TestFile(object):
+    def __init__(self):
+        import csv, Queue
+        self.q = Queue.Queue()
+        self.checks = check_rows(
+            csv.reader(iter(self.q.get, None), delimiter='\t').next,
+            csv.reader(open("tests/data/NC_002754-partial.ptt"), delimiter='\t').next)
+    def write(self, data):
+        self.q.put(data)
+        self.checks.next()
 
-    # check if the column headers match
-    nt.assert_equals(cols, xcols)
-
-    # fixup function to make the rows compareable
-    def truncate_row(row):
-        del row[7:]         # i didn't bother to fill in the "cog" row (7)
-                            # and the descriptions (8) don't match exactly
-        return row
-
-    # compare the rows produced by ./gb2ptt.py to those read from the reference file
-    nt.assert_items_equal(map(truncate_row, reader), map(truncate_row, xreader))
+def test_gb2ptt():
+    from rnaseqlyze.gb2ptt import gb2ptt
+    gb2ptt(open("tests/data/NC_002754-partial.gb"), TestFile())

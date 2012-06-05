@@ -1,4 +1,4 @@
-#!/usr/bin/python
+# encoding: utf-8
 
 def run(*args):
 
@@ -7,4 +7,5 @@ def run(*args):
 	tt_cmd = tt_dir + "transterm", "-p", tt_dir + "expterm.dat"
 
 	import subprocess
-	subprocess.call(tt_cmd + args)
+    if subprocess.call(tt_cmd + args) != 0:
+        raise Exception(str(tt_cmd + args) + " failed")

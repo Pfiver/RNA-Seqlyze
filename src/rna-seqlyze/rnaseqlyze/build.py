@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # encoding: utf-8
 
 """
@@ -103,16 +102,16 @@ phases = 'build', 'test', 'install'
 class bcbb(Part):
     srcdir = "bcbb/nextgen"
     build = "python setup.py build"
-# save some time
-#    test = "nosetests"
-# not working: gfortran missing
-#    install = "python setup.py install --user"
+    # save some time
+    #test = "nosetests"
+    # not working: gfortran missing
+    #install = "python setup.py install --prefix=$PREFIX"
 
 class biopython(Part):
     build = "python setup.py build"
-# save some time
-#    test = "python setup.py test"
-    install = "python setup.py install --user"
+    # save some time
+    #test = "python setup.py test"
+    install = "python setup.py install --prefix=$PREFIX"
 
 class bowtie2(Part):
     build = "make -j$NCPUS_ONLN"
@@ -142,7 +141,7 @@ class samtools(Part):
 
 class cufflinks(Part):
     depends = samtools
-    build = "./configure --prefix=$PREFIX --with-bam=$PWD/../samtools --with-eigen=$PWD/../eigen && make"
+    build = "./configure --prefix=$PREFIX --with-bam=$TOPDIR/samtools --with-eigen=$TOPDIR/eigen && make"
     install = "make install"
 
 class kent(Part):
@@ -160,25 +159,28 @@ class kent(Part):
 class pysam(Part):
     build = "python setup.py build"
     # tests failing atm
-# neither working
-#    test = "cd tests; nosetests --exe"
-#    test = "cd tests; ./pysam_test.py"
-    install = "python setup.py install --user"
+    # neither working
+    #test = "cd tests; nosetests --exe"
+    #test = "cd tests; ./pysam_test.py"
+    install = "python setup.py install --prefix=$PREFIX"
+
+class rna_seqlyze_cli(Part):
+    srcdir = "rna-seqlyze-cli"
+    build = "python setup.py build"
+    test = "python setup.py test"
+    install = "python setup.py develop --prefix=$PREFIX"
 
 class rna_seqlyze_web(Part):
     srcdir = "rna-seqlyze-web"
-# not working: boostrap symlink
-#    build = "python setup.py build"
-# not yet implemented
-#    test = "python setup.py test"
-    install = "python setup.py develop --user"
+    build = "python setup.py build"
+    test = "python setup.py test"
+    install = "python setup.py develop --prefix=$PREFIX"
 
-# not yet implemented
-#class rna_seqlyze_worker(Part):
-#    srcdir = "rna-seqlyze-worker"
-#    build = "python setup.py build"
-#    test = "python setup.py test"
-#    install = "python setup.py develop --user"
+class rna_seqlyze_worker(Part):
+    srcdir = "rna-seqlyze-worker"
+    build = "python setup.py build"
+    test = "python setup.py test"
+    install = "python setup.py develop --prefix=$PREFIX"
 
 class sra_sdk(Part):
 # 1) created a symlink src/sra_sdk/libxml2.so
@@ -197,23 +199,30 @@ class sra_sdk(Part):
         for lib in os.listdir(dir):
             if re.search(r'\.so\.[0-9]+$', lib):
                 shutil.copy(dir + lib, env["LIBDIR"])
+
 class tophat(Part):
-    build = "./configure --prefix=$PREFIX --with-bam=$PWD/../samtools && make"
+    build = "./configure --prefix=$PREFIX --with-bam=$TOPDIR/samtools && make"
     install = "make install"
 
 class trac(Part):
     build = "python setup.py build"
-# save some time
-#    test = "python setup.py test"
-    install = "python setup.py install --user"
+    # save some time
+    #test = "python setup.py test"
+    install = "python setup.py install --prefix=$PREFIX"
 
 class trac_env(Part):
     def install(self):
+        destdir = "%(PREFIX)s/var/trac_env" % env
+        basedir = os.path.dirname(destdir)
+        if not os.path.isdir(basedir):
+            os.mkdir(basedir)
+        shutil.copytree(".", destdir, symlinks=True)
+        print("Copied %s to %s\n" % (os.getcwd(), destdir))
         print("\n".join((
-            "This needs to be done manually:",
+            "The following still needs to be done manually:",
             " 1) Set up a database",
             " 2) Restore the backup:",
-            "    $ cd " + os.path.abspath("."),
+            "    $ cd " + destdir
             "    $ mysql -uUSERNAME -pPASSWORD DATABASE < mysql-db-backup.sql",
             " 4) Adjust the 'database' variable in the [trac] section in 'conf/trac.ini':",
             "    database = mysql://USERNAME:PASSWORD@localhost/DATABSE",
@@ -234,6 +243,8 @@ class transterm_hp(Part):
 def buildall(topdir, prefix):
 
     os.chdir(topdir)
+
+    env["TOPDIR"] = topdir
     env["PREFIX"] = prefix
     env["BINDIR"] = prefix + "/bin"
     env["LIBDIR"] = prefix + "/lib"
