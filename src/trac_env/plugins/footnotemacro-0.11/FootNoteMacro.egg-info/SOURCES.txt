@@ -1,0 +1,12 @@
+setup.cfg
+setup.py
+FootNoteMacro.egg-info/PKG-INFO
+FootNoteMacro.egg-info/SOURCES.txt
+FootNoteMacro.egg-info/dependency_links.txt
+FootNoteMacro.egg-info/entry_points.txt
+FootNoteMacro.egg-info/requires.txt
+FootNoteMacro.egg-info/top_level.txt
+footnotemacro/__init__.py
+footnotemacro/macro.py
+footnotemacro/htdocs/footnote.css
+footnotemacro/htdocs/footnote.js
