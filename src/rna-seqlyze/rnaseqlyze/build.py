@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 The rna-seqlyze software consisty of several parts.  The majority of those parts
 have been developped independent of this project and have been released under a
@@ -47,8 +45,8 @@ class Part(object):
             self.subdir = "src/" + self.name
 
     def execute(self, phase):
-        cmd = getattr(self, phase, None)
-        if cmd == None: return
+        cmds = getattr(self, phase, None)
+        if cmds == None: return
         print("#" * 80)
         print("# executing %s '%s' phase" % (self.name, phase))
         print("#")
@@ -66,25 +64,28 @@ class Part(object):
                 for nv in filter(lambda i: i[0] in (
                     "PREFIX", "MACHTYPE", "NCPUS_ONLN"), env.iteritems())))
             log()
-            log("$ cd " + self.subdir)
-            log("$ " + "\n  ".join(str(cmd).split("\n")))
-            log()
-            if type(cmd) == str:
-                ret = subprocess.call(cmd, shell=True, cwd=self.subdir,
-                            stdin=dev_null, stdout=T.stdin, stderr=T.stdin)
-            elif type(cmd) == MethodType:
-                def tgt():
-                    sys.stdin = dev_null
-                    sys.stdout = sys.stderr = T.stdin
-                    os.chdir(self.subdir)
-                    return cmd()
-                sp = multiprocessing.Process(target=tgt)
-                sp.start()
-                sp.join()
-                ret = sp.exitcode
-            else:
-                raise Exception("Invalid %s phase: %s" % (phase, repr(cmd)))
-            log()
+            if type(cmds) not in list, tuple:
+                cmds = cmds, # make it a 1-tuple
+            for cmd in cmds:
+                log("$ cd " + self.subdir)
+                log("$ " + "\n  ".join(str(cmd).split("\n")))
+                log()
+                if type(cmd) == str:
+                    ret = subprocess.call(cmd, shell=True, cwd=self.subdir,
+                                stdin=dev_null, stdout=T.stdin, stderr=T.stdin)
+                elif type(cmd) == MethodType:
+                    def tgt():
+                        sys.stdin = dev_null
+                        sys.stdout = sys.stderr = T.stdin
+                        os.chdir(self.subdir)
+                        return cmd()
+                    sp = multiprocessing.Process(target=tgt)
+                    sp.start()
+                    sp.join()
+                    ret = sp.exitcode
+                else:
+                    raise Exception("Invalid '%s' phase command: %s" % (phase, repr(cmd)))
+                log()
             log(time.asctime())
             if ret != 0:
                 raise Exception("%s '%s' phase failed -- exit code %d" % (
@@ -104,8 +105,7 @@ class bcbb(Part):
     build = "python setup.py build"
     # save some time
     #test = "nosetests"
-    # not working: gfortran missing
-    #install = "python setup.py install --prefix=$PREFIX"
+    install = "python setup.py install --prefix=$PREFIX"
 
 class biopython(Part):
     build = "python setup.py build"
@@ -129,14 +129,16 @@ class bowtie2(Part):
 class samtools(Part):
     # the samtools 'build' command
     # is somewhat long so ncurses-dev is not required
-    build = """\
-        make -j$NCPUS_ONLN -C bcftools &&
-        make -j$NCPUS_ONLN -C misc &&
-        make -j$NCPUS_ONLN SUBDIRS=. \
-            LIBCURSES= DFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_USE_KNETFILE" \
-            AOBJS="bam_plcmd.o sam_view.o bam_rmdup.o bam_rmdupse.o bam_mate.o bam_stat.o bam_color.o \
+    build = (
+        "make -j$NCPUS_ONLN -C bcftools",
+        "make -j$NCPUS_ONLN -C misc",
+        """\
+            make -j$NCPUS_ONLN SUBDIRS=. \\
+            LIBCURSES= DFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_USE_KNETFILE" \\
+            AOBJS="bam_plcmd.o sam_view.o bam_rmdup.o bam_rmdupse.o bam_mate.o bam_stat.o bam_color.o \\
                    bamtk.o kaln.o bam2bcf.o bam2bcf_indel.o errmod.o sample.o cut_target.o phase.o bam2depth.o"
-    """
+        """
+    )
     install = "cp samtools $PREFIX/bin"
 
 class cufflinks(Part):
@@ -158,8 +160,7 @@ class kent(Part):
 
 class pysam(Part):
     build = "python setup.py build"
-    # tests failing atm
-    # neither working
+    # tests failing...
     #test = "cd tests; nosetests --exe"
     #test = "cd tests; ./pysam_test.py"
     install = "python setup.py install --prefix=$PREFIX"
@@ -183,11 +184,12 @@ class rna_seqlyze_worker(Part):
     install = "python setup.py develop --prefix=$PREFIX"
 
 class sra_sdk(Part):
-# 1) created a symlink src/sra_sdk/libxml2.so
-#    pointing to /usr/lib/libxml2.so.2 and added
-#    LDFLAGS=-L$PWD to avoid installing libxml2-dev
-# 2) replaced the content of src/sra_sdk/libs/ext/Makefile
-#    with "all:" to skip unnesessary downloading of zlib and libbz2
+    # To get this to compile, I
+    # 1) created a symlink src/sra_sdk/libxml2.so
+    #    pointing to /usr/lib/libxml2.so.2 and added
+    #    LDFLAGS=-L$PWD to avoid having to install libxml2-dev
+    # 2) replaced the content of src/sra_sdk/libs/ext/Makefile
+    #    with "all:" to skip unnesessary downloading of zlib and libbz2
     build = "LD_RUN_PATH=$LIBDIR make STATIC= STATICSYSLIBS= LDFLAGS=-L$PWD"
     def install(self):
         dir = "linux/pub/gcc/%(ARCH)s/bin/" % env
@@ -212,12 +214,14 @@ class trac(Part):
 
 class trac_env(Part):
     def install(self):
-        destdir = "%(PREFIX)s/var/trac_env" % env
-        basedir = os.path.dirname(destdir)
-        if not os.path.isdir(basedir):
-            os.mkdir(basedir)
-        shutil.copytree(".", destdir, symlinks=True)
-        print("Copied %s to %s\n" % (os.getcwd(), destdir))
+        # need to discuss server
+        # configuration with admin
+        #destdir = "%(PREFIX)s/var/trac_env" % env
+        #basedir = os.path.dirname(destdir)
+        #if not os.path.isdir(basedir):
+        #    os.mkdir(basedir)
+        #shutil.copytree(".", destdir, symlinks=True)
+        #print("Copied %s to %s\n" % (os.getcwd(), destdir))
         print("\n".join((
             "The following still needs to be done manually:",
             " 1) Set up a database",
