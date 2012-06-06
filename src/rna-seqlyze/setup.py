@@ -23,7 +23,11 @@ setup(
     license="Mixed",
     packages=find_packages(),
     test_suite='nose.collector',
-    scripts=['scripts/' + name for name in os.listdir("scripts")],
+    entry_points={
+        'console_scripts': [
+            'build-rnaseqlyze = rnaseqlyze.build:main',
+        ],
+    },
     setup_requires=[
         "nose >= 1.0",
         "distribute >= 0.6.14",     # unsure if really required, but won't harm

@@ -64,7 +64,7 @@ class Part(object):
                 for nv in filter(lambda i: i[0] in (
                     "PREFIX", "MACHTYPE", "NCPUS_ONLN"), env.iteritems())))
             log()
-            if type(cmds) not in list, tuple:
+            if type(cmds) not in (list, tuple):
                 cmds = cmds, # make it a 1-tuple
             for cmd in cmds:
                 log("$ cd " + self.subdir)
@@ -226,7 +226,7 @@ class trac_env(Part):
             "The following still needs to be done manually:",
             " 1) Set up a database",
             " 2) Restore the backup:",
-            "    $ cd " + destdir
+            "    $ cd " + os.getcwd(),
             "    $ mysql -uUSERNAME -pPASSWORD DATABASE < mysql-db-backup.sql",
             " 4) Adjust the 'database' variable in the [trac] section in 'conf/trac.ini':",
             "    database = mysql://USERNAME:PASSWORD@localhost/DATABSE",
@@ -247,7 +247,6 @@ class transterm_hp(Part):
 def buildall(topdir, prefix):
 
     os.chdir(topdir)
-
     env["TOPDIR"] = topdir
     env["PREFIX"] = prefix
     env["BINDIR"] = prefix + "/bin"
@@ -259,3 +258,18 @@ def buildall(topdir, prefix):
     for part in parts:
         for phase in phases:
             part.execute(phase)
+
+# script enty point
+###################
+
+def main():
+    import optparse
+    parser = optparse.OptionParser()
+    parser.add_option("-t", "--topdir",
+                      dest="topdir", default=os.getcwd(),
+                      help="the git source tree - default: current diretory")
+    parser.add_option("-p", "--prefix",
+                      dest="prefix", default=env["HOME"] + "/.local",
+                      help="the installation prefix - default: $HOME/.local")
+    options, args = parser.parse_args()
+    buildall(options.topdir, options.prefix)
