@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
-
 from pkgutil import iter_modules
 from setuptools import setup, find_packages
 

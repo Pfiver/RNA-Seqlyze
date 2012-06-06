@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 debug = False
 
 import sys

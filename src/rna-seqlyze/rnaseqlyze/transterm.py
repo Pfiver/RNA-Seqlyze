@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 def run(*args):
 
 	from os.path import abspath, dirname

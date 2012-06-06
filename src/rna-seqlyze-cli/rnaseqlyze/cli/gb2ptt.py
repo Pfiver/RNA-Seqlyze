@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import sys
 
 from rnaseqlyze.gb2ptt import gb2ptt

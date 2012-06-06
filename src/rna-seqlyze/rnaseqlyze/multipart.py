@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # based on http://code.activestate.com/recipes/146306/
 
 def urlopen_multipart(url, data):

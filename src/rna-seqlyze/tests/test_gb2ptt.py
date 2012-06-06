@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from nose.tools import *
 def check_rows(actual, expected):
 

@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
-
 # this "distrubute" setup script depends on
 
     # "distribute" 0.6.26

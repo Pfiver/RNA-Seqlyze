@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 def main(argv=sys.argv):
 
     # http://docs.python.org/library/tempfile.html?highlight=tempfile#tempfile.mkstemp
