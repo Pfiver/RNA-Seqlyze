@@ -24,7 +24,7 @@ setup(name = "bcbio-nextgen",
                  'scripts/variant_effects.py',
                  ],
       install_requires = [
-          "numpy >= 1.5.1",
+          "numpy",
           "biopython >= 1.58",
           "Mako >= 0.3.6",
           "PyYAML >= 3.09",
