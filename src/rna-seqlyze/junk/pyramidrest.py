@@ -20,6 +20,7 @@ def start(request):
 
 @view_config('results', request_method='GET', renderer='string')
 def results(request):
+    global child
     if child:
         stdout = child.stdout
         if child.poll() != None:
