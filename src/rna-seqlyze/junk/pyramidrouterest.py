@@ -18,22 +18,28 @@ class route(object):
         venusian.attach(wrapped, self.callback)
         return wrapped
     def callback(self, scanner, name, wrapped):
-        scanner.config.add_route(name=wrapped.__name__, pattern=self.pattern)
-        scanner.config.add_view(view=wrapped, route_name=wrapped.__name__, **self.view_args)
+        if self.pattern not in [action['discriminator'][1]
+                for action in scanner.config.action_state.actions]:
+            scanner.config.add_route(name=self.pattern, pattern=self.pattern)
+        scanner.config.add_view(view=wrapped, route_name=self.pattern, **self.view_args)
 
 from wsgiref.simple_server import make_server
 
-from pyramid.view import view_config
 from pyramid.config import Configurator
 from pyramid.response import Response
 
-@route('/start/{number}', request_method='GET')
+@route('/start/{number}', request_method='GET', accept='text/html')
 def start(request):
-    return Response("Number " + request.matchdict["number"])
+    return Response("HTML Number " + request.matchdict["number"])
+
+@route('/start/{number}', request_method='GET', accept='application/json')
+def startj(request):
+    return Response("JSON Number " + request.matchdict["number"])
 
 def main():
     config = Configurator()
     config.scan()
+
     app = config.make_wsgi_app()
     server = make_server('0.0.0.0', 8080, app)
     server.serve_forever()
