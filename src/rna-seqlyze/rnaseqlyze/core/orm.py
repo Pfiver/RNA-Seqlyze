@@ -23,7 +23,13 @@ Entity = declarative_base(cls=Entity)
 ##########
 
 class Analysis(Entity):
+    """
+    The central entity
 
+    The whole rnaseqlyze project basically revolves around this entity.
+
+    It represents an analysis by a researcher, as described in the srs, feature 1.
+    """
     id = Column(Integer, primary_key=True)
     refseq_ns = Column(String) # RefSeq accession
                                # maps directly to filename
@@ -64,7 +70,10 @@ class FeaturePredictions(Entity):
     """
     Holds a reference to the output of a FeaturePredictor
     """
+    id = Column(Integer, primary_key=True)
+
     type = Column('type', String(50))
+    __mapper_args__ = {'polymorphic_on': type}
 
 # tracks
 
@@ -72,4 +81,7 @@ class HgTrack(Entity):
     """
     Holds the type and filename for a UCSC Genome Browser Track
     """
+    id = Column(Integer, primary_key=True)
+
     type = Column('type', String(50))
+    __mapper_args__ = {'polymorphic_on': type}
