@@ -8,6 +8,7 @@ Map Python Objects to Database Tables
 from sqlalchemy import Table, Column
 from sqlalchemy import Integer, String, Text
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declared_attr, declarative_base
 
 class Entity(object):
@@ -18,6 +19,7 @@ class Entity(object):
 
 Entity = declarative_base(cls=Entity)
 
+DBSession = scoped_session(sessionmaker())
 
 # entities
 ##########
