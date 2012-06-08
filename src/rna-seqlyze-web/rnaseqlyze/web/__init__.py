@@ -1,13 +1,14 @@
+from sqlalchemy import create_engine
 from pyramid.config import Configurator
-from sqlalchemy import engine_from_config
 
+import rnaseqlyze
 from rnaseqlyze.core.orm import DBSession
 
 def main(global_config, **settings):
     """
-    Returns a Pyramid WSGI application.
+    Return a Pyramid(!) WSGI application.
     """
-    engine = engine_from_config(settings, 'sqlalchemy.')
+    engine = create_engine(rnaseqlyze.db_url)
     DBSession.configure(bind=engine)
 
     config = Configurator(settings=settings)
@@ -15,5 +16,6 @@ def main(global_config, **settings):
     for path in 'img', 'css', 'js':
         config.add_static_view(path, path)
     config.scan()
+
     return config.make_wsgi_app()
 

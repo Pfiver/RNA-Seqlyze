@@ -5,6 +5,7 @@ Map Python Objects to Database Tables
 # infrastructure
 ################
 
+from sqlalchemy import ForeignKey
 from sqlalchemy import Table, Column
 from sqlalchemy import Integer, String, Text
 from sqlalchemy.orm import relationship, backref
@@ -56,6 +57,7 @@ class RNASeqExperiment(Entity):
     Constitutes an SRA "SRX" == SRA Experiment
     """
     srx = Column(String, primary_key=True)
+    srp_srp = Column(Integer, ForeignKey('rnaseqstudy.srp'))
     srp = relationship("RNASeqStudy", backref=backref("experiments"))
     # runs = `backref` from RNASeqRun
 
@@ -64,6 +66,7 @@ class RNASeqRun(Entity):
     Constitutes an SRA "SRR" == SRA Run
     """
     srr = Column(String, primary_key=True)
+    srx_srx = Column(Integer, ForeignKey('rnaseqexperiment.srx'))
     srx = relationship("RNASeqExperiment", backref=backref("runs"))
 
 # predictions
