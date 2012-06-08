@@ -1,34 +1,29 @@
-from pyramid.response import Response
 from pyramid.view import view_config
+from pyramid.response import Response
 
 from sqlalchemy.exc import DBAPIError
 
-from .models import (
-    DBSession,
-    MyModel,
-    )
+from rnaseqlyze.core.orm import DBSession, Analysis
 
 @view_config(route_name='base', renderer='templates/main.pt')
-def my_view(request):
+def main(request):
     try:
-        one = DBSession.query(MyModel).filter(MyModel.name=='one').first()
+        analyses_query = DBSession.query(Analysis)
+        analyses = analyses_query.all()
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    return {'one':one, 'project':'rna-seqlyze-web'}
+
+    return {
+        'analyses': analyses,
+    }
 
 conn_err_msg = """\
-Pyramid is having a problem using your SQL database.  The problem
-might be caused by one of the following things:
+Pyramid is having
+a problem connecting to to database.
 
-1.  You may need to run the "initialize_rna-seqlyze-web_db" script
-    to initialize your database tables.  Check your virtual 
-    environment's "bin" directory for this script and try to run it.
+You may need to run the
+"initialize_rnaseqlyze_db" script to create it.
 
-2.  Your database server may not be running.  Check that the
-    database server referred to by the "sqlalchemy.url" setting in
-    your "development.ini" file is running.
-
-After you fix the problem, please restart the Pyramid application to
-try it again.
+Afterwards, restart the Pyramid application, i.e. send a
+SIG_INT to the apache mod_wsgi daemon processes, and try again.
 """
-

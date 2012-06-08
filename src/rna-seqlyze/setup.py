@@ -26,6 +26,7 @@ setup(
     entry_points={
         'console_scripts': [
             'build-rnaseqlyze = rnaseqlyze.build:main',
+            'rnaseqlyze-dbinit = rnaseqlyze.dbinit:main',
         ],
     },
     setup_requires=[
