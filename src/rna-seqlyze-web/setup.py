@@ -10,7 +10,7 @@ setup(
     license="Mixed",
     packages=find_packages(),
     namespace_packages = ['rnaseqlyze'],
-    test_suite='rnaseqlyze.web',
+    test_suite='nose.collector',
     include_package_data=True,
     zip_safe=False,
     setup_requires=[

@@ -40,6 +40,9 @@ class Analysis(Entity):
     # feature_predictions = `backref` from FeaturePredictions
     # hg_tracks = `backref` from HgTrack
 
+    def __init__(self, refseq_ns=None):
+        self.refseq_ns = refseq_ns
+
 # SRA analogons
 
 class RNASeqStudy(Entity):
