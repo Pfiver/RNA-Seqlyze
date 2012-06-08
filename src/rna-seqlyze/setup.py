@@ -34,6 +34,7 @@ setup(
         "distribute >= 0.6.14",     # unsure if really required, but won't harm
     ],
     install_requires=[
+        "pyflakes",                 # Buildbot
         "nose >= 1.1.2",
         "pyramid >= 1.3.2",
         "MarkupSafe >= 0.15",       # in Trac
