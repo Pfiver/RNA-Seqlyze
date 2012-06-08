@@ -23,4 +23,4 @@ def test():
     from rnaseqlyze.web.views import main
     request = testing.DummyRequest()
     info = main(request)
-    assert_equal(info['analysis'].refseq_ns, 'NC_1234')
+    assert_equal(info['analyses'][0].refseq_ns, 'NC_1234')
