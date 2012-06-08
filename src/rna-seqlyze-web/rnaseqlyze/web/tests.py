@@ -3,30 +3,25 @@ import transaction
 
 from pyramid import testing
 
-from .models import DBSession
+from rnaseqlyze.core.orm import DBSession, Analysis
 
-class TestMyView(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-        from sqlalchemy import create_engine
-        engine = create_engine('sqlite://')
-        from .models import (
-            Base,
-            MyModel,
-            )
-        DBSession.configure(bind=engine)
-        Base.metadata.create_all(engine)
-        with transaction.manager:
-            model = MyModel(name='one', value=55)
-            DBSession.add(model)
+def setup():
+    testing.setUp()
+    from sqlalchemy import create_engine
+    engine = create_engine('sqlite://')
+    DBSession.configure(bind=engine)
+    from rnaseqlyze.core.orm import Entity, Analysis
+    Entity.metadata.create_all(engine)
+    with transaction.manager:
+        analysis = MyModel(refseq_ns='NC_1234')
+        DBSession.add(analysis)
 
-    def tearDown(self):
-        DBSession.remove()
-        testing.tearDown()
+def teardown():
+    DBSession.remove()
+    testing.tearDown()
 
-    def test_it(self):
-        from .views import my_view
-        request = testing.DummyRequest()
-        info = my_view(request)
-        self.assertEqual(info['one'].name, 'one')
-        self.assertEqual(info['project'], 'rna-seqlyze-web')
+def test_it(self):
+    from .views import main
+    request = testing.DummyRequest()
+    info = main(request)
+    self.assertEqual(info['analysis'].refseq_ns, 'NC_1234')

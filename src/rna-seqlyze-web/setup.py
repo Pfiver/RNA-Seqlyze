@@ -32,8 +32,5 @@ setup(
         'paste.app_factory': [
             'main = rnaseqlyze.web:main',
         ],
-        'console_scripts': [
-            'initialize_rna-seqlyze-web_db = rnaseqlyze.web.scripts.initializedb:main'
-        ]
     },
 )
