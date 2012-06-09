@@ -30,17 +30,21 @@ def check_rows(actual, expected):
         assert_equals(actual()[:7], expected()[:7])
         yield
 
+open_ = open
+from os.path import abspath, dirname
+open = lambda file: open_(abspath(dirname(__file__)) + "/data/" + file)
+
 class TestFile(object):
     def __init__(self):
         import csv, Queue
         self.q = Queue.Queue()
         self.checks = check_rows(
             csv.reader(iter(self.q.get, None), delimiter='\t').next,
-            csv.reader(open("tests/data/NC_002754-partial.ptt"), delimiter='\t').next)
+            csv.reader(open("NC_002754-partial.ptt"), delimiter='\t').next)
     def write(self, data):
         self.q.put(data)
         self.checks.next()
 
 def test_gb2ptt():
     from rnaseqlyze.gb2ptt import gb2ptt
-    gb2ptt(open("tests/data/NC_002754-partial.gb"), TestFile())
+    gb2ptt(open("NC_002754-partial.gb"), TestFile())
