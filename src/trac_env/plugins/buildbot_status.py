@@ -21,8 +21,8 @@ class BuildbotStatusMacro(WikiMacroBase):
 
     def expand_macro(self, formatter, name, text, args):
         get_link = lambda dir_: formatter.req.href("/browser/src/%s" % dir_) + "?rev=master"
-        builds = [ json.load(urllib2.urlopen("http://localhost:8010/json/builders/%s/builds/-1" % slave))
-                    for slave in ("rna-seqlyze",) ]
+        builds = [ json.load(urllib2.urlopen("http://localhost:8010/json/builders/rna-seqlyze%s/builds/-1" % component))
+                    for component in ('', '-cli', '-web', '-worker')]
         out = []
         out.append("<ul>")
         for build in builds:
