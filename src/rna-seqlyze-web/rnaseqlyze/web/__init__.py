@@ -4,7 +4,6 @@ from pyramid.config import Configurator
 import rnaseqlyze
 from rnaseqlyze.core.orm import DBSession
 
-
 def main(global_config, **settings):
     """
     Return a Pyramid(!) WSGI application.
@@ -14,10 +13,8 @@ def main(global_config, **settings):
 
     config = Configurator(settings=settings)
 
-    config.add_subscriber('rnaseqlyze.web.add_base_template',
-                          'pyramid.events.BeforeRender')
-
     config.add_route('home', '/')
+    config.add_route('new', '/new')
     config.add_route('analysis', '/analysis')
     for path in 'img', 'css', 'js':
         config.add_static_view(path, path)
@@ -26,9 +23,20 @@ def main(global_config, **settings):
     return config.make_wsgi_app()
 
 
-
+from pyramid.events import subscriber
+from pyramid.events import BeforeRender
 from pyramid.renderers import get_renderer
 
+@subscriber(BeforeRender)
 def add_base_template(event):
+
     base = get_renderer('templates/base.pt').implementation()
-    event.update({'base': base})
+
+    def path(relative):
+        return event['request'].route_path('home') + relative
+
+    event.update({
+        'base': base,
+        'path': path,
+        'version': rnaseqlyze.__version__,
+    })

@@ -8,9 +8,10 @@ from rnaseqlyze.core.orm import DBSession, Analysis
 
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
-    pass
+    return {}
 
 
+@view_config(route_name='new', renderer='templates/analysis.pt')
 @view_config(route_name='analysis', renderer='templates/analysis.pt')
 def analysis(request):
     try:

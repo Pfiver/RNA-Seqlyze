@@ -1,6 +1,20 @@
 body {
     padding-top: 20px;
 }
+
+
+.sidebar-fixed {
+    padding: 9px 0;
+    position:fixed;
+    top:20px;
+    left:20px;
+    width:250px;
+}
+.content-fixed {
+    margin-left: 290px;
+}
+
+
 .main-logo {
     padding: 9px;
     height: 200px;
@@ -18,16 +32,59 @@ body {
     color: #333333;
     text-decoration: none;
 }
-.sidebar-nav-fixed {
-    padding: 9px 0;
-    position:fixed;
-    left:20px;
-    top:240px;
-    width:250px;
-}
-.row-fluid > .span-fixed-sidebar {
-    margin-left: 290px;
-}
 #action-buttons {
     margin-bottom: 20px;
+}
+
+
+/*
+ * footer, as seen at
+ * http://www.cssstickyfooter.com/using-sticky-footer-code.html
+ */
+
+html, body {
+    padding: 0;
+    height: 100%;
+}
+#wrap {
+    min-height: 100%;
+}
+#main {
+    overflow: auto;
+    padding-bottom: 120px; /* must be same height as the footer */
+}
+#footer { /* total height: 80 + 20 + 20 = 120 */
+    margin: 0;
+    margin-top: -120px; /* negative value of footer height */
+    height: 80px; /* == height of <footer> */
+    padding: 20px;
+    position: relative;
+    clear:both;
+    z-index: 10;
+}
+/*Opera Fix*/
+body:before {
+    content:"";
+    height:100%;
+    float:left;
+    width:0;
+    margin-top:-32767px;/
+}
+
+footer.well {   /* total height: 40 + 20 + 20 = 80 */
+    height: 40px;
+    line-height: 40px;
+    /* padding: 19 + border: 1 == 20 in all directions */
+}
+footer {
+    overflow: auto;
+    white-space: nowrap;
+}
+footer > * {
+    margin: 0 20px !important;
+    display: inline-block;
+    vertical-align: middle;
+}
+footer > :first-child {
+    margin-left: 0 !important;
 }

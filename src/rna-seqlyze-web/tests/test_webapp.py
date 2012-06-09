@@ -20,7 +20,7 @@ def teardown():
 
 from nose.tools import *
 def test():
-    from rnaseqlyze.web.views import main
+    from rnaseqlyze.web.views import analysis
     request = testing.DummyRequest()
-    info = main(request)
+    info = analysis(request)
     assert_equal(info['analyses'][0].refseq_ns, 'NC_1234')
