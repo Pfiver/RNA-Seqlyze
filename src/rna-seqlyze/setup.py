@@ -1,21 +1,27 @@
-# this "distrubute" setup script depends on
+# rna-seqlyze setup script
 
-    # "distribute" 0.6.26
-    # - source code: https://bitbucket.org/tarek/distribute
-    # - documentation: http://pypi.python.org/pypi/distribute
+    # depends on git and "distribute"
+    # - git: git-scm.com
+    # - "distribute":
+    #  - docs: http://packages.python.org/distribute/
+    #  - code: https://bitbucket.org/tarek/distribute
+    #  - installation:
+    #    $ curl -O https://bitbucket.org/tarek/distribute/raw/default/distribute_setup.py
+    #    $ python distribute_setup.py --user
 
-    # to run this script, "distribute" must be installed, as follows:
-    # 1) fetch the setup script
-    #     $ curl -O https://bitbucket.org/tarek/distribute/raw/b69f072c0002/distribute_setup.py
-    # 2) install "distribute"
-    #     $ python distribute_setup.py --user
-
-import os
 from setuptools import setup, find_packages
+
+def get_version():
+    from subprocess import Popen, PIPE
+    git_describe = Popen(("git", "describe"), stdout=PIPE, stderr=PIPE)
+    version, error = git_describe.communicate()
+    if git_describe.returncode:
+        raise Exception("couldn't determine package version: " + error)
+    return version.strip()[1:]
 
 setup(
     name='rna-seqlyze',
-    version='0.1',
+    version=get_version(),
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
     description="RNA-seq analysis | core features",
