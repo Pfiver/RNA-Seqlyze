@@ -39,6 +39,15 @@ set incsearch " incremental search
 set comments= " ...
 set nofoldenable " disable code folding
 
+autocmd BufEnter,BufNewFile * set indentkeys-=<>>
+
+" simpler code pasting
+""""""""""""""""""""""
+" insert mode
+set pastetoggle=<F2>
+" shows new mode when toggling in normal mode
+nnoremap <F2> :set invpaste paste?<CR>
+
 " fix auto-indentation
 """"""""""""""""""""""
 " autocmd BufEnter,BufNewFile * set indentkeys=
