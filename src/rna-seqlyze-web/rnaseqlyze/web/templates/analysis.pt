@@ -1,46 +1,5 @@
-<!DOCTYPE html>
-<html lang="en" tal:define="base request.route_path('base')">
-  <head>
-    <meta charset="utf-8">
-    <title>RNA-seqlyze</title>
-    <meta name="author" content="Patrick Pfeifer, FHNW">
-    <meta name="description" content="RNA-seq data analyzis tool">
-
-    <link rel="shortcut icon" href="${base + 'img/RNA-Seqlyze-icon.ico'}">
-
-    <link rel="stylesheet" href="${base + 'css/main.css'}">
-    <link rel="stylesheet" href="${base + 'css/bootstrap.css'}">
-
-    <!-- HTML5 shim - for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-
-  <body>
-
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-
-          <a href="${base}">
-          <div class="main-logo">
-            <img src="${base + 'img/RNA-Seqlyze.png'}"/>
-            <div class="app-version">
-              <h3>RNA-seqlyze</h3>
-              <span class="version">0.1</span>
-            </div>
-          </div>
-          </a>
-
-          <ul class="nav nav-tabs nav-stacked">
-            <li class="active"><a href="#sec1">Section 1</a></li>
-            <li><a href="#sec1">Section 2</a></li>
-            <li><a href="#sec1">Section 3</a></li>
-          </ul><!--/nav-->
-
-        </div><!--/span3-->
+<html>
+  <tal:block metal:fill-slot="content">
 
         <div class="span9">
 
@@ -109,32 +68,7 @@
 
         </div><!--/span9-->
 
-      </div><!--/row-->
-
-      <hr>
-
-      <footer>
-        <p>&copy; Patrick Pfeifer 2012</p>
-      </footer>
-
-    </div><!--/.container-fluid-->
-
-    <!-- javascript placed at the end of the document so the pages load faster -->
-    <script src="${base + 'js/jquery.js'}"></script>
-    <script src="${base + 'js/bootstrap-transition.js'}"></script>
-    <script src="${base + 'js/bootstrap-alert.js'}"></script>
-    <script src="${base + 'js/bootstrap-modal.js'}"></script>
-    <script src="${base + 'js/bootstrap-dropdown.js'}"></script>
-    <script src="${base + 'js/bootstrap-scrollspy.js'}"></script>
-    <script src="${base + 'js/bootstrap-tab.js'}"></script>
-    <script src="${base + 'js/bootstrap-tooltip.js'}"></script>
-    <script src="${base + 'js/bootstrap-popover.js'}"></script>
-    <script src="${base + 'js/bootstrap-button.js'}"></script>
-    <script src="${base + 'js/bootstrap-collapse.js'}"></script>
-    <script src="${base + 'js/bootstrap-carousel.js'}"></script>
-    <script src="${base + 'js/bootstrap-typeahead.js'}"></script>
-
-  </body>
+  </tal:block>
 <!--
   vim: sw=2:et
   -->
