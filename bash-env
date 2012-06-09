@@ -1,27 +1,21 @@
-xpath() {
-	[[ ${!1} =~ (^|:)$2(:|$) ]] || eval ${1}+=:\$2
-}
-
 : ${bt:=/data/school/06_BT}
 
-xpath PATH $bt/bin
-xpath PATH $bt/src/rna-seqlyze/scripts
-export PATH
+rnas_pkgs=("" -cli -web -worker)
+rnas_pkgs=("${rnas_pkgs[@]/#/rna-seqlyze}")
 
-dirs=(
-	"$bt"
-	"$bt/src/rna-seqlyze"
-	"$bt/src/rna-seqlyze-cli"
-	"$bt/src/rna-seqlyze-web"
-	"$bt/src/rna-seqlyze-worker"
-)
-dirs -c
-for ((i=${#dirs[@]};i>0;))
-do
-	pushd "${dirs[--i]}"
-done
-cd "$bt"
-unset dirs
+rnas_topdir=$bt
+rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
+
+if [ "$PS1" ]
+then
+	dirs -c
+	for ((i=${#rnas_pkgdirs[@]}-1; i>=0; i--))
+	do
+		pushd "${rnas_pkgdirs[i]}"
+	done
+	pushd "$rnas_topdir"
+	cd ~1
+fi
 
 buildbot ()
 (
@@ -39,10 +33,9 @@ sig-int ()
 
 py-redevelop ()
 {
-	for ((i=2; i<=5; i++))
+	for dir in "${rnas_pkgdirs[@]}"
 	do (
-		eval cd ~$i
-		pwd
+		cd "$dir"
 		python setup.py develop --user
 	) done
 
@@ -52,13 +45,12 @@ py-redevelop ()
 	#  --cover-inclusive: include modules not loaded by test scripts
 	#  --cover-package: restrict coverage report to packge
 	#  --cover-html: generate html coverage report
-	#  ~2 ~3 ~4 ~5: directories to include
 	(
-		cd ~1
+		cd "$rnas_topdir"
 		nosetests --with-coverage		\
 			--cover-inclusive		\
 			--cover-package rnaseqlyze	\
-			--cover-html --cover-html-dir=report/coverage ~2 ~3 ~4 ~5
+			--cover-html --cover-html-dir=report/coverage "${rnas_pkgdirs[@]}"
 		rm -f .coverage
 	)
 }
