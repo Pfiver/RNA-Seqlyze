@@ -5,8 +5,14 @@ from sqlalchemy.exc import DBAPIError
 
 from rnaseqlyze.core.orm import DBSession, Analysis
 
-@view_config(route_name='base', renderer='templates/main.pt')
-def main(request):
+
+@view_config(route_name='home', renderer='templates/home.pt')
+def home(request):
+    pass
+
+
+@view_config(route_name='analysis', renderer='templates/analysis.pt')
+def analysis(request):
     try:
         analyses_query = DBSession.query(Analysis)
         analyses = analyses_query.all()
@@ -16,6 +22,7 @@ def main(request):
     return {
         'analyses': analyses,
     }
+
 
 conn_err_msg = """\
 Pyramid is having
