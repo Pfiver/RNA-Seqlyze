@@ -34,6 +34,10 @@
           </div>
           </a>
 
+          <div id="action-buttons">
+            <a href="${base + 'new'}" class="btn btn-large btn-primary">New Analysis</a>
+          </div>
+
           <ul class="nav nav-tabs nav-stacked">
             <li class="active"><a href="#sec1">Section 1</a></li>
             <li><a href="#sec1">Section 2</a></li>

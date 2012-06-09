@@ -28,4 +28,6 @@ body {
 .row-fluid > .span-fixed-sidebar {
     margin-left: 290px;
 }
-
+#action-buttons {
+    margin-bottom: 20px;
+}
