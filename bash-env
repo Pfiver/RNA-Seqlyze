@@ -36,3 +36,29 @@ sig-int ()
 {
 	curl localhost/biopython/debug?{sig_int,sig_int}
 }
+
+py-redevelop ()
+{
+	for ((i=2; i<=5; i++))
+	do (
+		eval cd ~$i
+		pwd
+		python setup.py develop --user
+	) done
+
+	sig-int
+
+	# compute test coverage
+	#  --cover-inclusive: include modules not loaded by test scripts
+	#  --cover-package: restrict coverage report to packge
+	#  --cover-html: generate html coverage report
+	#  ~2 ~3 ~4 ~5: directories to include
+	(
+		cd ~1
+		nosetests --with-coverage		\
+			--cover-inclusive		\
+			--cover-package rnaseqlyze	\
+			--cover-html --cover-html-dir=report/coverage ~2 ~3 ~4 ~5
+		rm -f .coverage
+	)
+}
