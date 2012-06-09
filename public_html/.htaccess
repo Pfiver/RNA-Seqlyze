@@ -18,6 +18,7 @@ RewriteCond $0 !^rna-seqlyze.wsgi
 RewriteCond $0 !^debug.wsgi
 RewriteCond $0 !^pyramid-webapp.wsgi
 RewriteCond $0 !^rna-seqlyze-dev.wsgi
+RewriteCond %{REQUEST_URI} !^/~pfeifer/static/
 RewriteRule .* - [R=404]
 
 RewriteRule buildbot/(.*) http://localhost:8010/$1 [QSA,P]
