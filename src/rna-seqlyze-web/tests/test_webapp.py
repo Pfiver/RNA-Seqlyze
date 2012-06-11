@@ -12,7 +12,7 @@ def setup():
     from rnaseqlyze.core.orm import Entity, Analysis
     Entity.metadata.create_all(engine)
     with transaction.manager:
-        analysis = Analysis(refseq_ns='NC_1234')
+        analysis = Analysis()
         DBSession.add(analysis)
 
 def teardown():
@@ -20,9 +20,9 @@ def teardown():
     testing.tearDown()
 
 from nose.tools import *
-def test():
+def most_basic_test():
     from rnaseqlyze.web.views import analysis
     request = testing.DummyRequest()
     request.matchdict['id'] = "1"
     info = analysis(request)
-    assert_equal(info['analysis'].refseq_ns, 'NC_1234')
+    assert_equal(info['analysis'].id, 1)

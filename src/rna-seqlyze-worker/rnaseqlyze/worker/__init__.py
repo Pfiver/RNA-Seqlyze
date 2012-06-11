@@ -1,8 +1,14 @@
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
 from pyramid.config import Configurator
 
 import rnaseqlyze
-from rnaseqlyze.core.orm import DBSession
+
+DBSession = scoped_session(sessionmaker())
+
+def main():
+    engine = create_engine(rnaseqlyze.db_url)
+    DBSession.configure(bind=engine)
 
 def main(global_config, **settings):
     """
