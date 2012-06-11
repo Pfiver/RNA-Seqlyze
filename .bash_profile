@@ -1,3 +1,12 @@
+# tmux
+
+tmux="$HOME/.local/bin/tmux -S /tmp/tmux-pfeifer"
+if ! [ $TMUX ]
+then
+	$tmux display 2> /dev/null && exec $tmux attach
+	exec $tmux
+fi
+
 # history
 
 histfile=~/.pbh
