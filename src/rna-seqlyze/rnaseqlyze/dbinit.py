@@ -4,7 +4,8 @@ import sys
 from sqlalchemy import create_engine
 
 import rnaseqlyze
-from rnaseqlyze.core.orm import DBSession, Entity
+from rnaseqlyze.cli import DBSession
+from rnaseqlyze.core.orm import Entity
 
 def main(argv=sys.argv):
     if len(argv) > 1:

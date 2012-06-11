@@ -3,7 +3,9 @@ from pyramid.response import Response
 
 from sqlalchemy.exc import DBAPIError
 
-from rnaseqlyze.core.orm import DBSession, Analysis
+from rnaseqlyze.core import service
+from rnaseqlyze.core.orm import Analysis
+from rnaseqlyze.web import DBSession
 
 
 @view_config(route_name='home', renderer='templates/home.pt')
@@ -11,17 +13,29 @@ def home(request):
     return {}
 
 
-@view_config(route_name='new', renderer='templates/analysis.pt')
+from pyramid.httpexceptions import HTTPFound
+@view_config(route_name='new')
+def new(request):
+    try:
+        analysis = service.create_anonymous_analysis(DBSession)
+        DBSession.add(analysis)
+        DBSession.flush() # set analysis.id
+        loc = request.route_path('analysis', id=str(analysis.id))
+        return HTTPFound(location=loc)
+    except DBAPIError, e:
+        return Response(conn_err_msg % e, content_type='text/plain', status_int=500)
+
+
 @view_config(route_name='analysis', renderer='templates/analysis.pt')
 def analysis(request):
     try:
-        analyses_query = DBSession.query(Analysis)
-        analyses = analyses_query.all()
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+        id = int(request.matchdict["id"])
+        analysis = DBSession.query(Analysis).get(id)
+    except DBAPIError, e:
+        return Response(conn_err_msg % e, content_type='text/plain', status_int=500)
 
     return {
-        'analyses': analyses,
+        'analysis': analysis,
     }
 
 
@@ -34,4 +48,6 @@ You may need to run the
 
 Afterwards, restart the Pyramid application, i.e. send a
 SIG_INT to the apache mod_wsgi daemon processes, and try again.
+
+The error was: %s
 """

@@ -7,9 +7,8 @@ Map Python Objects to Database Tables
 
 from sqlalchemy import ForeignKey
 from sqlalchemy import Table, Column
-from sqlalchemy import Integer, String, Text
+from sqlalchemy import Boolean, Integer, String, Text, DateTime
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declared_attr, declarative_base
 
 class Entity(object):
@@ -19,8 +18,6 @@ class Entity(object):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
 Entity = declarative_base(cls=Entity)
-
-DBSession = scoped_session(sessionmaker())
 
 # entities
 ##########
@@ -33,16 +30,32 @@ class Analysis(Entity):
 
     It represents an analysis by a researcher, as described in the srs, feature 1.
     """
+
+    def __init__(self):
+        import datetime
+        self.creation_date = datetime.datetime.utcnow()
+
     id = Column(Integer, primary_key=True)
     refseq_ns = Column(String) # RefSeq accession
                                # maps directly to filename
+    owner_name = Column(String, ForeignKey('user.name'))
+    owner = relationship("User", backref=backref("analyses"))
+    creation_date = Column(DateTime)
+    finished = Column(Boolean)
 
     # rnaseq_study = `backref` from RNASeqStudy
     # feature_predictions = `backref` from FeaturePredictions
     # hg_tracks = `backref` from HgTrack
 
-    def __init__(self, refseq_ns=None):
-        self.refseq_ns = refseq_ns
+class User(Entity):
+    """
+    Constitutes a user of this service
+    """
+    name = Column(String, primary_key=True)
+    # analyses = `backref` from Analysis
+
+    def __init__(self, name):
+        self.name = name
 
 # SRA analogons
 

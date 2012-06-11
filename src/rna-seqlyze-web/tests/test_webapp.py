@@ -1,7 +1,8 @@
 import transaction
 from pyramid import testing
 
-from rnaseqlyze.core.orm import DBSession, Analysis
+from rnaseqlyze.web import DBSession
+from rnaseqlyze.core.orm import Analysis
 
 def setup():
     testing.setUp()
@@ -22,5 +23,6 @@ from nose.tools import *
 def test():
     from rnaseqlyze.web.views import analysis
     request = testing.DummyRequest()
+    request.matchdict['id'] = "1"
     info = analysis(request)
-    assert_equal(info['analyses'][0].refseq_ns, 'NC_1234')
+    assert_equal(info['analysis'].refseq_ns, 'NC_1234')

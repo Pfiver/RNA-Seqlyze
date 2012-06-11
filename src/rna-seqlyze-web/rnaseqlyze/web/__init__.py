@@ -1,8 +1,14 @@
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
 from pyramid.config import Configurator
+from zope.sqlalchemy import ZopeTransactionExtension
 
 import rnaseqlyze
-from rnaseqlyze.core.orm import DBSession
+
+# why ZopeTransactionExtension ?
+# -> http://stackoverflow.com/a/6044925
+# -> pyramid_tm (transaction manager) is configured
+DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
 def main(global_config, **settings):
     """
@@ -15,7 +21,7 @@ def main(global_config, **settings):
 
     config.add_route('home', '/')
     config.add_route('new', '/new')
-    config.add_route('analysis', '/analysis')
+    config.add_route('analysis', '/analysis/{id}')
     for path in 'img', 'css', 'js':
         config.add_static_view(path, path)
     config.scan()
