@@ -63,18 +63,23 @@
 
     <div id="footer">
       <footer class="well">
-        <a class="left" href="http://www.fhnw.ch/lifesciences" title="fhnw.ch/lifesciences"><img
-          src="${path('img/FHNW-logo-30.jpg')}" height="30"
-          alt="fhnw.ch/lifesciences"/>
-        </a>
-        <p class="left">
-          Bachelor Thesis of <a href="http://www.patrickpfeifer.net/"><strong>Patrick Pfeifer</strong></a><br />
-          at the <a href="http://www.fhnw.ch/lifesciences">University of Applied Sciences and Arts Northwestern Switzerland | School of Life Sciences</a>.
-        </p>
-        <a class="right" href="http://www.python.org/"><img
-          src="${path('img/python-powered.png')}" height="30"
-          alt="Python Powered"/>
-        </a>
+        <div class="left">
+          <a href="http://www.fhnw.ch/lifesciences" title="fhnw.ch/lifesciences"><img
+            src="${path('img/FHNW-logo-30.jpg')}" height="30"
+            alt="fhnw.ch/lifesciences"/>
+          </a>
+          <p>
+            Bachelor Thesis of <a href="http://www.patrickpfeifer.net/"><strong>Patrick Pfeifer</strong></a><br />
+            at the <a href="http://www.fhnw.ch/lifesciences"
+                    >University of Applied Sciences and Arts Northwestern Switzerland | School of Life Sciences</a>.
+          </p>
+        </div>
+        <div class="right">
+          <a href="http://www.python.org/"><img
+            src="${path('img/python-powered.png')}" height="30"
+            alt="Python Powered"/>
+          </a>
+        </div>
       </footer>
     </div>
 
