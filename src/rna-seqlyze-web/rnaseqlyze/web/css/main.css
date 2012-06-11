@@ -1,7 +1,7 @@
-body {
-    padding-top: 20px;
-}
-
+/*
+ * fixed sidebar
+ * based on http://stackoverflow.com/a/9351158
+ */
 
 .sidebar-fixed {
     padding: 9px 0;
@@ -14,6 +14,9 @@ body {
     margin-left: 290px;
 }
 
+/*
+ * more sidebar styles
+ */
 
 .main-logo {
     padding: 9px;
@@ -38,7 +41,17 @@ body {
 
 
 /*
- * footer, as seen at
+ * Main content styles
+ */
+.date {
+    font-size: 85%;
+}
+.date, .username {
+    font-style: italic;
+}
+
+/*
+ * sticky footer, as seen at
  * http://www.cssstickyfooter.com/using-sticky-footer-code.html
  */
 
@@ -70,6 +83,10 @@ body:before {
     width:0;
     margin-top:-32767px;/
 }
+
+/*
+ * more footer styles
+ */
 
 footer.well {   /* total height: 40 + 20 + 20 = 80 */
     height: 40px;
