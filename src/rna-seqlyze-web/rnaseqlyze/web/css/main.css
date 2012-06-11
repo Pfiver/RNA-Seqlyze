@@ -106,6 +106,9 @@ footer > .right {
     right: 20px; /* anchored @ #footer
                   * :last-child keeps 20px margin-right */
 }
+footer > * > p {
+    line-height: 1.4em;
+}
 footer > * > * {
     margin: 0 20px 0 0 !important;
     display: inline-block;
