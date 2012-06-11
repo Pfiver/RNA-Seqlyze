@@ -31,7 +31,16 @@ sig-int ()
 	curl localhost/biopython/debug?{sig_int,sig_int}
 }
 
-py-redevelop ()
+re-initdb ()
+{
+	dir="$rnas_topdir/rna-seqlyze"
+	rm -f $dir/rnaseqlyze.db
+	rnaseqlyze-dbinit &&
+		chmod 664 $dir/rnaseqlyze.db &&
+		chgrp www-data $dir/rnaseqlyze.db
+}
+
+re-develop ()
 {
 	for dir in "${rnas_pkgdirs[@]}"
 	do (
