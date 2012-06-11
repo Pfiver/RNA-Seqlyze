@@ -10,7 +10,7 @@ To get started, checkout http://twitter.github.com/bootstrap!
 Quick start
 -----------
 
-Clone the repo, `git clone git@github.com:twitter/bootstrap.git`, or [download the latest release](https://github.com/twitter/bootstrap/zipball/master).
+Clone the repo, `git clone git://github.com/twitter/bootstrap.git`, or [download the latest release](https://github.com/twitter/bootstrap/zipball/master).
 
 
 
@@ -36,7 +36,7 @@ For more information on SemVer, please visit http://semver.org/.
 Bug tracker
 -----------
 
-Have a bug? Please create an issue here on GitHub!
+Have a bug? Please create an issue here on GitHub! Also, when filing please make sure you're familiar with [necolas's guidelines](https://github.com/necolas/issue-guidelines). thanks! <3
 
 https://github.com/twitter/bootstrap/issues
 
