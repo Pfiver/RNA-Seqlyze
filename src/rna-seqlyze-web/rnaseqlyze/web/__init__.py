@@ -19,12 +19,14 @@ def main(global_config, **settings):
 
     config = Configurator(settings=settings)
 
+    config.scan()
+
     config.add_route('home', '/')
     config.add_route('new', '/new')
     config.add_route('analysis', '/analysis/{id}')
-    for path in 'img', 'css', 'js':
+
+    for path in 'less', 'css', 'img', 'js':
         config.add_static_view(path, path)
-    config.scan()
 
     return config.make_wsgi_app()
 

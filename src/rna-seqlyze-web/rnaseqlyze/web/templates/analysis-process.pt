@@ -1,0 +1,58 @@
+<tal:block metal:use-macro="analysis-base">
+  <tal:block metal:fill-slot="input">
+    <div>
+      <h3>Short Reads</h3>
+
+      <div class="control-group">
+        <label for="inputfileInput" class="control-label">SRA or FASTQ File</label>
+        <div class="controls">
+          <strong>${analysis.inputfilename}</strong>
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="strandspecificInput" class="control-label">strand-specific</label>
+        <div class="controls">
+          <strong>${analysis.strandspecific}</strong>
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="pairendedInput" class="control-label">pair-ended reads</label>
+        <div class="controls">
+          <strong>${analysis.pairended}</strong>
+        </div>
+      </div>
+      <div id="pairendlenControls" class="control-group">
+        <label for="pairendlenInput" class="control-label">fragment length</label>
+        <div class="controls">
+          <strong>${analysis.pairendlen}</strong>
+        </div>
+        </div>
+      </div>
+
+      <h3>Organism</h3>
+
+      <tal:block tal:condition="analysis.organism">
+        <div id="organismControls" class="control-group">
+          <label for="organismInput" class="control-label">Accession Number</label>
+          <div class="controls">
+            <strong>${analysis.organism}</strong>
+          </div>
+        </div>
+      </tal:block>
+
+      <tal:block tal:condition="not analysis.organism">
+        <div class="control-group">
+          <label for="genbankfileInput" class="control-label">Genebank File</label>
+          <div class="controls">
+            <strong>${analysis.genebankfile}</strong>
+          </div>
+        </div>
+      </tal:block>
+
+    </div>
+    </tal:block>
+ 
+<!--
+  vim: sw=2:et
+  -->
+</tal:block>

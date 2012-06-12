@@ -1,0 +1,40 @@
+<tal:block metal:use-macro="base">
+
+  <tal:block metal:fill-slot="menu">
+    <ul class="nav nav-tabs nav-stacked">
+      <li class="active"><a href="#input">Input</a></li>
+      <li class="active"><a href="#process">Process</a></li>
+      <li class="active"><a href="#results">Results</a></li>
+    </ul>
+  </tal:block>
+
+  <tal:block metal:fill-slot="content">
+
+    <div class="page-header">
+      <h1>Analysis ${analysis.id}<br>
+        <small>created
+            on <span class="date">${analysis.creation_date.strftime("%Y-%m-%d %H:%M")}</span>
+            by <span class="username">${analysis.owner.name}</span>
+        </small>
+      </h1>
+    </div>
+
+    <h2 id="input">Input</h2>
+    <tal:block metal:define-slot="analysis-input"/>
+
+    <h2 id="process">Process</h2>
+    <tal:block metal:define-slot="analysis-process"/>
+
+    <h2 id="results">Results</h2>
+    <tal:block metal:define-slot="analysis-results"/>
+
+  </tal:block>
+
+  <tal:block metal:fill-slot="footer">
+    <script src="${path('js/analysis.js')}"></script>
+  </tal:block>
+  
+<!--
+  vim: sw=2:et
+  -->
+</tal:block>

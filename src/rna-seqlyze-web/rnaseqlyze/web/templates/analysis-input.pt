@@ -1,0 +1,89 @@
+<tal:block metal:use-macro="analysis-base">
+  <tal:block metal:fill-slot="input">
+    <div>
+      <form class="form-horizontal" action=""
+            method="POST" accept-charset="utf-8" enctype="multipart/form-data">
+    
+        <fieldset>
+
+          <h3>Short Reads</h3>
+
+          <!-- TODO: security checks
+                     see "shootout" pyramid demo app
+          <input name="_csrf" type="hidden" value="DOLLAR{request.session.get_csrf_token()}">
+          -->
+
+          <div class="control-group">
+            <label for="inputfileInput" class="control-label">SRA or FASTQ File</label>
+            <div class="controls">
+              <input type="file" name="inputfile" id="inputfileInput" class="input-file">
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="strandspecificInput" class="control-label">strand-specific</label>
+            <div class="controls">
+              <label class="checkbox">
+                <input type="checkbox" name="strandspecific" id="strandspecificInput">
+              </label>
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="pairendedInput" class="control-label">pair-ended reads</label>
+            <div class="controls">
+              <label class="checkbox">
+                <input type="checkbox" name="pairended" id="pairendedInput">
+              </label>
+            </div>
+          </div>
+          <div id="pairendlenControls" class="control-group">
+            <label for="pairendlenInput" class="control-label">fragment length</label>
+            <div class="controls">
+              <input type="text" name="pairendlen" id="pairendlenInput"/>
+              <p class="help-block">maximum length of double stranded fragments the reads are taken from</p>
+            </div>
+          </div>
+
+          <h3>Organism</h3>
+
+          <div id="organismControls" class="control-group">
+            <label for="organismInput" class="control-label">Accession Number</label>
+            <div class="controls">
+              <input type="text" name="organism" id="organismInput" class="input-xlarge" value="NC_"/>
+              <span id="organismStatus" class="help-inline"></span>
+              <p class="help-block"><em>recommended!</em></p>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="controls">
+              <p>or</p>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label for="genbankfileInput" class="control-label">Genebank File</label>
+            <div class="controls">
+              <input type="file" name="genbankfile" id="genbankfileInput" class="input-file">
+              <p class="help-block">Nucleotide Sequence in Genebank format</p>
+            </div>
+          </div>
+
+          <br style="margin: 10px;"/>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Submit</button>
+          </div>
+
+        </div>
+      </form>
+    </fieldset>
+  </tal:block>
+
+  <tal:block metal:fill-slot="footer">
+    <script src="${path('js/analysis.js')}"></script>
+  </tal:block>
+
+<!--
+  vim: sw=2:et
+  -->
+</tal:block>

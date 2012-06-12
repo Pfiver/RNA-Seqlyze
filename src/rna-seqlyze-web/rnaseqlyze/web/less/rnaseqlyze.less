@@ -1,3 +1,5 @@
+@import "variables.less";
+
 /*
  * fixed sidebar
  * based on http://stackoverflow.com/a/9351158
@@ -5,10 +7,10 @@
 
 .sidebar-fixed {
     padding: 9px 0;
-    position:fixed;
-    top:20px;
-    left:20px;
-    width:250px;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 250px;
 }
 .content-fixed {
     margin-left: 290px;
@@ -43,12 +45,34 @@
 /*
  * Main content styles
  */
+
 .date {
     font-size: 85%;
 }
 .date, .username {
     font-style: italic;
 }
+
+/*
+ * .form-horizontal
+
+.form-horizontal .control-label {
+  width: 240px;
+}
+.form-horizontal .controls {
+  margin-left: 260px;
+}
+.form-horizontal .controls:first-child {
+  *padding-left: 260px;
+}
+.form-horizontal .form-actions {
+  padding-left: 260px;
+}
+ */
+#organismControls .help-block {
+    color: @textColor;
+}
+
 
 /*
  * sticky footer, as seen at
@@ -64,6 +88,7 @@ html, body {
 }
 #main {
     overflow: auto;
+    padding-top: 20px;
     padding-bottom: 120px; /* must be same height as the footer */
 }
 #footer { /* total height: 80 + 20 + 20 = 120 */
@@ -81,7 +106,7 @@ body:before {
     height:100%;
     float:left;
     width:0;
-    margin-top:-32767px;/
+    margin-top:-32767px;
 }
 
 /*
@@ -114,3 +139,7 @@ footer > * > * {
     display: inline-block;
     vertical-align: middle;
 }
+
+/*
+ * vim: ft=css
+ */
