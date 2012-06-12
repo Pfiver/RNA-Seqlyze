@@ -11,8 +11,8 @@
 
     <link rel="shortcut icon" href="${path('img/RNA-Seqlyze-icon.ico')}">
 
-    <link rel="stylesheet" href="${path('css/main.css')}">
     <link rel="stylesheet" href="${path('css/bootstrap.css')}">
+    <link rel="stylesheet" href="${path('css/main.css')}">
 
     <!-- HTML5 shim - for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -97,6 +97,10 @@
     <script src="${path('js/bootstrap-collapse.js')}"></script>
     <script src="${path('js/bootstrap-carousel.js')}"></script>
     <script src="${path('js/bootstrap-typeahead.js')}"></script>
+
+    <tal:block metal:define-slot="footer">
+    </tal:block>
+
   </body>
 <!--
   vim: sw=2:et
