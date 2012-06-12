@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
-webapps_path = '/home/pfeifer/webapps/'
+webapps_env = '/home/pfeifer/webapps-virtualenv'
 
 import site
+site.addsitedir(webapps_env + "/lib/python2.6/site-packages")
 site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
 
 from pyramid.paster import get_app
@@ -18,7 +19,7 @@ def application(env, start_request):
     env['SCRIPT_NAME'] = env['REQUEST_URI'][:script_name_len]
     appname = env['SCRIPT_NAME'][base_path_len:]
 
-    basedir = webapps_path + appname
+    basedir = webapps_env + '/apps/' + appname
     dev_ini = basedir + '/development.ini'
 
     import os
@@ -37,4 +38,5 @@ def application(env, start_request):
                 % env['REQUEST_URI'] ]
 
     logging_config.fileConfig(dev_ini, {'here': basedir})
+
     return get_app(dev_ini, 'main')(env, start_request)
