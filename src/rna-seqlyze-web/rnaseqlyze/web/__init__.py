@@ -5,10 +5,14 @@ from zope.sqlalchemy import ZopeTransactionExtension
 
 import rnaseqlyze
 
+
+datapath = rnaseqlyze.config.get("cache", "path")
+
 # why ZopeTransactionExtension ?
 # -> http://stackoverflow.com/a/6044925
 # -> pyramid_tm (transaction manager) is configured
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
+
 
 def main(global_config, **settings):
     """

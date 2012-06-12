@@ -1,0 +1,19 @@
+<tal:block metal:use-macro="view.base">
+
+  <tal:block metal:fill-slot="analysis_input">
+
+      <h3>Short Reads</h3>
+
+      <h3>Organism</h3>
+
+  </tal:block>
+
+  <tal:block metal:fill-slot="analysis_process">
+    processing...
+  </tal:block>
+  
+  <tal:block metal:fill-slot="analysis_results">
+    results
+  </tal:block>
+  
+</tal:block>

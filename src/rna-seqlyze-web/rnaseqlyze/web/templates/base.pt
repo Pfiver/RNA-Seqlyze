@@ -97,11 +97,7 @@
 
     <script src="${path('js/less-1.3.0.min.js')}"></script>
 
-    <tal:block metal:define-slot="footer">
-    </tal:block>
+    <tal:block metal:define-slot="footer"/>
 
   </body>
-<!--
-  vim: sw=2:et
-  -->
 </html>

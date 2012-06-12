@@ -24,8 +24,5 @@
       </div>
     </div>
   </tal:block>
-
-<!--
-  vim: sw=2:et
-  -->
+  
 </tal:block>

@@ -41,7 +41,11 @@ class Analysis(Entity):
     owner_name = Column(String, ForeignKey('user.name'))
     owner = relationship("User", backref=backref("analyses"))
     creation_date = Column(DateTime)
+    started = Column(Boolean)
     finished = Column(Boolean)
+    strandspecific = Column(Boolean)
+    pairended = Column(Boolean)
+    pairendlen = Column(Integer)
 
     # rnaseq_study = `backref` from RNASeqStudy
     # feature_predictions = `backref` from FeaturePredictions

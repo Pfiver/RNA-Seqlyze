@@ -20,13 +20,13 @@
     </div>
 
     <h2 id="input">Input</h2>
-    <tal:block metal:define-slot="analysis-input"/>
+    <tal:block metal:define-slot="analysis_input"/>
 
     <h2 id="process">Process</h2>
-    <tal:block metal:define-slot="analysis-process"/>
+    <tal:block metal:define-slot="analysis_process"/>
 
     <h2 id="results">Results</h2>
-    <tal:block metal:define-slot="analysis-results"/>
+    <tal:block metal:define-slot="analysis_results"/>
 
   </tal:block>
 
