@@ -38,6 +38,7 @@
     this.$body = $('body')
     this.refresh()
     this.process()
+    console.log("yup");
   }
 
   ScrollSpy.prototype = {
@@ -77,11 +78,16 @@
           , activeTarget = this.activeTarget
           , i
 
+        console.log("scrollTop:" + scrollTop
+			+ " | scrollHeight:" + scrollHeight
+			+ " | maxScroll:" + maxScroll
+	);
         if (scrollTop >= maxScroll) {
           return activeTarget != (i = targets.last()[0])
             && this.activate ( i )
         }
 
+        console.log("process2");
         for (i = offsets.length; i--;) {
           activeTarget != targets[i]
             && scrollTop >= offsets[i]
@@ -122,6 +128,7 @@
   * =========================== */
 
   $.fn.scrollspy = function ( option ) {
+    console.log("bla");
     return this.each(function () {
       var $this = $(this)
         , data = $this.data('scrollspy')
