@@ -56,6 +56,10 @@
 
   <tal:block metal:fill-slot="analysis_process">
     processing...
+    <br style="margin: 500px 0;"/>
   </tal:block>
   
+  <tal:block metal:fill-slot="analysis_results">
+    <br style="margin: 500px 0;"/>
+  </tal:block>
 </tal:block>

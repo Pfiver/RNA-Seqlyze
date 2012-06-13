@@ -6,14 +6,18 @@
 
       <h3>Organism</h3>
 
+    <br style="margin: 500px 0;"/>
+
   </tal:block>
 
   <tal:block metal:fill-slot="analysis_process">
     processing...
+    <br style="margin: 500px 0;"/>
   </tal:block>
-  
+
   <tal:block metal:fill-slot="analysis_results">
     results
+    <br style="margin: 500px 0;"/>
   </tal:block>
   
 </tal:block>

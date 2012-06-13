@@ -1,10 +1,10 @@
 <tal:block metal:use-macro="base">
 
   <tal:block metal:fill-slot="menu">
-    <ul class="nav nav-tabs nav-stacked">
-      <li class="active"><a href="#input">Input</a></li>
-      <li class="active"><a href="#process">Process</a></li>
-      <li class="active"><a href="#results">Results</a></li>
+    <ul id="page-nav" class="nav nav-tabs nav-stacked">
+      <li><a href="#input">Input</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#results">Results</a></li>
     </ul>
   </tal:block>
 
