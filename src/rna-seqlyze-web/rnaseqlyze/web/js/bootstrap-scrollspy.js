@@ -77,17 +77,15 @@
           , activeTarget = this.activeTarget
           , i
 
-        if (scrollTop >= maxScroll) {
-          return activeTarget != (i = targets.last()[0])
-            && this.activate ( i )
-        }
+        for (i = offsets.length; i--;)
+          if (activeTarget != targets[i]
+              && scrollTop >= offsets[i]
+              && (!offsets[i + 1] || scrollTop <= offsets[i + 1]))
+            return this.activate( targets[i] )
 
-        for (i = offsets.length; i--;) {
-          activeTarget != targets[i]
-            && scrollTop >= offsets[i]
-            && (!offsets[i + 1] || scrollTop <= offsets[i + 1])
-            && this.activate( targets[i] )
-        }
+        if (scrollTop >= maxScroll
+            && activeTarget != (i = targets.last()[0]))
+            return this.activate ( i )
       }
 
     , activate: function (target) {
