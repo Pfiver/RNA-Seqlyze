@@ -5,6 +5,9 @@ from .orm import Analysis, User
 
 datapath = rnaseqlyze.config.get("cache", "path")
 
+class ServiceError(Exception):
+    pass
+
 def create_analysis(session, inputfile, attributes):
 
     # owner handling
@@ -48,17 +51,19 @@ def save_inputfile(analysis, file):
 
 def start_analysis(analysis):
 
-    import json
-    import urllib2
+    try:
+        url = "http://127.0.0.1:6543/analyses/%d" % analysis.id
 
-    url = "http://127.0.0.1:6543/analyses/%d" % analysis.id
+        con = urllib2.urlopen(STARTRequest(url))
+        con.read()
+        con.close()
 
-    class STARTRequest(urllib2.Request):
-        def get_method(self):
-            return 'START'
+        assert response['status'] == 200
 
-    con = urllib2.urlopen(STARTRequest(url))
-    con.read()
-    con.close()
+    except Exception, e:
+        raise ServiceError("failed to notify worker: %s" % e.args)
 
-    assert response['status'] == 200
+import urllib2
+class STARTRequest(urllib2.Request):
+    def get_method(self):
+        return 'START'

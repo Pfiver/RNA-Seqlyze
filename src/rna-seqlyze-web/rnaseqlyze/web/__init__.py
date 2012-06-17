@@ -26,6 +26,9 @@ def main(global_config, **settings):
     config.add_route('analyses', '/analyses')
     config.add_route('analysis', '/analyses/{id}')
 
+    config.add_view(route_name='home', renderer='templates/home.pt')
+    config.add_view(route_name='analyses', renderer='templates/create.pt')
+
     for path in 'less', 'css', 'img', 'js':
         config.add_static_view(path, path)
 
