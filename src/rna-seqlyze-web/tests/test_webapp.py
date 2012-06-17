@@ -21,8 +21,8 @@ def teardown():
 
 from nose.tools import *
 def most_basic_test():
-    from rnaseqlyze.web.views import analysis
+    from rnaseqlyze.web.views import display
     request = testing.DummyRequest()
     request.matchdict['id'] = "1"
-    info = analysis(request)
+    info = display(request)
     assert_equal(info['analysis'].id, 1)
