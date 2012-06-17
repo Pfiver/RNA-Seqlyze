@@ -6,7 +6,11 @@ from .orm import Analysis, User
 datapath = rnaseqlyze.config.get("cache", "path")
 
 class ServiceError(Exception):
-    pass
+    def __init__(self, msg, e):
+        t = type(e)
+        msg = "%s (%s.%s)" % (
+            msg, t.__module__, t.__name__)
+        super(ServiceError, self).__init__(msg)
 
 def create_analysis(session, inputfile, attributes):
 
@@ -61,7 +65,7 @@ def start_analysis(analysis):
         assert response['status'] == 200
 
     except Exception, e:
-        raise ServiceError("failed to notify worker: %s" % e.args)
+        raise ServiceError("failed to notify worker", e)
 
 import urllib2
 class STARTRequest(urllib2.Request):
