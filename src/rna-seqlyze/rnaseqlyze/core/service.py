@@ -4,18 +4,25 @@ import urllib2
 import rnaseqlyze
 from .orm import Analysis, User
 
-datapath = rnaseqlyze.config.get("cache", "path")
 
-class ServiceError(Exception):
-    def __init__(self, msg, e):
-        t = type(e)
-        ServiceError.__init__(self,
-            "%s (%s.%s(%s))" % (msg, t.__module__, t.__name__, e.args[0]))
+datapath = rnaseqlyze.config.get("cache", "path")
+analyses_path = os.path.join(datapath, "analyses")
+
+
+# TODO: make these functions methods of a mixin class
+
+def get_topdir(analysis):
+    topdir = os.path.join(analyses_path, str(analysis.id))
+    if not os.path.isdir(topdir):
+        os.makedirs(topdir)
+    return topdir
+
+def get_inputfile_path(analysis):
+    return os.path.join(get_topdir(analysis), "inputfile")
 
 def create_analysis(session, inputfile, attributes):
 
     # owner handling
-    ################
     if 'owner' not in attributes:
         owner = session.query(User).get("anonymous")
         if not owner:
@@ -24,31 +31,25 @@ def create_analysis(session, inputfile, attributes):
         attributes['owner'] = owner
 
     # create db object
-    ##################
     analysis = Analysis(**attributes)
     session.add(analysis)
     session.flush() # set analysis.id
 
     # transfer inputfile
-    ####################
     save_inputfile(analysis, inputfile)
 
     return analysis
 
+def save_inputfile(analysis, remote_file):
+    topdir = get_topdir(analysis)
+    local_path = get_inputfile_path(analysis)
 
-def save_inputfile(analysis, file):
-
-    topdir = datapath + os.sep + 'analyses'
-    if not os.path.isdir(topdir):
-        os.mkdir(topdir)
-    topdir += os.sep + str(analysis.id)
-    if not os.path.isdir(topdir):
-        os.mkdir(topdir)
-    local_file = open(topdir + os.sep + "inputfile", 'wb')
-    file.seek(0)
+    local_file = open(local_path, 'wb')
+    remote_file.seek(0)
     while 1:
-        data = file.read(4096)
-        if not data: break
+        data = remote_file.read(4096)
+        if not data:
+            break
         local_file.write(data)
     local_file.close()
 
@@ -63,3 +64,9 @@ def start_analysis(analysis):
 class STARTRequest(urllib2.Request):
     def get_method(self):
         return 'START'
+
+class ServiceError(Exception):
+    def __init__(self, msg, e):
+        t = type(e)
+        Exception.__init__(self,
+            "%s (%s.%s)" % (msg, t.__module__, t.__name__))

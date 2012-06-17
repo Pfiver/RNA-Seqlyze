@@ -24,7 +24,7 @@ def post(request):
     post = request.POST
 
     # inputfile handling
-    post['inputfilename'] = post['inputfile'].filename
+    post['inputfile_name'] = post['inputfile'].filename
     inputfile = post['inputfile'].file
     del post['inputfile']
 

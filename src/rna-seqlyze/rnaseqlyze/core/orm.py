@@ -53,7 +53,8 @@ class Analysis(Entity):
                                    # maps directly to filename
     owner_name = Column(String, ForeignKey('user.name'))
     owner = relationship("User", backref=backref("analyses"))
-    inputfilename = Column(String)
+    inputfile_name = Column(String)
+    inputfile_type = Column(String)
     creation_date = Column(DateTime)
     started = Column(Boolean)
     finished = Column(Boolean)

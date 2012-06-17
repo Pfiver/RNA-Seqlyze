@@ -16,7 +16,6 @@ DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 DBSession.unmanaged = scoped_session(sessionmaker())
 
 
-
 def main(global_config, **settings):
     """
     Return a Pyramid(!) WSGI application.
