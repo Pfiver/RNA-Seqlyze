@@ -3,9 +3,11 @@ log = logging.getLogger(__name__)
 
 from pyramid.config import Configurator
 from pyramid.response import Response
+from pyramid.httpexceptions import HTTPBadRequest
 
 import rnaseqlyze
 from .core import Manager
+from .core import AnalysisAlreadyStartedException
 
 
 def wsgi_app(global_config, **settings):
@@ -16,7 +18,7 @@ def wsgi_app(global_config, **settings):
     Waitress.manager = Manager()
 
     config = Configurator(settings=settings, root_factory=Waitress)
-    config.add_view(Waitress.json_view, renderer='json')
+    config.add_view(Waitress.text_view, renderer='string')
     return config.make_wsgi_app()
 
 
@@ -54,19 +56,40 @@ class Waitress(object):
         raise KeyError()
 
     @classmethod
-    def json_view(cls, context, request):
-        if request.method == 'START':
-            if context.analysis:
-                n = cls.manager.start_analysis(context.analysis)
-            elif context.analyses:
-                n = cls.manager.start_all_analyses()
-            else:
-                raise Exception("start what?")
-            return Response("started %d analyses" % n)
+    def text_view(cls, context, request):
 
-        return {
-            'context': str(context), # Waitress
-            'manager': str(cls.manager), # Manager
-            'analysis': str(context.analysis), # Analysis
-#            'started': context.analysis.started,
-        }
+        if request.method == 'START':
+
+            if not context.analysis:
+                raise HTTPBadRequest("START must be called on /analyses/#")
+
+            try:
+                cls.manager.start_analysis(context.analysis)
+            except AnalysisAlreadyStartedException, e:
+                raise HTTPBadRequest(e)
+
+            return "started analysis #%d" % context.analysis.id
+
+        import pprint
+        return pprint.pformat({
+            'context': context, # Waitress
+            'manager': cls.manager, # Manager
+            'analysis': context.analysis, # Analysis
+        })
+
+
+# monkey-patch some HTTPException classes to get simpler error messages
+
+from pyramid.response import Response
+def _WHE_init(self, arg=None):
+    Exception.__init__(self, arg)
+    if isinstance(arg, Exception):
+        e, t = arg, type(arg)
+        arg = "%s.%s(%s)" % (t.__module__, t.__name__, e.args[0])
+    Response.__init__(self, arg + '\n',
+        content_type='text/plain', status='%s %s' % (self.code, self.title))
+
+from pyramid.httpexceptions import WSGIHTTPException
+WSGIHTTPException.__init__ = _WHE_init
+del WSGIHTTPException.__call__
+del WSGIHTTPException.prepare

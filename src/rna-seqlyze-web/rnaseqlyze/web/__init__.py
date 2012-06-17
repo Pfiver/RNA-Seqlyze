@@ -10,6 +10,12 @@ import rnaseqlyze
 # -> pyramid_tm (transaction manager) is configured
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
+# an unmanaged session
+# used by the post() function,
+# that needs to commit the session eraly on
+DBSession.unmanaged = scoped_session(sessionmaker())
+
+
 
 def main(global_config, **settings):
     """
@@ -17,6 +23,7 @@ def main(global_config, **settings):
     """
     engine = create_engine(rnaseqlyze.db_url)
     DBSession.configure(bind=engine)
+    DBSession.unmanaged.configure(bind=engine)
 
     config = Configurator(settings=settings)
 

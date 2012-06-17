@@ -5,6 +5,7 @@ from pyramid.httpexceptions import (
         HTTPFound, HTTPError, HTTPServiceUnavailable, HTTPInternalServerError
 )
 
+import transaction
 from sqlalchemy.exc import DBAPIError
 
 from . import DBSession
@@ -23,13 +24,11 @@ def post(request):
     post = request.POST
 
     # inputfile handling
-    ####################
     post['inputfilename'] = post['inputfile'].filename
     inputfile = post['inputfile'].file
     del post['inputfile']
 
     # organism handling
-    ###################
     if 'org_accession' not in post:
         if 'genebankfile' in post:
             raise Exception('Genebank file upload not yet implemented')
@@ -39,23 +38,23 @@ def post(request):
         if 'genebankfile' in post:
             del post['genebankfile']
 
-    analysis = service.create_analysis(DBSession, inputfile, attributes=post)
-
-    log.debug("starting analysis #%d by '%s'..." % (analysis.id, analysis.owner.name))
+    analysis = service.create_analysis(DBSession.unmanaged,
+                                       inputfile, attributes=post)
+    DBSession.unmanaged.commit()
+    # the analysis must exist in the database
+    # for the worker to be able to start working on it
 
     service.start_analysis(analysis)
+    log.debug("started analysis #%d by '%s'" % (
+                        analysis.id, analysis.owner.name))
 
-    return HTTPFound(request.route_path('analysis', id=str(analysis.id)))
+    return HTTPFound(request.route_path('analysis', id=analysis.id))
 
 
 @view_config(route_name='analysis', renderer='templates/analysis.pt')
 def display(request):
-
     id = int(request.matchdict["id"])
-    analysis = DBSession.query(Analysis).get(id)
-
-    return {'analysis': analysis}
-
+    return {'analysis': DBSession.query(Analysis).get(id)}
 
 @view_config(context=service.ServiceError)
 def sevice_error(request):

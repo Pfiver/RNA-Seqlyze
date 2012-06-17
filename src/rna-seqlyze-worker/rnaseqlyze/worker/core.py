@@ -23,14 +23,11 @@ class Manager(object):
         return self.db_session.query(Analysis).get(id)
 
     def start_analysis(self, analysis):
-        if not analysis.started:
-            analysis.started = True
-            self.db_session.flush()
-            return 1
-        return 0
-
-    def start_all_analyses(self):
-        # refresh session
+        if analysis.started:
+            raise AnalysisAlreadyStartedException(analysis.id)
+        analysis.started = True
         self.db_session.commit()
-        return sum(self.start_analysis(a) for a in
-                   self.db_session.query(Analysis).all())
+
+
+class AnalysisAlreadyStartedException(Exception):
+    pass
