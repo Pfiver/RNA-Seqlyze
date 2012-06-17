@@ -31,15 +31,29 @@ class Analysis(Entity):
     It represents an analysis by a researcher, as described in the srs, feature 1.
     """
 
-    def __init__(self):
-        import datetime
-        self.creation_date = datetime.datetime.utcnow()
+    def __init__(self, **kwargs):
+
+        if 'id' in kwargs:
+            raise Exception("bad keyword argument: id; id is auto-generated")
+
+        want = set(kwargs.keys())
+        have = set(self.__class__.__dict__)
+        if not want.issubset(have):
+            raise Exception("bad keyword arguments: %s" % list(want - have))
+
+        for attr in kwargs:
+            setattr(self, attr, kwargs[attr])
+
+        if not self.creation_date:
+            import datetime
+            self.creation_date = datetime.datetime.utcnow()
 
     id = Column(Integer, primary_key=True)
-    refseq_ns = Column(String) # RefSeq accession
-                               # maps directly to filename
+    org_accession = Column(String) # Genebank accession
+                                   # maps directly to filename
     owner_name = Column(String, ForeignKey('user.name'))
     owner = relationship("User", backref=backref("analyses"))
+    inputfilename = Column(String)
     creation_date = Column(DateTime)
     started = Column(Boolean)
     finished = Column(Boolean)

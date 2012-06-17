@@ -5,9 +5,6 @@ from zope.sqlalchemy import ZopeTransactionExtension
 
 import rnaseqlyze
 
-
-datapath = rnaseqlyze.config.get("cache", "path")
-
 # why ZopeTransactionExtension ?
 # -> http://stackoverflow.com/a/6044925
 # -> pyramid_tm (transaction manager) is configured
@@ -26,8 +23,8 @@ def main(global_config, **settings):
     config.scan()
 
     config.add_route('home', '/')
-    config.add_route('new', '/new')
-    config.add_route('analysis', '/analysis/{id}')
+    config.add_route('analyses', '/analyses')
+    config.add_route('analysis', '/analyses/{id}')
 
     for path in 'less', 'css', 'img', 'js':
         config.add_static_view(path, path)

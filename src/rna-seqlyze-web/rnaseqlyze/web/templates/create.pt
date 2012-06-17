@@ -1,18 +1,31 @@
-<tal:block metal:use-macro="view.base">
+<tal:block metal:use-macro="base">
 
-  <tal:block metal:fill-slot="analysis_input">
+  <tal:block metal:fill-slot="menu-items">
+      <li><a href="#shortreads">Short Reads</a></li>
+      <li><a href="#organism">Organism</a></li>
+  </tal:block> 
 
-    <form class="form-horizontal" action=""
+  <tal:block metal:fill-slot="content">
+
+    <div class="page-header">
+      <h1>New Analysis<br>
+        <small>please fill in the following form</small>
+      </h1>
+    </div>
+
+    <form class="form-horizontal" action="${path('analyses')}"
           method="POST" accept-charset="utf-8" enctype="multipart/form-data">
   
       <fieldset>
 
-        <h3>Short Reads</h3>
+        <h2 id="shortreads">Short Reads</h2>
 
-        <!-- TODO: security checks
-                   see "shootout" pyramid demo app
+<!--!
+  TODO: security checks
+        see "shootout" pyramid demo app
+
         <input name="_csrf" type="hidden" value="DOLLAR{request.session.get_csrf_token()}">
-        -->
+  -->
 
         <div class="control-group">
           <label for="inputfileInput" class="control-label">SRA or FASTQ File</label>
@@ -44,12 +57,12 @@
           </div>
         </div>
 
-        <h3>Organism</h3>
+        <h3 id="organism">Organism</h3>
 
         <div id="organismControls" class="control-group">
           <label for="organismInput" class="control-label">Accession Number</label>
           <div class="controls">
-            <input type="text" name="organism" id="organismInput" class="input-xlarge" value="NC_"/>
+            <input type="text" name="org_accession" id="organismInput" class="input-xlarge" value="NC_"/>
             <span id="organismStatus" class="help-inline"></span>
             <p class="help-block"><em>recommended!</em></p>
           </div>
@@ -64,7 +77,7 @@
         <div class="control-group">
           <label for="genbankfileInput" class="control-label">Genebank File</label>
           <div class="controls">
-            <input type="file" name="genbankfile" id="genbankfileInput" class="input-file">
+            <input type="file" name="genebankfile" id="genbankfileInput" class="input-file">
             <p class="help-block">Nucleotide Sequence in Genebank format</p>
           </div>
         </div>
@@ -78,6 +91,10 @@
       </fieldset>
     </form>
 
+  </tal:block>
+
+  <tal:block metal:fill-slot="footer">
+    <script src="${path('js/rnaseqlyze-create.js')}"></script>
   </tal:block>
 
 </tal:block>

@@ -44,10 +44,12 @@
           </a>
 
           <div id="action-buttons">
-            <a href="${path('new')}" class="btn btn-large btn-primary">New Analysis</a>
+            <a href="${path('analyses')}" class="btn btn-large btn-primary">New Analysis</a>
           </div>
 
-          <tal:block metal:define-slot="menu"/>
+          <ul id="page-nav" class="nav nav-tabs nav-stacked">
+            <tal:block metal:define-slot="menu-items"/>
+          </ul>
 
         </div>
 
@@ -99,6 +101,8 @@
   -->
 
     <script src="${path('js/less-1.3.0.min.js')}"></script>
+
+    <script src="${path('js/rnaseqlyze.js')}"></script>
 
     <tal:block metal:define-slot="footer"/>
 

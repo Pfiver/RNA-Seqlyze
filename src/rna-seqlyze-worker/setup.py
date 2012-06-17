@@ -27,7 +27,7 @@ setup(
     ],
     entry_points={
         'paste.app_factory': [
-            'main = rnaseqlyze.web:main',
+            'main = rnaseqlyze.worker:wsgi_app',
         ],
         'console_scripts': [
             'initialize_rna-seqlyze-worker_db = rnaseqlyze.worker.scripts.initializedb:main'

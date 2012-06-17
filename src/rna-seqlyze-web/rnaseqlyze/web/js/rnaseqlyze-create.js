@@ -1,5 +1,7 @@
 /*
  * RNA-seqlyze javascript routines
+ *
+ *     for the "create" page
  */
 
 $(document).ready(function() {
@@ -35,11 +37,6 @@ $(document).ready(function() {
     /*
      * page initialization
      */
-
-    $(window).scrollspy({
-            offset: 200,
-            wrap: $('#wrap')[0],
-    });
 
     maybe_show_pairendlen_controls();
     $('#pairendedInput').change(maybe_show_pairendlen_controls);
