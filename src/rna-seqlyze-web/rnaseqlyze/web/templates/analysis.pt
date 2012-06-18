@@ -62,10 +62,17 @@
     <tal:block metal:define-slot="analysis_input"/>
 
     <h2 id="processing">Processing</h2>
+
     <ul>
       <li tal:switch="analysis.inputfile_type != None">Type of input:
-	<strong tal:case="True" tal:content="analysis.inputfile_type"/>
-	<span tal:case="False">not detected</span>
+	<tal:block tal:case="True">
+	  <strong tal:content="analysis.inputfile_type"></strong>
+	  <pre tal:condition="analysis.inputfile_header != None"
+	      tal:content="analysis.inputfile_header">
+	  </pre>
+	</tal:block>
+	<tal:block tal:case="False">not detected
+	</tal:block>
       </li>
     </ul>
 

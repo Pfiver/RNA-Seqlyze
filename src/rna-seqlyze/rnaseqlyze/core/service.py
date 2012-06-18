@@ -1,19 +1,30 @@
+import logging
+log = logging.getLogger(__name__)
+
 import os
 import urllib2
 
 import rnaseqlyze
+from . import security
 from .orm import Analysis, User
 
 # TODO: make these functions methods of a mixin class
 
-def get_topdir(analysis):
-    topdir = os.path.join(rnaseqlyze.analyses_path, str(analysis.id))
-    if not os.path.isdir(topdir):
-        os.makedirs(topdir)
-    return topdir
+def get_data_dir(analysis):
+    data_dir = os.path.join(rnaseqlyze.analyses_path, str(analysis.id))
+    if not os.path.isdir(data_dir):
+        os.makedirs(data_dir)
+    return data_dir
+
+def get_shared_data_dir(analysis):
+    acc = analysis.org_accession
+    dir = os.path.join(rnaseqlyze.shared_data_path, acc)
+    if not os.path.isdir(dir):
+        os.makedirs(dir)
+    return dir
 
 def get_inputfile_path(analysis):
-    return os.path.join(get_topdir(analysis), "inputfile")
+    return os.path.join(get_data_dir(analysis), "inputfile")
 
 def create_analysis(session, inputfile, attributes):
 
@@ -36,9 +47,7 @@ def create_analysis(session, inputfile, attributes):
     return analysis
 
 def save_inputfile(analysis, remote_file):
-    topdir = get_topdir(analysis)
     local_path = get_inputfile_path(analysis)
-
     local_file = open(local_path, 'wb')
     remote_file.seek(0)
     while 1:

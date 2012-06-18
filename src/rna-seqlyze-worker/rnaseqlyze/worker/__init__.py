@@ -61,12 +61,12 @@ class Waitress(object):
     @classmethod
     def text_view(cls, context, request):
 
-        if request.method == 'START':
+        if request.method in ('START', 'RESTART'):
 
             if not context.analysis:
                 raise HTTPBadRequest("START must be called on /analyses/#")
 
-            cls.manager.start_analysis(context.analysis)
+            cls.manager.start_analysis(context.analysis, request.method == 'RESTART')
 
             return "started analysis #%d" % context.analysis.id
 
@@ -99,6 +99,10 @@ def _WHE_init(self, arg=None):
     if isinstance(arg, Exception):
         e, t = arg, type(arg)
         arg = "%s.%s %s" % (t.__module__, t.__name__, e.args)
+        # FIXME: debug only
+        if True:
+            import traceback
+            arg += '\n' + traceback.format_exc(999)
     Response.__init__(self,
         'HTTP %s %s: %s\n' % (self.code, self.title, arg),
         content_type='text/plain', status='%s %s' % (self.code, self.title))
