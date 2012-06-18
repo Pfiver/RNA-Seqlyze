@@ -192,15 +192,25 @@ class sra_sdk(Part):
     #    with "all:" to skip unnesessary downloading of zlib and libbz2
     build = "LD_RUN_PATH=$LIBDIR make STATIC= STATICSYSLIBS= LDFLAGS=-L$PWD"
     def install(self):
-        dir = "linux/pub/gcc/%(ARCH)s/bin/" % env
+        # build output directory
+        bld = "linux/pub/gcc/%(ARCH)s/" % env
+        # dynamic executables
+        dir = bld + "bin/"
         for bin in os.listdir(dir):
             if not re.search(r'[0-9]$', bin):
                 shutil.copy(dir + bin, env["BINDIR"])
                 os.chmod(env["BINDIR"] + "/" + bin, 0775)
-        dir = "linux/pub/gcc/%(ARCH)s/lib/" % env
+        # shared libraries
+        dir = bld + "lib/"
         for lib in os.listdir(dir):
             if re.search(r'\.so\.[0-9]+$', lib):
                 shutil.copy(dir + lib, env["LIBDIR"])
+        # conf file
+        shutil.copytree(bld + "lib/ncbi", env["LIBDIR"])
+        # schemas
+        shutil.copytree(bld + "mod", env["LIBDIR"] + "/ncbi")
+        # ???
+        shutil.copytree(bld + "wmod", env["LIBDIR"] + "/ncbi")
 
 class tophat(Part):
     build = "./configure --prefix=$PREFIX --with-bam=$TOPDIR/samtools && make"
