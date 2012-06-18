@@ -8,6 +8,10 @@ function s:python_settings()
 	set shiftwidth=4
 endfunction
 
+function s:html_settings()
+	set shiftwidth=2
+endfunction
+
 " set language specific settings
 """"""""""""""""""""""""""""""""
 autocmd BufEnter,BufNewFile *
