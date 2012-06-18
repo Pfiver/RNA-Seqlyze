@@ -1,10 +1,9 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker
 
 import rnaseqlyze
 
-DBSession = scoped_session(sessionmaker())
+DBSession = sessionmaker(create_engine(rnaseqlyze.db_url))
 
 def main():
-    engine = create_engine(rnaseqlyze.db_url)
-    DBSession.configure(bind=engine)
+    session = DBSession()
