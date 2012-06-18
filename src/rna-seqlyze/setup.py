@@ -12,8 +12,9 @@
 from setuptools import setup, find_packages
 
 def get_version():
+    cmd = "git describe --tags"
     from subprocess import Popen, PIPE
-    git_describe = Popen(("git", "describe"), stdout=PIPE, stderr=PIPE)
+    git_describe = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
     version, error = git_describe.communicate()
     if git_describe.returncode:
         raise Exception("couldn't determine package version: " + error)

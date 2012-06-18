@@ -14,15 +14,12 @@ def _init():
     global install_path
     install_path = dist.location
 
-    global config_path
     config_path = os.path.join(install_path, config_filename)
-
-    global config
     config = ConfigParser({'here': install_path})
     config.read(config_path)
 
+    for name, value in config.items("rnaseqlyze"):
+        globals()[name] = value
+
 _init()
 del _init
-
-db_url = config.get("database", "url")
-cache_path = config.get("cache", "path")

@@ -62,7 +62,8 @@ class Part(object):
             log()
             log("\n".join("%s=%s" % nv
                 for nv in filter(lambda i: i[0] in (
-                    "PREFIX", "MACHTYPE", "NCPUS_ONLN"), env.iteritems())))
+                    "TOPDIR", "PREFIX", "BINDIR", "LIBDIR",
+                    "MACHTYPE", "NCPUS_ONLN"), env.iteritems())))
             log()
             if type(cmds) not in (list, tuple):
                 cmds = cmds, # make it a 1-tuple
@@ -143,7 +144,7 @@ class samtools(Part):
 
 class cufflinks(Part):
     depends = samtools
-    build = "./configure --prefix=$PREFIX --with-bam=$TOPDIR/samtools --with-eigen=$TOPDIR/eigen && make"
+    build = "./configure --prefix=$PREFIX --with-bam=$TOPDIR/src/samtools --with-eigen=$TOPDIR/src/eigen && make"
     install = "make install"
 
 class kent(Part):
@@ -191,19 +192,15 @@ class sra_sdk(Part):
     # 2) replaced the content of src/sra_sdk/libs/ext/Makefile
     #    with "all:" to skip unnesessary downloading of zlib and libbz2
     build = "LD_RUN_PATH=$LIBDIR make STATIC= STATICSYSLIBS= LDFLAGS=-L$PWD"
-    def install(self):
-        dir = "linux/pub/gcc/%(ARCH)s/bin/" % env
-        for bin in os.listdir(dir):
-            if not re.search(r'[0-9]$', bin):
-                shutil.copy(dir + bin, env["BINDIR"])
-                os.chmod(env["BINDIR"] + "/" + bin, 0775)
-        dir = "linux/pub/gcc/%(ARCH)s/lib/" % env
-        for lib in os.listdir(dir):
-            if re.search(r'\.so\.[0-9]+$', lib):
-                shutil.copy(dir + lib, env["LIBDIR"])
+    install = (
+        "cp -a linux/pub/gcc/$ARCH/bin/* $BINDIR",
+        "cp -a linux/pub/gcc/$ARCH/lib/* $LIBDIR",
+        "cp -a linux/pub/gcc/$ARCH/mod $LIBDIR/ncbi",
+        "cp -a linux/pub/gcc/$ARCH/wmod $LIBDIR/ncbi",
+    )
 
 class tophat(Part):
-    build = "./configure --prefix=$PREFIX --with-bam=$TOPDIR/samtools && make"
+    build = "./configure --prefix=$PREFIX --with-bam=$TOPDIR/src/samtools && make"
     install = "make install"
 
 class trac(Part):

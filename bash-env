@@ -9,12 +9,14 @@ rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
 if [ "$PS1" ]
 then
 	dirs -c
-	for ((i=${#rnas_pkgdirs[@]}-1; i>=0; i--))
+	for ((i=${#rnas_pkgdirs[@]}-1; i>0; i--))
 	do
-		pushd "${rnas_pkgdirs[i]}"
+		pkg=${rnas_pkgdirs[i]##*-}
+		pushd "${rnas_pkgdirs[i]}/rnaseqlyze/$pkg"
 	done
-	pushd "$rnas_topdir"
-	cd ~1
+	pushd "${rnas_pkgdirs[0]}/rnaseqlyze/core"
+	pushd "${rnas_pkgdirs[0]}/rnaseqlyze"
+	cd "$rnas_topdir"
 fi
 
 buildbot ()
@@ -29,15 +31,6 @@ buildbot ()
 sig-int ()
 {
 	curl localhost/biopython/debug?{sig_int,sig_int}
-}
-
-re-initdb ()
-{
-	dir="$rnas_topdir/src/rna-seqlyze"
-	rm -f $dir/rnaseqlyze.db
-	rnaseqlyze-dbinit &&
-		chmod 664 $dir/rnaseqlyze.db &&
-		chgrp www-data $dir/rnaseqlyze.db
 }
 
 re-develop ()

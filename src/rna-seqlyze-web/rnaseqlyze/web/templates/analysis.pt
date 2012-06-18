@@ -3,7 +3,7 @@
   <tal:block metal:fill-slot="menu-items">
     <ul id="page-nav" class="nav nav-tabs nav-stacked">
       <li><a href="#input">Input</a></li>
-      <li><a href="#process">Process</a></li>
+      <li><a href="#processing">Processing</a></li>
       <li><a href="#results">Results</a></li>
     </ul>
   </tal:block>
@@ -27,7 +27,7 @@
         <div class="control-group">
           <label for="inputfileInput" class="control-label">SRA or FASTQ File</label>
           <div class="controls entered-values">
-            <strong>${analysis.inputfilename}</strong>
+            <strong>${analysis.inputfile_name}</strong>
           </div>
         </div>
         <div class="control-group">
@@ -61,12 +61,25 @@
      </div>
     <tal:block metal:define-slot="analysis_input"/>
 
-    <h2 id="process">Process</h2>
-    processing...
+    <h2 id="processing">Processing</h2>
+
+    <ul>
+      <li tal:switch="analysis.inputfile_type != None">Type of input:
+	<tal:block tal:case="True">
+	  <strong tal:content="analysis.inputfile_type"></strong>
+	  <pre tal:condition="analysis.inputfile_header != None"
+	      tal:content="analysis.inputfile_header">
+	  </pre>
+	</tal:block>
+	<tal:block tal:case="False">not detected
+	</tal:block>
+      </li>
+    </ul>
+
     <br style="margin: 500px 0;"/>
 
     <h2 id="results">Results</h2>
-    way to go...
+    still some way to go...
     <br style="margin: 500px 0;"/>
 
   </tal:block>
