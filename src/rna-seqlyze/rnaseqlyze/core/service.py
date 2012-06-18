@@ -4,15 +4,10 @@ import urllib2
 import rnaseqlyze
 from .orm import Analysis, User
 
-
-datapath = rnaseqlyze.config.get("cache", "path")
-analyses_path = os.path.join(datapath, "analyses")
-
-
 # TODO: make these functions methods of a mixin class
 
 def get_topdir(analysis):
-    topdir = os.path.join(analyses_path, str(analysis.id))
+    topdir = os.path.join(rnaseqlyze.analyses_path, str(analysis.id))
     if not os.path.isdir(topdir):
         os.makedirs(topdir)
     return topdir
