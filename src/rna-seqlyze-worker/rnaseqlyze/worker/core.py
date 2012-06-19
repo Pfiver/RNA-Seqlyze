@@ -10,30 +10,18 @@ from rnaseqlyze import efetch
 from rnaseqlyze.core import service
 from rnaseqlyze.core.orm import Analysis
 
-
-# Allways commit the DBSession after making changes!
-# Otherwise the db will stay locked by this thread and
-# other threads/processes trying to access it will block
-
-DBSession = sessionmaker(create_engine(rnaseqlyze.db_url))
+DBSession = sessionmaker()
 
 class Manager(object):
     def __init__(self):
         self.worker = Thread()
-        self.session = DBSession()
 
-    def get_analysis(self, id):
-        obj = self.session.query(Analysis).get(id)
-        self.session.refresh(obj)
-        return obj
-
-    def start_analysis(self, analysis, re=False):
+    def analysis_requested(self, analysis, re=False):
         if analysis.started and not re:
-            raise AnalysisAlreadyStartedException(analysis)
+            raise AnalysisAlreadyStartedException
         if self.worker.is_alive():
             raise ManagerBusyException
-
-        self.worker = AnalysisOrchestrator(analysis.id)
+        self.worker = Worker(analysis)
         self.worker.start()
 
 class AnalysisAlreadyStartedException(Exception):
@@ -43,28 +31,32 @@ class ManagerBusyException(Exception):
     pass
 
 
-class AnalysisOrchestrator(Thread):
+class Worker(Thread):
 
-    def __init__(self, analysis_id):
+    # Allways commit the DBSession after making changes!
+    # Otherwise the db will stay locked by this thread and
+    # other threads/processes trying to access it will block
+
+    def __init__(self, analysis):
         Thread.__init__(self)
-        self.analysis_id = analysis_id
+        self.analysis_id = analysis.id
+
+    def _thread_init(self):
+        log.info("starting work on analysis #%d" % self.analysis_id)
+        self.session = DBSession(bind=create_engine(rnaseqlyze.db_url))
+        self.analysis = self.session.query(Analysis).get(self.analysis_id)
+        self.analysis.started = True
+        self.session.commit()
+        self.data_dir = service.get_data_dir(self.analysis)
+        self.shared_data_dir = service.get_shared_data_dir(self.analysis)
 
     def run(self):
-        log.info("starting work on analysis #%d" % self.analysis_id)
         self._thread_init()
         self._determine_inputfile_type()
         self._get_input_header()
         self._fetch_gb()
         self._gb2fasta()
         self._bowtie_build()
-
-    def _thread_init(self):
-        self.session = DBSession()
-        self.analysis = self.session.query(Analysis).get(self.analysis_id)
-        self.analysis.started = True
-        self.session.commit()
-        self.data_dir = service.get_data_dir(self.analysis)
-        self.shared_data_dir = service.get_shared_data_dir(self.analysis)
 
     def _determine_inputfile_type(self):
         def getit(header):
