@@ -1,9 +1,19 @@
-def run(*args):
+"""
+run transterm_hp with the given arguments plus "-p expterm.dat"
+"""
 
-    from os.path import abspath, dirname
-    tt_dir = dirname(abspath(__file__)) + "/../../TransTermHP/"
-    tt_cmd = tt_dir + "transterm", "-p", tt_dir + "expterm.dat"
 
-    import subprocess
-    if subprocess.call(tt_cmd + args) != 0:
-        raise Exception(str(tt_cmd + args) + " failed")
+def run(args):
+    import os, subprocess
+    def findit():
+        for path in os.getenv("PATH").split(os.path.pathsep):
+            for name in os.listdir(os.path.join(path, "../lib")):
+                if name == 'expterm.dat':
+                    return os.path.join(path, "../lib", name)
+    expterm_dat = findit()
+    if not expterm_dat:
+        raise Exception("'expterm.dat' not found")
+    cmd = ['transterm', '-p', expterm_dat]
+    proc = subprocess.Popen(cmd + args)
+    if proc.returncode != 0:
+        raise Exception(str(cmd + args) + " failed")
