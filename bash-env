@@ -28,21 +28,42 @@ buildbot ()
 	command buildslave $1 buildslave
 )
 
+vi-all()
+(
+	cd $rnas_topdir/src
+	vi $(find rna-seqlyze* -\( -name junk -o -name setup.py -\) -prune -o 	\
+		-\( -name "*.pt" -o -\( -name "*.py" -\(			\
+			-not -name __init__.py -o				\
+			-size +1 -exec sed -n '1{/^__/{q1}}' {} \; -\) -\) -\)	\
+										\
+			-print | tr '/-' '[]' | sort | tr '[]' '/-')
+)
+
 sig-int ()
 {
 	curl localhost/biopython/debug?{sig_int,sig_int}
 }
 
-re-develop ()
+re-apidoc()
+(
+	cd $rnas_topdir/report/apidoc
+	rm -f rnaseqlyze*.rst
+	apidoc ${rnas_pkgdirs[0]}
+	make html
+)
+
+re-install ()
 {
 	for dir in "${rnas_pkgdirs[@]}"
 	do (
 		cd "$dir"
 		python setup.py develop --user
+		rm -rf build 
 	) done
+}
 
-	sig-int
-
+re-cover ()
+{
 	# compute test coverage
 	#  --cover-inclusive: include modules not loaded by test scripts
 	#  --cover-package: restrict coverage report to packge
@@ -56,3 +77,24 @@ re-develop ()
 		rm -f .coverage
 	)
 }
+
+logtail-developall ()
+{
+	auto-restart-mod-wsgi "${rnas_pkgdirs[@]}" &
+	(
+		cd $rnas_topdir
+		while true
+		do
+			pserve --reload src/rna-seqlyze-worker/development.ini
+			sleep 10
+		done
+	) &
+	(
+		cd $rnas_topdir
+		tail -f pyramid.log \
+			src/rnaseqlyze-{web,worker}/*.log \
+			/var/log/apache2/{access,error}.log \
+	)
+}
+
+# vim: ft=sh
