@@ -39,19 +39,3 @@ def urlencode_multipart(fields, files=None):
 def get_content_type(filename):
 	import mimetypes
 	return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
-
-if __name__ == "__main__":
-	import socket
-	import threading
-	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	sock.bind(('localhost', 9123))
-	sock.listen(1)
-	def run():
-		con = sock.accept()[0]
-		print con.recv(4096)
-		con.send("200 OK\r\n\r\n")
-		con.close()
-	threading.Thread(target=run).start()
-
-	data = urlencode_multipart((("123", "456"),))
-	urlopen_multipart("http://localhost:9123/asd", data)
