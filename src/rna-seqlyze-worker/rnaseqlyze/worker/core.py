@@ -1,5 +1,6 @@
 import logging
 log = logging.getLogger(__name__)
+
 from threading import Thread
 
 from sqlalchemy import create_engine
@@ -53,10 +54,13 @@ class Worker(Thread):
     def run(self):
         self._thread_init()
         self._determine_inputfile_type()
-        self._get_input_header()
+        self._convert_inpuit_file()
         self._fetch_gb()
         self._gb2fasta()
         self._bowtie_build()
+        self._tophat()
+        self._galaxy_upload()
+        self._ucsc_browse()
 
     def _determine_inputfile_type(self):
         def getit(header):
@@ -67,25 +71,21 @@ class Worker(Thread):
         self.analysis.inputfile_type = getit(open(path).read(8))
         self.session.commit()
 
-    def _get_input_header(self):
+    def _convert_inpuit_file(self):
+        from os import path
         type = self.analysis.inputfile_type
-        path = service.get_inputfile_path(self.analysis)
-        if type == 'fastq':
-            f = open(path)
-            data = [f.readline() for i in range(4)]
-        elif type == 'sra':
-            cmd = "fastq-dump", "--stdout", path
-            log.info("converting %s" % path)
+        fq_path = service.get_inputfile_fqpath(self.analysis)
+        if not path.exists(fq_path):
+            import os
+            os.chdir(self.data_dir)
+            sra_name = self.analysis.inputfile_name
+            cmd = "fastq-dump", sra_name
+            log.info("converting %s" % sra_name)
             from subprocess import Popen, PIPE
-            proc = Popen(cmd, stdout=PIPE)
-            data = [proc.stdout.readline() for i in range(4)]
-            proc.kill()
-            proc.wait()
-        else:
-            raise
-        log.debug("got header: %s ..." % data[0][:-1])
-        self.analysis.inputfile_header = "".join(data)
-        self.session.commit()
+            proc = Popen(cmd)#, stdout=PIPE, stderr=PIPE)
+            out, err = proc.communicate()
+            if proc.returncode != 0:
+                raise Exception("%s failed" % (cmd,))
 
     def _fetch_gb(self):
         from os import path
@@ -119,7 +119,23 @@ class Worker(Thread):
             cmd = "bowtie2-build", acc + ".fa", acc
             log.info("bowtie2-build %s" % acc)
             from subprocess import Popen, PIPE
-            proc = Popen(cmd, stdout=PIPE)
+            proc = Popen(cmd)#, stdout=PIPE, stderr=PIPE)
+            out, err = proc.communicate()
+            if proc.returncode != 0:
+                raise Exception("%s failed" % (cmd,))
+
+    def _tophat(self):
+        from os import path
+        acc = self.analysis.org_accession
+        if not path.isdir(path.join(self.data_dir, "tophat-output")):
+            import os
+            os.chdir(self.data_dir)
+            n_cpus = os.sysconf("SC_NPROCESSORS_ONLN")
+            acc_path = path.join(self.shared_data_dir, acc)
+            fq_name = service.get_inputfile_fqname(self.analysis)
+            cmd = "tophat", "-p", str(n_cpus), "-o", "tophat-output", acc_path, fq_name
+            from subprocess import Popen, PIPE
+            proc = Popen(cmd)#, stdout=PIPE, stderr=PIPE)
             out, err = proc.communicate()
             if proc.returncode != 0:
                 raise Exception("%s failed" % (cmd,))

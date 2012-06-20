@@ -6,16 +6,22 @@ from pyramid.view import view_defaults
 from pyramid.config import Configurator
 from pyramid.response import Response
 from pyramid.httpexceptions import (
-        HTTPError, HTTPBadRequest, HTTPInternalServerError
+        HTTPError,
+        HTTPBadRequest,
+        HTTPInternalServerError,
 )
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from zope.sqlalchemy import ZopeTransactionExtension
 
 import rnaseqlyze
 from rnaseqlyze.core.orm import Analysis
-from .core import Manager
-from .core import AnalysisAlreadyStartedException, ManagerBusyException
+from rnaseqlyze.worker.core import (
+        Manager,
+        ManagerBusyException,
+        AnalysisAlreadyStartedException,
+)
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
@@ -43,7 +49,7 @@ class Waitress(object):
         self.analysis = DBSession.query(Analysis).get(id)
 
     @view_config(request_method='GET')
-    def get(self):
+    def status(self):
         import pprint
         return pprint.pformat({
             'context': self, # Waitress

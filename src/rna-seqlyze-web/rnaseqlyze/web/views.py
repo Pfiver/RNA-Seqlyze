@@ -1,3 +1,6 @@
+import logging
+log = logging.getLogger(__name__)
+
 from pyramid.view import view_config
 from pyramid.response import Response
 from pyramid.renderers import get_renderer
@@ -8,13 +11,9 @@ from pyramid.httpexceptions import (
 import transaction
 from sqlalchemy.exc import DBAPIError
 
-from . import DBSession
-from ..core import service
-from ..core.orm import Analysis
-
-import logging
-log = logging.getLogger(__name__)
-
+from rnaseqlyze.web import DBSession
+from rnaseqlyze.core import service
+from rnaseqlyze.core.orm import Analysis
 
 @view_config(route_name='analyses', request_method='POST')
 def post(request):
@@ -54,13 +53,10 @@ def post(request):
 @view_config(route_name='analysis', renderer='templates/analysis.pt')
 def display(request):
     id = int(request.matchdict["id"])
-    return {'analysis': DBSession.query(Analysis).get(id)}
-
-@view_config(context=service.ServiceError)
-def sevice_error(request):
-    import traceback
-    detail = traceback.format_exc(999)
-    return HTTPServiceUnavailable(detail=detail)
+    return {
+        'service': service,
+        'analysis': DBSession.query(Analysis).get(id),
+    }
 
 @view_config(context=DBAPIError)
 def dbapi_error(request):

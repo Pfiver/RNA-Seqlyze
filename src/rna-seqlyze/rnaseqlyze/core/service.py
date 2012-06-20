@@ -5,26 +5,43 @@ import os
 import urllib2
 
 import rnaseqlyze
-from . import security
-from .orm import Analysis, User
+from rnaseqlyze.core import security
+from rnaseqlyze.core.orm import Analysis, User
 
 # TODO: make these functions methods of a mixin class
 
-def get_data_dir(analysis):
-    data_dir = os.path.join(rnaseqlyze.analyses_path, str(analysis.id))
-    if not os.path.isdir(data_dir):
-        os.makedirs(data_dir)
-    return data_dir
+class AnalysisMixins(object):
+    @property
+	def data_dir(self):
+        return os.path.join(rnaseqlyze.analyses_path, str(self.id))
 
-def get_shared_data_dir(analysis):
-    acc = analysis.org_accession
-    dir = os.path.join(rnaseqlyze.shared_data_path, acc)
-    if not os.path.isdir(dir):
-        os.makedirs(dir)
-    return dir
+    @property
+	def shared_data_dir(self):
+        acc = self.org_accession
+        return os.path.join(rnaseqlyze.shared_data_path, acc)
 
-def get_inputfile_path(analysis):
-    return os.path.join(get_data_dir(analysis), "inputfile")
+    def create_directories(self)
+        if not os.path.isdir(self.data_dir):
+            os.makedirs(data_dir)
+        if not os.path.isdir(self.shared_data_dir):
+            os.makedirs(self.shared_data_dir)
+
+    @property
+	def inputfile_path(self):
+        return os.path.join(self.data_dir, self.inputfile_name)
+
+    @property
+	def inputfile_fqname(self):
+        return self.inputfile_name.rsplit('.', 1)[0] + ".fastq"
+
+    @property
+	def inputfile_fqpath(self):
+        return os.path.join(self.data_dir, self.inputfile_fqname)
+
+    @property
+	def inputfile_header(self):
+        fq_file = open(self.inputfile_fqpath)
+        return "".join(fq_file.readline() for i in range(4))
 
 def create_analysis(session, inputfile, attributes):
 
@@ -49,28 +66,17 @@ def create_analysis(session, inputfile, attributes):
 def save_inputfile(analysis, remote_file):
     local_path = get_inputfile_path(analysis)
     local_file = open(local_path, 'wb')
-    remote_file.seek(0)
-    while 1:
-        data = remote_file.read(4096)
-        if not data:
-            break
-        local_file.write(data)
+    from shutil import copyfileobj as copy
+    copy(remote_file, local_file)
     local_file.close()
 
-
 def start_analysis(analysis):
-   try:
-        url = "http://127.0.0.1:6543/analyses/%d" % analysis.id
-        assert urllib2.urlopen(STARTRequest(url)).getcode() == 200
-   except Exception, e:
-       raise ServiceError("failed to notify worker", e)
+    url = "http://127.0.0.1:6543/analyses/%d" % analysis.id
+    STARTRequest = type('START', urllib2.Request, None)
+    STARTRequest.get_method = lambda self: 'START'
+    rsp = rllib2.urlopen(STARTRequest(url))
+    body = rsp.read()
+    rsp.close()
+    if rsp.getcode() != 200:
+        raise Exception("Worker failed to start analysis: " + body)
 
-class STARTRequest(urllib2.Request):
-    def get_method(self):
-        return 'START'
-
-class ServiceError(Exception):
-    def __init__(self, msg, e):
-        t = type(e)
-        Exception.__init__(self,
-            "%s (%s.%s)" % (msg, t.__module__, t.__name__))

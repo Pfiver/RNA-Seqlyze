@@ -1,3 +1,7 @@
+"""
+Top level package module
+"""
+
 project_name = 'rna-seqlyze'
 config_filename = 'rnaseqlyze.ini'
 

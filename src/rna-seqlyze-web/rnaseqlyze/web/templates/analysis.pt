@@ -65,14 +65,16 @@
 
     <ul>
       <li tal:switch="analysis.inputfile_type != None">Type of input:
-	<tal:block tal:case="True">
-	  <strong tal:content="analysis.inputfile_type"></strong>
-	  <pre tal:condition="analysis.inputfile_header != None"
-	      tal:content="analysis.inputfile_header">
-	  </pre>
-	</tal:block>
-	<tal:block tal:case="False">not detected
-	</tal:block>
+        <tal:block tal:case="True">
+          <strong tal:content="analysis.inputfile_type"></strong>
+          <pre tal:content="service.get_inputfile_header(analysis)">
+          </pre>
+        </tal:block>
+        <tal:block tal:case="False">not detected
+        </tal:block>
+      </li>
+      <li tal:condition="analysis.hg_url != None">Hg browser tracks:
+        <a href="analysis.hg_url">View Tracks in UCSC Browser</a>
       </li>
     </ul>
 

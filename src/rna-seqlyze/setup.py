@@ -37,14 +37,15 @@ setup(
         ],
     },
     setup_requires=[
-        "nose >= 1.0",
+        "nose >= 1.1.2",            # Unit testing
         "distribute >= 0.6.14",     # unsure if really required, but won't harm
     ],
     install_requires=[
-        "pyflakes",                 # Buildbot
-        "nose >= 1.1.2",
-        "pyramid >= 1.3.2",
-        "MarkupSafe >= 0.15",       # in Trac
-        "MySQL-python >= 1.2.2",    # in Trac
+        "sphinx",                   # Apidoc
+        "pyflakes",                 # Style checker
+        "pyinotify",                # Auto-Restarting mod_wsgi daemons
+        "pyramid >= 1.3.2",         # Web framework
+        "MarkupSafe >= 0.15",       # Syntax highlighting in Trac
+        "MySQL-python >= 1.2.2",    # Trac database backend
     ],
 )

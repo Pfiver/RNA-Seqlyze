@@ -1,8 +1,9 @@
-debug = False
-
 import sys
+
 from Bio import SeqIO
 from Bio.SeqFeature import ExactPosition
+
+debug = False
 
 def gb2ptt(in_file, out_file):
     seq = SeqIO.parse(in_file, "genbank").next()
