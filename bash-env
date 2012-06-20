@@ -28,8 +28,8 @@ buildbot ()
 	command buildslave $1 buildslave
 )
 
-vi-all()
-(
+viall()
+{
 	cd $rnas_topdir/src
 	vi $(find rna-seqlyze* -\( -name junk -o -name setup.py -\) -prune -o 	\
 		-\( -name "*.pt" -o -\( -name "*.py" -\(			\
@@ -37,9 +37,9 @@ vi-all()
 			-size +1 -exec sed -n '1{/^__/{q1}}' {} \; -\) -\) -\)	\
 										\
 			-print | tr '/-' '[]' | sort | tr '[]' '/-')
-)
+}
 
-sig-int ()
+sigint ()
 {
 	curl localhost/biopython/debug?{sig_int,sig_int}
 }
@@ -80,7 +80,6 @@ re-cover ()
 
 logtail-developall ()
 {
-	auto-restart-mod-wsgi "${rnas_pkgdirs[@]}" &
 	(
 		cd $rnas_topdir
 		while true
@@ -89,12 +88,9 @@ logtail-developall ()
 			sleep 10
 		done
 	) &
-	(
-		cd $rnas_topdir
-		tail -f pyramid.log \
-			src/rnaseqlyze-{web,worker}/*.log \
-			/var/log/apache2/{access,error}.log \
-	)
+	auto-restart-mod-wsgi "${rnas_pkgdirs[@]}" &
+	tail -f /var/log/apache2/{access,error}.log \
+		$rnas_topdir/src/rna-seqlyze-{web,worker}/*.log
 }
 
 # vim: ft=sh

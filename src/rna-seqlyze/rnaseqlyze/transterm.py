@@ -2,7 +2,6 @@
 run transterm_hp with the given arguments plus "-p expterm.dat"
 """
 
-
 def run(args):
     import os, subprocess
     def findit():

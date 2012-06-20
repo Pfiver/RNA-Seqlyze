@@ -8,7 +8,6 @@ from sqlalchemy.orm import sessionmaker
 
 import rnaseqlyze
 from rnaseqlyze import efetch
-from rnaseqlyze.core import service
 from rnaseqlyze.core.orm import Analysis
 
 DBSession = sessionmaker()
@@ -48,8 +47,6 @@ class Worker(Thread):
         self.analysis = self.session.query(Analysis).get(self.analysis_id)
         self.analysis.started = True
         self.session.commit()
-        self.data_dir = service.get_data_dir(self.analysis)
-        self.shared_data_dir = service.get_shared_data_dir(self.analysis)
 
     def run(self):
         self._thread_init()
@@ -67,14 +64,14 @@ class Worker(Thread):
             if header[0] == '@': return 'fastq'
             elif header[:8] == 'NCBI.sra': return 'sra'
             else: raise UnknownInputfileTypeException()
-        path = service.get_inputfile_path(self.analysis)
-        self.analysis.inputfile_type = getit(open(path).read(8))
+        self.analysis.inputfile_type = \
+                getit(open(self.analysis.inputfile_path).read(8))
         self.session.commit()
 
     def _convert_inpuit_file(self):
         from os import path
         type = self.analysis.inputfile_type
-        fq_path = service.get_inputfile_fqpath(self.analysis)
+        fq_path = self.analysis.inputfile_fqpath
         if not path.exists(fq_path):
             import os
             os.chdir(self.data_dir)
@@ -132,7 +129,7 @@ class Worker(Thread):
             os.chdir(self.data_dir)
             n_cpus = os.sysconf("SC_NPROCESSORS_ONLN")
             acc_path = path.join(self.shared_data_dir, acc)
-            fq_name = service.get_inputfile_fqname(self.analysis)
+            fq_name = self.analysis.inputfile_fqname
             cmd = "tophat", "-p", str(n_cpus), "-o", "tophat-output", acc_path, fq_name
             from subprocess import Popen, PIPE
             proc = Popen(cmd)#, stdout=PIPE, stderr=PIPE)

@@ -41,7 +41,7 @@ def post(request):
                                        inputfile, attributes=post)
     DBSession.unmanaged.commit()
     # the analysis must exist in the database
-    # for the worker to be able to start working on it
+    # so the worker can find it and start working
 
     service.start_analysis(analysis)
     log.debug("started analysis #%d by '%s'" % (
@@ -53,10 +53,7 @@ def post(request):
 @view_config(route_name='analysis', renderer='templates/analysis.pt')
 def display(request):
     id = int(request.matchdict["id"])
-    return {
-        'service': service,
-        'analysis': DBSession.query(Analysis).get(id),
-    }
+    return { 'analysis': DBSession.query(Analysis).get(id) }
 
 @view_config(context=DBAPIError)
 def dbapi_error(request):
