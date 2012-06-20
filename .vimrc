@@ -1,5 +1,13 @@
 " ~/.vimrc - read after /etc/vim/vimrc.local
 
+" enable hidden modified buffers
+""""""""""""""""""""""""""""""""
+set hidden
+
+" quickbuf hotkey
+"""""""""""""""""
+let g:qb_hotkey = "<F3>"
+
 " language specific settings
 """"""""""""""""""""""""""""
 function s:python_settings()
@@ -29,7 +37,7 @@ filetype plugin indent on
 
 " F5 -> paste date-time dpkg changelog format
 """""""""""""""""""""""""""""""""""""""""""""
-:inoremap <F5> <C-R>=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>
+inoremap <F5> <C-R>=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>
 
 " syntax highlithing
 """"""""""""""""""""
@@ -58,8 +66,21 @@ nnoremap <F2> :set invpaste paste?<CR>
 
 " navigate to next/prev file in ":args" using Enter/Backspace
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-:nnoremap <silent> <Return> :n<CR>
-:nnoremap <silent> <Backspace> :N<CR>
+"nnoremap <silent> <Return> :bn<CR>
+"nnoremap <silent> <Backspace> :bN<CR>
+nnoremap <silent> <Return> :call g:maybe_next_buffer()<CR>
+function g:maybe_next_buffer()
+    if bufnr("%") != bufnr('$')
+        bn
+    endif
+endfunction
+nnoremap <silent> <Backspace> :call g:maybe_previous_buffer()<CR>
+function g:maybe_previous_buffer()
+	redir @y | silent ls! | redir END
+	if bufnr("%") != matchstr(@y, '[0-9]\+ ') + 0
+		bN
+	endif
+endfunction
 
 " highlight all search pattern matches
 """"""""""""""""""""""""""""""""""""""
@@ -67,11 +88,11 @@ set hlsearch
 
 " [space] => turn off all highlights
 """"""""""""""""""""""""""""""""""""
-:nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
+nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 
 " resore the cursor position when opening files
 """""""""""""""""""""""""""""""""""""""""""""""
-autocmd BufWinEnter * if ! exists("s:NewFile") | exe "normal g'\"" | endif
+"autocmd BufWinEnter * if ! exists("s:NewFile") | exe "normal g'\"" | endif
 
 " auto-load templates
 """""""""""""""""""""
