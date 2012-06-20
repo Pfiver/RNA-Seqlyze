@@ -14,20 +14,30 @@
   <div id="ctxtnav" class="nav"></div>
 
   <div id="content" class="tractab">
-  height:
-  <select onchange="document.getElementById('thisIframe').style.height = this.options[this.selectedIndex].value;">
-    <option value="100px">100</option>
-    <option value="200px">200</option>
-    <option value="300px">300</option>
-    <option value="400px">400</option>
-    <option value="500px" selected="true">500</option>
-    <option value="600px">600</option>
-    <option value="700px">700</option>
-    <option value="800px">800</option>
-    <option></option>
-  </select>
-  <iframe id="thisIframe" style="width:100%;height:500px;overflow:auto;" 
-      src="$url" ></iframe>
+
+    <!-- based on http://stackoverflow.com/a/701521
+	 and http://th.atguy.com/mycode/100_percent_iframe/
+      -->
+    <script language="JavaScript">
+    function resize_iframe(){
+      document.getElementById("glu").height = (document.getElementById("glu").contentWindow.document.body.scrollHeight + 100) + "px";
+    }
+    window.onresize=resize_iframe;
+    </script>
+    <style>
+    .wikipage {
+	padding: 0;
+    }
+    #glu {
+	background-color: transparent;
+	border: 0px none transparent;
+	padding: 0px;
+	overflow: hidden;
+	width: 100%;
+    }
+    </style>
+    <iframe id="glu" onload="resize_iframe()" src="$url"></iframe>
+
   </div>
 
 </body>
