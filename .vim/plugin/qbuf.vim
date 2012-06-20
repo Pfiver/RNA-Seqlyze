@@ -6,14 +6,15 @@ if !exists("g:qb_hotkey") || g:qb_hotkey == ""
 	let g:qb_hotkey = "<F4>"
 endif
 exe "nnoremap <unique>" g:qb_hotkey " :cal <SID>init(1)<cr>:cal SBRun()<cr>"
-exe "cnoremap <unique>" g:qb_hotkey "<Esc>"
+exe "cnoremap <unique>" g:qb_hotkey "<cr>"
 
 if exists("g:qb_loaded") && g:qb_loaded
 	finish
 endif
 let g:qb_loaded = 1
 
-let s:action2cmd = {"z": 'call <SID>switchbuf(#,"")', "!z": 'call <SID>switchbuf(#,"!")',
+let s:action2cmd = {	 "z": 'call <SID>switchbuf(#,"")',
+			\"!z": 'call <SID>switchbuf(#,"!")',
 			\"u": "hid b #|let s:cursel = (s:cursel+1) % s:blen",
 			\"s": "sb #",
 			\"d": 'call <SID>qbufdcmd(#,"")', "!d": 'call <SID>qbufdcmd(#,"!")',
@@ -79,24 +80,33 @@ function SBRun()
 	if s:unlisted
 		echoh WarningMsg
 	endif
-"	let l:pkey = input(s:unlisted ? "UNLISTED ([+] loaded):" : "LISTED ([+] modified):" , " ")
 	let l:pkey = input(":")
 	if s:unlisted
 		echoh None
 	endif
 	if l:pkey =~ "j$"
-		let s:cursel = (s:cursel+1) % s:blen
+		let s:cursel = min([s:cursel+1, s:blen])
+	elseif l:pkey =~ "J$"
+		let s:cursel = min([s:cursel+10, s:blen])
 	elseif l:pkey =~ "k$"
-		if s:cursel == 0
-			let s:cursel = s:blen - 1
-		else
+		if s:cursel > 1
 			let s:cursel -= 1
 		endif
+	elseif l:pkey =~ "K$"
+		if s:cursel < 10
+			let s:cursel = 0
+		else
+			let s:cursel -= 10
+		endif
+	elseif l:pkey =~ "q$"
+		call s:init(0)
+		return
 	elseif s:update_buf(l:pkey)
 		call s:init(0)
 		return
 	endif
 	call s:setcmdh(s:blen+1)
+	echo "quit"
 endfunc
 
 function s:init(onStart)
@@ -108,12 +118,15 @@ function s:init(onStart)
 		let s:cmdh = &cmdheight
 		hi Cursor guibg=NONE guifg=NONE
 
-		let s:klist = ["j", "k", "u", "d", "w", "l", "s", "c"]
+		let s:klist = ["j", "k", "J", "K", "u", "d", "w", "l", "s", "c"]
 		for l:key in s:klist
 			exe "cnoremap ".l:key." ".l:key."<cr>:cal SBRun()<cr>"
 		endfor
+		exe "cnoremap q q<cr>"
 		cmap <up> k
 		cmap <down> j
+		cmap <PageUp> K
+		cmap <PageDown> J
 
 		call s:rebuild()
 		let s:cursel = match(s:buflist, '^\d*\*')
@@ -123,15 +136,18 @@ function s:init(onStart)
 		for l:key in s:klist
 			exe "cunmap ".l:key
 		endfor
+		exe "cunmap q"
 		cunmap <up>
 		cunmap <down>
+		cunmap <PageUp>
+		cunmap <PageDown>
 		exe "hi Cursor guibg=" . s:cursorbg . " guifg=".((s:cursorfg == "") ? "NONE" : s:cursorfg)
 	endif
 endfunc
 
 " return true to indicate termination
 function s:update_buf(cmd)
-	if a:cmd != "" && a:cmd =~ '^ *\d*!\?\a\?$'
+	if a:cmd =~ '^ *\d*!\?\a\?$'
 		let l:bufidx = str2nr(a:cmd) - 1
 		if l:bufidx == -1
 			let l:bufidx = s:cursel

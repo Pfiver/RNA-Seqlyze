@@ -1,5 +1,9 @@
 " ~/.vimrc - read after /etc/vim/vimrc.local
 
+" quit quit quit & stop nagging
+"""""""""""""""""""""""""""""""
+cabbrev q qa
+
 " enable hidden modified buffers
 """"""""""""""""""""""""""""""""
 set hidden
