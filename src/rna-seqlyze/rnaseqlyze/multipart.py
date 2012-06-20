@@ -10,7 +10,7 @@ def urlopen(url, data):
     rq.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
     return urllib2.urlopen(rq)
 
-def urlencode(asd, qwe, yxc):
+def urlencode(fields, files=None):
     """
     :param asd:
       is a sequence of ``(name, value)`` elements for regular form fields.
