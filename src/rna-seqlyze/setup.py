@@ -6,7 +6,7 @@
     #  - docs: http://packages.python.org/distribute/
     #  - code: https://bitbucket.org/tarek/distribute
     #  - installation:
-    #    $ curl -O https://bitbucket.org/tarek/distribute/raw/default/distribute_setup.py
+    #    $ curl -O http://python-distribute.org/distribute_setup.py
     #    $ python distribute_setup.py --user
 
 from setuptools import setup, find_packages
@@ -26,7 +26,8 @@ setup(
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
     description="RNA-seq analysis | core features",
-    long_description="RNA-seq analysis & sequence annotation enhancement web-application",
+    long_description=
+        "RNA-seq analysis & sequence annotation enhancement web-application",
     license="Mixed",
     packages=find_packages(),
     test_suite='nose.collector',

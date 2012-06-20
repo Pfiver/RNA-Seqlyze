@@ -1,6 +1,8 @@
-import sys
-
-from rnaseqlyze.gb2ptt import gb2ptt
+import sys, logging
 
 def main(argv=sys.argv):
-    gb2ptt(argv[1], sys.stdout)
+
+    loggin.basicConfig(level=logging.NOTSET)
+
+    from rnaseqlyze.gb2ptt import gb2ptt
+    gb2ptt(open(argv[1]), sys.stdout)

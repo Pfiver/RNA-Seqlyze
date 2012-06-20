@@ -24,24 +24,22 @@ class Entity(object):
             try:
                 getattr(type(self), name)
             except AttributeError:
-                raise Exception("'%s' is not mapped to a database column" % name)
+                raise Exception("'%s' is not a declared attribute" % name)
         object.__setattr__(self, name, value)
 
 Entity = declarative_base(cls=Entity)
 
 class Analysis(Entity, AnalysisMixins):
     """
-    The central entity
+    The central entity.
+    Represents an analysis by a researcher.
     The whole rnaseqlyze project basically revolves around this entity.
-    It represents an analysis by a researcher, as described in the srs, feature 1.
     """
 
     id                  = Column(Integer, primary_key=True)
 
-    org_id              = Column(Integer)   # Genebank/Entrez id
-
-    org_accession       = Column(String)    # Genebank accession
-                                            # used to constructshared data directory name
+    org_gid             = Column(Integer)  # Organisms Genebank/Entrez gid
+    org_accession       = Column(String)   # Organisms Genebank accession number
 
     inputfile_name      = Column(String)
     inputfile_type      = Column(String)

@@ -15,7 +15,8 @@ hostname = 'main.g2.bx.psu.edu'
 
 default_history = '6556fe2755b424cd'
 history_path_template = '/api/histories/%(history)s/contents'
-ucsc_bam_track_template = '/display_application/%(dataset)s/ucsc_bam/archaea/None/param/track'
+ucsc_bam_track_template = \
+        '/display_application/%(dataset)s/ucsc_bam/archaea/None/param/track'
 
 def api_call(path):
     url = "https://" + hostname + path
@@ -91,7 +92,8 @@ def upload(fileobj, filename):
     import json
     ftpupload(fileobj, filename)
     import_uploads(login())
-    histories = json.loads(api_call(history_path_template % dict(history=default_history)))
+    histories = json.loads(api_call(
+        history_path_template % dict(history=default_history)))
     for history in histories:
         if history['name'] == filename:
             return history['id']

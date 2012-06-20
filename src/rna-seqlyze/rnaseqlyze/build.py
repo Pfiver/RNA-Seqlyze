@@ -85,7 +85,8 @@ class Part(object):
                     sp.join()
                     ret = sp.exitcode
                 else:
-                    raise Exception("Invalid '%s' phase command: %s" % (phase, repr(cmd)))
+                    raise Exception("Invalid '%s' phase command: %s" % (
+                                              phase,             repr(cmd)))
                 log()
             log(time.asctime())
             if ret != 0:
@@ -133,31 +134,34 @@ class samtools(Part):
     build = (
         "make -j$NCPUS_ONLN -C bcftools",
         "make -j$NCPUS_ONLN -C misc",
-        """\
-            make -j$NCPUS_ONLN SUBDIRS=. \\
-            LIBCURSES= DFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_USE_KNETFILE" \\
-            AOBJS="bam_plcmd.o sam_view.o bam_rmdup.o bam_rmdupse.o bam_mate.o bam_stat.o bam_color.o \\
-                   bamtk.o kaln.o bam2bcf.o bam2bcf_indel.o errmod.o sample.o cut_target.o phase.o bam2depth.o"
-        """
+"""\
+make -j$NCPUS_ONLN SUBDIRS=. LIBCURSES=                                   \\
+    DFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_USE_KNETFILE"  \\
+    AOBJS="bam_plcmd.o sam_view.o bam_rmdup.o bam_rmdupse.o                 \\
+           bam_mate.o bam_stat.o bam_color.o bamtk.o kaln.o bam2bcf.o        \\
+           bam2bcf_indel.o errmod.o sample.o cut_target.o phase.o bam2depth.o" \
+""",
     )
     install = "cp samtools $PREFIX/bin"
 
 class cufflinks(Part):
     depends = samtools
-    build = "./configure --prefix=$PREFIX --with-bam=$TOPDIR/src/samtools --with-eigen=$TOPDIR/src/eigen && make"
+    build = "./configure --prefix=$PREFIX"       \
+                " --with-eigen=$TOPDIR/src/eigen" \
+                " --with-bam=$TOPDIR/src/samtools && make"
     install = "make install"
 
 class kent(Part):
     build = "make -C src/lib"
     def install(self):
         """
-        the kent install function
-        was created because to install the few ulities required from that tree,
-        the easiest way to do that is to run "make" with custom arguments for each one
+        the kent install function was created, because rna-seqlyze need only
+        a small subset of the included ulities and the easiest way to build
+        those is to run "make" with custom arguments for each one of them
         """
         for util in "bigWigToWig wigToBigWig".split(" "):
             if subprocess.call("make -C src/utils/" + util, shell=True) != 0:
-                raise Exception("kent.install(): couldn't install '%s' util" % util)
+                raise Exception("kent.install(): couldn't install '%s'" % util)
 
 class pysam(Part):
     build = "python setup.py build"
@@ -200,7 +204,8 @@ class sra_sdk(Part):
     )
 
 class tophat(Part):
-    build = "./configure --prefix=$PREFIX --with-bam=$TOPDIR/src/samtools && make"
+    build = "./configure --prefix=$PREFIX" \
+                       " --with-bam=$TOPDIR/src/samtools && make"
     install = "make install"
 
 class trac(Part):
@@ -220,13 +225,15 @@ class trac_env(Part):
         #shutil.copytree(".", destdir, symlinks=True)
         #print("Copied %s to %s\n" % (os.getcwd(), destdir))
         print("\n".join((
-            "The following still needs to be done manually:",
-            " 1) Set up a database",
-            " 2) Restore the backup:",
-            "    $ cd " + os.getcwd(),
-            "    $ mysql -uUSERNAME -pPASSWORD DATABASE < mysql-db-backup.sql",
-            " 4) Adjust the 'database' variable in the [trac] section in 'conf/trac.ini':",
-            "    database = mysql://USERNAME:PASSWORD@localhost/DATABSE",
+"""\
+The following still needs to be done manually:
+ 1) Set up a database
+ 2) Restore the backup:
+    $ cd """ + os.getcwd() + """
+    $ mysql -uUSERNAME -pPASSWORD DATABASE < mysql-db-backup.sql
+ 4) Adjust the 'database' variable in the [trac] section in 'conf/trac.ini':
+    database = mysql://USERNAME:PASSWORD@localhost/DATABSE
+"""
         )))
 
 class transterm_hp(Part):

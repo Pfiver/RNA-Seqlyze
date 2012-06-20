@@ -2,15 +2,15 @@
 
 def urlopen(url, data):
     import urllib2
-    req = urllib2.Request(url, data)
+    rq = urllib2.Request(url, data)
     try:
         boundary = data[2:data.index("\r")]
     except ValueError, e:
         raise Exception("couldn't find boundary string in data", e)
-    req.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
-    return urllib2.urlopen(req)
+    rq.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+    return urllib2.urlopen(rq)
 
-def m1(asd, qwe, yxc):
+def urlencode(asd, qwe, yxc):
     """
     :param asd:
       is a sequence of ``(name, value)`` elements for regular form fields.

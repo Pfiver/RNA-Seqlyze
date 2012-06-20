@@ -5,8 +5,12 @@ from pkgutil import walk_packages
 Package = type('Package', (object,), dict())
 
 def main(argv=sys.argv):
+
     packages = {}
-    module_tmpl = modulesrc
+    module_tmpl = module
+    subwrite = lambda tpl, **vals: \
+            pkg.outfile.write(tpl.substitute(**vals))
+
     for loader, name, is_pkg in walk_packages(argv[1:]):
         pkgname = name.rsplit('.', 1)[0]
         if is_pkg:
@@ -19,10 +23,11 @@ def main(argv=sys.argv):
             pkg = packages[name] = Package()
             pkg.subpackages = []
             pkg.outfile = open(name + '.rst', 'w')
-            pkg.outfile.write(package.substitute(name=name, equals="="*len(name)))
+            subwrite(package, name=name, equals="="*len(name))
             filename = modname + os.sep + '__init__.py'
+
         else:
-            # skip modules that are not part of any package
+            # skip modules that are not part of any package, like setup.py
             if pkgname not in packages:
                 continue
             pkg = packages[pkgname]
@@ -35,11 +40,12 @@ def main(argv=sys.argv):
             modpath = loader.path[len(basepath)+1:] + os.sep
 
         pkgpath = os.path.basename(basepath) + os.sep
-        pkg.outfile.write(module_tmpl.substitute(name=name, dashes="-"*len(name),
-                                                 path=pkgpath + modpath + filename))
+        subwrite(module_tmpl, name=name, dashes="-"*len(name),
+                              path=pkgpath + modpath + filename)
+
     for pkg in packages.values():
         if pkg.subpackages:
-            pkg.outfile.write(subpackages.substitute(names="\n\t".join(pkg.subpackages)))
+            subwrite(subpackages, names="\n\t".join(pkg.subpackages))
 
 package = Template("""\
 Package `${name}`

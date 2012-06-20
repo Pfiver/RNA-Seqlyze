@@ -131,7 +131,8 @@ class Worker(Thread):
             n_cpus = os.sysconf("SC_NPROCESSORS_ONLN")
             acc_path = path.join(self.shared_data_dir, acc)
             fq_name = self.analysis.inputfile_fqname
-            cmd = "tophat", "-p", str(n_cpus), "-o", "tophat-output", acc_path, fq_name
+            cmd = "tophat", "-p", str(n_cpus), \
+                    "-o", "tophat-output", acc_path, fq_name
             from subprocess import Popen, PIPE
             proc = Popen(cmd)#, stdout=PIPE, stderr=PIPE)
             out, err = proc.communicate()
@@ -143,13 +144,15 @@ class Worker(Thread):
             return
         from os import path
         from rnaseqlyze import galaxy
-        bam_path = path.join(self.data_dir, "tophat-output", "accepted_hits.bam")
+        bam_path = path.join(self.data_dir, 
+                             "tophat-output", "accepted_hits.bam")
         srr_name = self.analysis.inputfile_name.rsplit(".", 1)[0]
         # FIXME: names are not unique on galaxy:
         # is "%s_%s" % (srr_name, self.analysis.org_accession) good enough ?
         galaxy_bam_name = "%s_%s" % (srr_name, self.analysis.org_accession)
         bam_file = open(bam_path)
-        log.info("uploading %s to galaxy server %s ..." % (bam_path, galaxy.hostname))
+        log.info("uploading %s to galaxy server %s ..." % (
+                            bam_path,           galaxy.hostname))
         self.analysis.galaxy_bam_id = galaxy.upload(bam_file, galaxy_bam_name)
         log.info("done.")
         bam_file.close()
