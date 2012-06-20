@@ -10,7 +10,7 @@ from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.ext.declarative import declared_attr, declarative_base
 
 from rnaseqlyze.core import security
-from rnaseqlyze.core.service import AnalysisMixins
+from rnaseqlyze.core.orm_mixins import AnalysisMixins
 
 class Entity(object):
     @declared_attr
@@ -45,7 +45,6 @@ class Analysis(Entity, AnalysisMixins):
 
     inputfile_name      = Column(String)
     inputfile_type      = Column(String)
-    inputfile_header    = Column(Text)
 
     strandspecific      = Column(Boolean)
     pairended           = Column(Boolean)
