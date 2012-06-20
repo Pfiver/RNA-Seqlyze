@@ -48,7 +48,7 @@ re-apidoc()
 (
 	cd $rnas_topdir/report/apidoc
 	rm -f rnaseqlyze*.rst
-	apidoc ${rnas_pkgdirs[0]}
+	rnas-apidoc ${rnas_pkgdirs[0]}
 	make html
 )
 
