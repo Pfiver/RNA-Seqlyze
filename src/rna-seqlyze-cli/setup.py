@@ -18,7 +18,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            '%s = rnaseqlyze.cli.%s:main' % (n.replace("_", "-"), n) \
+            'rnas-%s = rnaseqlyze.cli.%s:main' % (n.replace("_", "-"), n) \
                 for l, n, p in iter_modules(["rnaseqlyze/cli"]) if not p
         ]
     }
