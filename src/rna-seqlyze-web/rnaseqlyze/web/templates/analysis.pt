@@ -20,49 +20,42 @@
     </div>
 
     <h2 id="input">Input</h2>
-
-    <h3 id="shortreads">Short Reads</h3>
-
     <div class="form-horizontal">
-        <div class="control-group">
-          <label for="inputfileInput" class="control-label">SRA or FASTQ File</label>
-          <div class="controls entered-values">
-            <strong>${analysis.inputfile_name}</strong>
-          </div>
+      <h3 id="shortreads">Short Reads</h3>
+      <div class="control-group">
+        <label for="inputfileInput" class="control-label">SRA or FASTQ File</label>
+        <div class="controls entered-values">
+          <strong>${analysis.inputfile_name}</strong>
         </div>
-        <div class="control-group">
-          <label for="strandspecificInput" class="control-label">strand-specific</label>
-          <div class="controls entered-values">
-            <strong>${analysis.strandspecific and 'True' or 'False'}</strong>
-          </div>
+      </div>
+      <div class="control-group">
+        <label for="strandspecificInput" class="control-label">strand-specific</label>
+        <div class="controls entered-values">
+          <strong>${analysis.strandspecific and 'True' or 'False'}</strong>
         </div>
-        <div class="control-group">
-          <label for="pairendedInput" class="control-label">pair-ended reads</label>
-          <div class="controls entered-values">
-            <strong>${analysis.pairended and 'True' or 'False'}</strong>
-          </div>
+      </div>
+      <div class="control-group">
+        <label for="pairendedInput" class="control-label">pair-ended reads</label>
+        <div class="controls entered-values">
+          <strong>${analysis.pairended and 'True' or 'False'}</strong>
         </div>
-        <div id="pairendlenControls" class="control-group" tal:condition="analysis.pairended">
-          <label for="pairendlenInput" class="control-label">fragment length</label>
-          <div class="controls entered-values">
-            <strong>${analysis.pairendlen}</strong>
-          </div>
+      </div>
+      <div id="pairendlenControls" class="control-group" tal:condition="analysis.pairended">
+        <label for="pairendlenInput" class="control-label">fragment length</label>
+        <div class="controls entered-values">
+          <strong>${analysis.pairendlen}</strong>
         </div>
-
-        <h3>Organism</h3>
-
+      </div>
+      <h3>Organism</h3>
       <div id="organismControls" class="control-group">
         <label for="organismInput" class="control-label">Accession Number</label>
         <div class="controls entered-values">
           <strong>${analysis.org_accession}</strong>
         </div>
       </div>
-
-     </div>
-    <tal:block metal:define-slot="analysis_input"/>
+    </div>
 
     <h2 id="processing">Processing</h2>
-
     <ul>
       <li tal:switch="analysis.inputfile_type != None">Type of input:
         <tal:block tal:case="True">
@@ -73,16 +66,14 @@
         <tal:block tal:case="False">not detected
         </tal:block>
       </li>
+    </ul>
+
+    <h2 id="results">Results</h2>
+    <ul>
       <li tal:condition="analysis.hg_url">Hg browser tracks:
         <a href="${analysis.hg_url}">View Tracks in UCSC Browser</a>
       </li>
     </ul>
-
-    <br style="margin: 500px 0;"/>
-
-    <h2 id="results">Results</h2>
-    still some way to go...
-    <br style="margin: 500px 0;"/>
 
   </tal:block>
 

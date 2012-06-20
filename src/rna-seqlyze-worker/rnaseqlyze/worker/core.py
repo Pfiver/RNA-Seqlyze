@@ -145,25 +145,15 @@ class Worker(Thread):
         from rnaseqlyze import galaxy
         bam_path = path.join(self.data_dir, "tophat-output", "accepted_hits.bam")
         srr_name = self.analysis.inputfile_name.rsplit(".", 1)[0]
+        # FIXME: names are not unique on galaxy:
+        # is "%s_%s" % (srr_name, self.analysis.org_accession) good enough ?
         galaxy_bam_name = "%s_%s" % (srr_name, self.analysis.org_accession)
         bam_file = open(bam_path)
         log.info("uploading %s to galaxy server %s ..." % (bam_path, galaxy.hostname))
-        galaxy.upload(bam_file, galaxy_bam_name)
+        self.analysis.galaxy_bam_id = galaxy.upload(bam_file, galaxy_bam_name)
         log.info("done.")
         bam_file.close()
-        log.info("importing galaxy uploads to history")
-        galaxy.import_uploads(galaxy.login())
-        import json
-        histories = json.loads(galaxy.api_call(
-            galaxy.history_path_template % dict(history=galaxy.default_history)))
-        for history in histories:
-            # FIXME: names are not unique on galaxy:
-            # is "%s_%s" % (srr_name, self.analysis.org_accession) good enough ?
-            if history['name'] == galaxy_bam_name:
-                log.debug("history id: " + history['id'])
-                self.analysis.galaxy_bam_id = history['id']
-                self.session.commit()
-                break
+        self.session.commit()
 
 
 class UnknownInputfileTypeException(Exception):
