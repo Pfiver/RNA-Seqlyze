@@ -88,6 +88,8 @@ function SBRun()
 		let s:cursel = min([s:cursel+1, s:blen])
 	elseif l:pkey =~ "J$"
 		let s:cursel = min([s:cursel+10, s:blen])
+	elseif l:pkey =~ "E$"
+		let s:cursel = s:blen
 	elseif l:pkey =~ "k$"
 		if s:cursel > 1
 			let s:cursel -= 1
@@ -98,6 +100,8 @@ function SBRun()
 		else
 			let s:cursel -= 10
 		endif
+	elseif l:pkey =~ "H$"
+		let s:cursel = 0
 	elseif l:pkey =~ "q$"
 		call s:init(0)
 		return
@@ -118,7 +122,7 @@ function s:init(onStart)
 		let s:cmdh = &cmdheight
 		hi Cursor guibg=NONE guifg=NONE
 
-		let s:klist = ["j", "k", "J", "K", "u", "d", "w", "l", "s", "c"]
+		let s:klist = ["j", "k", "J", "K", "H", "E", "u", "d", "w", "l", "s", "c"]
 		for l:key in s:klist
 			exe "cnoremap ".l:key." ".l:key."<cr>:cal SBRun()<cr>"
 		endfor
@@ -127,6 +131,8 @@ function s:init(onStart)
 		cmap <down> j
 		cmap <PageUp> K
 		cmap <PageDown> J
+		cmap <Home> H
+		cmap <End> E
 
 		call s:rebuild()
 		let s:cursel = match(s:buflist, '^\d*\*')
@@ -141,6 +147,8 @@ function s:init(onStart)
 		cunmap <down>
 		cunmap <PageUp>
 		cunmap <PageDown>
+		cunmap <Home>
+		cunmap <End>
 		exe "hi Cursor guibg=" . s:cursorbg . " guifg=".((s:cursorfg == "") ? "NONE" : s:cursorfg)
 	endif
 endfunc
