@@ -1,9 +1,18 @@
 " ~/.vimrc - read after /etc/vim/vimrc.local
 
+" highlight over-long lines
+"""""""""""""""""""""""""""
+highlight OverLength ctermbg=red ctermfg=white
+match OverLength /\%81v.\+/
+
 " quit quit quit & stop nagging
 """""""""""""""""""""""""""""""
 cabbrev q qa
 cabbrev wq wqa
+cabbrev wn w<bar>bn
+cabbrev wN w<bar>bN
+cabbrev n bn
+cabbrev N bN
 
 " enable hidden modified buffers
 """"""""""""""""""""""""""""""""
