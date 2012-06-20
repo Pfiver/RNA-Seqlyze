@@ -57,6 +57,8 @@ class Analysis(Entity, AnalysisMixins):
     started             = Column(Boolean)
     finished            = Column(Boolean)
 
+    galaxy_bam_id       = Column(String)
+
     # ft_predictions    = `backref` from FeaturePredictions
     # rnaseq_study      = `backref` from RNASeqStudy
     # hg_tracks         = `backref` from HgTrack

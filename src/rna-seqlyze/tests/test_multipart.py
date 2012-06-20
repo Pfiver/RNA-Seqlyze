@@ -19,10 +19,10 @@ def test_multipart():
     received = io.StringIO()
     threading.Thread(target=run).start()
 
-    from rnaseqlyze.multipart import \
-            urlencode_multipart, urlopen_multipart
-    data = urlencode_multipart((("foo", "bar"),))
-    rsp = urlopen_multipart("http://localhost:9123/foobar", data)
+    from rnaseqlyze.multipart \
+        import urlencode, urlopen
+    data = urlencode((("foo", "bar"),))
+    rsp = urlopen("http://localhost:9123/foobar", data)
 
     received = received.getvalue()
     assert_equal(rsp.getcode(), 200)

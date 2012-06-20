@@ -47,6 +47,8 @@ class Worker(Thread):
         self.analysis = self.session.query(Analysis).get(self.analysis_id)
         self.analysis.started = True
         self.session.commit()
+        self.data_dir = self.analysis.data_dir
+        self.shared_data_dir = self.analysis.shared_data_dir
 
     def run(self):
         self._thread_init()
@@ -57,7 +59,6 @@ class Worker(Thread):
         self._bowtie_build()
         self._tophat()
         self._galaxy_upload()
-        self._ucsc_browse()
 
     def _determine_inputfile_type(self):
         def getit(header):
@@ -136,6 +137,34 @@ class Worker(Thread):
             out, err = proc.communicate()
             if proc.returncode != 0:
                 raise Exception("%s failed" % (cmd,))
+
+    def _galaxy_upload(self):
+        if self.analysis.galaxy_bam_id:
+            return
+        from os import path
+        from rnaseqlyze import galaxy
+        bam_path = path.join(self.data_dir, "tophat-output", "accepted_hits.bam")
+        srr_name = self.analysis.inputfile_name.rsplit(".", 1)[0]
+        galaxy_bam_name = "%s_%s" % (srr_name, self.analysis.org_accession)
+        bam_file = open(bam_path)
+        log.info("uploading %s to galaxy server %s ..." % (bam_path, galaxy.hostname))
+        galaxy.upload(bam_file, galaxy_bam_name)
+        log.info("done.")
+        bam_file.close()
+        log.info("importing galaxy uploads to history")
+        galaxy.import_uploads(galaxy.login())
+        import json
+        histories = json.loads(galaxy.api_call(
+            galaxy.history_path_template % dict(history=galaxy.default_history)))
+        for history in histories:
+            # FIXME: names are not unique on galaxy:
+            # is "%s_%s" % (srr_name, self.analysis.org_accession) good enough ?
+            if history['name'] == galaxy_bam_name:
+                log.debug("history id: " + history['id'])
+                self.analysis.galaxy_bam_id = history['id']
+                self.session.commit()
+                break
+
 
 class UnknownInputfileTypeException(Exception):
     pass

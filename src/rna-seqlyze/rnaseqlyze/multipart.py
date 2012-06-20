@@ -1,6 +1,6 @@
 # based on http://code.activestate.com/recipes/146306/
 
-def urlopen_multipart(url, data):
+def urlopen(url, data):
 	import urllib2
 	req = urllib2.Request(url, data)
 	try:
@@ -10,7 +10,7 @@ def urlopen_multipart(url, data):
 	req.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
 	return urllib2.urlopen(req)
 
-def urlencode_multipart(fields, files=None):
+def urlencode(fields, files=None):
 	"""
 	fields is a sequence of (name, value) elements for regular form fields.
 	files is a sequence of (name, filename, value) elements for data to be uploaded as files

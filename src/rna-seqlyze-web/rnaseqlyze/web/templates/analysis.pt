@@ -74,7 +74,7 @@
         </tal:block>
       </li>
       <li tal:condition="analysis.hg_url">Hg browser tracks:
-        <a href="analysis.hg_url">View Tracks in UCSC Browser</a>
+        <a href="${analysis.hg_url}">View Tracks in UCSC Browser</a>
       </li>
     </ul>
 

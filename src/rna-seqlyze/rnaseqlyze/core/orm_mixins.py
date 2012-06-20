@@ -42,4 +42,6 @@ class AnalysisMixins(object):
 
     @property
     def hg_url(self):
-        pass
+        from rnaseqlyze import galaxy
+        return "http://" + galaxy.hostname + \
+                galaxy.ucsc_bam_track_template % dict(dataset=self.galaxy_bam_id)
