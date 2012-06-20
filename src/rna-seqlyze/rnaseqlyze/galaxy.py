@@ -75,12 +75,23 @@ def import_uploads(cookie_jar=None, cookie_file="cookies.txt"):
     if cookie_file:
         cookie_jar.save(cookie_file, ignore_discard=True, ignore_expires=True)
 
-def upload(fileobj, filename):
+def ftpupload(fileobj, filename):
     """
     upload a file object to galaxy
     based on http://love-python.blogspot.com/2008/02/ftp-file-upload.html
     """
     import os.path, ftplib
+    log.debug("uploading file to ftp server")
     ftp = ftplib.FTP(hostname, email, password)
     ftp.storbinary('STOR ' + filename, fileobj)
+    log.debug("Success!")
     ftp.quit()
+
+def upload(fileobj, filename):
+    import json
+    ftpupload(fileobj, filename)
+    import_uploads(login())
+    histories = json.loads(api_call(history_path_template % dict(history=default_history)))
+    for history in histories:
+        if history['name'] == filename:
+            return history['id']
