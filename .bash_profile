@@ -44,6 +44,7 @@ alias rm='rm -i'
 alias grep='grep --color=auto'
 alias ls='ls --color=auto --show-control-chars --group-directories-first'
 
+alias gd='git diff'
 alias gs='git status'
 
 alias egit="git --git-dir=/home/pfeifer/.git --work-tree=/home/pfeifer"

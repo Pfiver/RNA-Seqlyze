@@ -3,6 +3,7 @@
 " quit quit quit & stop nagging
 """""""""""""""""""""""""""""""
 cabbrev q qa
+cabbrev wq wqa
 
 " enable hidden modified buffers
 """"""""""""""""""""""""""""""""
