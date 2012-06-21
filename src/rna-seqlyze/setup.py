@@ -33,8 +33,7 @@ setup(
     test_suite='nose.collector',
     entry_points={
         'console_scripts': [
-            'build-rnaseqlyze = rnaseqlyze.build:main',
-            'rnaseqlyze-dbinit = rnaseqlyze.dbinit:main',
+            'rnas-build = rnaseqlyze.build:main',
         ],
     },
     setup_requires=[

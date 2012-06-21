@@ -2,6 +2,9 @@
 Map Python Objects to Database Tables
 """
 
+# good read:
+#   http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
+
 from sqlalchemy import ForeignKey
 from sqlalchemy import Table, Column
 from sqlalchemy import Boolean, Integer, String, Text, DateTime
@@ -10,7 +13,8 @@ from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.ext.declarative import declared_attr, declarative_base
 
 from rnaseqlyze.core import security
-from rnaseqlyze.core.orm_mixins import AnalysisMixins
+from rnaseqlyze.core.analysis import AnalysisMixins
+from rnaseqlyze.core.sra import RNASeqRunMixins
 
 class Entity(object):
     @declared_attr
@@ -57,8 +61,9 @@ class Analysis(Entity, AnalysisMixins):
 
     galaxy_bam_id       = Column(String)
 
+    rnaseq_run          = relationship("RNASeqRun", backref=backref("analyses"))
+
     # ft_predictions    = `backref` from FeaturePredictions
-    # rnaseq_study      = `backref` from RNASeqStudy
     # hg_tracks         = `backref` from HgTrack
 
     @validates('org_accession')
@@ -91,6 +96,8 @@ class Analysis(Entity, AnalysisMixins):
             import datetime
             self.creation_date = datetime.datetime.utcnow()
 
+        self.create_directories()
+
 class User(Entity):
     """
     Constitutes a user of this service
@@ -101,18 +108,18 @@ class User(Entity):
     def __init__(self, name):
         self.name = name
 
+
 # SRA analogons
 
-class RNASeqStudy(Entity):
+class RNASeqStudy(Entity): # stub
     """
     Constitues an SRA "SRP" == SRA Study
-
-    Holds the "SRP...." identifier
     """
     srp             = Column(String, primary_key=True)
+    # analyses      = `backref` from Analysis
     # experiments   = `backref` from RNASeqExperiment
 
-class RNASeqExperiment(Entity):
+class RNASeqExperiment(Entity): # stub
     """
     Constitutes an SRA "SRX" == SRA Experiment
     """
@@ -121,7 +128,7 @@ class RNASeqExperiment(Entity):
     srp         = relationship("RNASeqStudy", backref=backref("experiments"))
     # runs      = `backref` from RNASeqRun
 
-class RNASeqRun(Entity):
+class RNASeqRun(Entity, RNASeqRunMixins):
     """
     Constitutes an SRA "SRR" == SRA Run
     """
@@ -129,9 +136,24 @@ class RNASeqRun(Entity):
     srx_srx     = Column(Integer, ForeignKey('rnaseqexperiment.srx'))
     srx         = relationship("RNASeqExperiment", backref=backref("runs"))
 
+    @validates('srr')
+    def check_srr(self, key, srr):
+        import string
+        assert len(srr) == 9
+        assert srr[:3] == 'SRR'
+        assert set(srr[3:]) < set(string.digits)
+        # ... what a powerful language python is! :-)
+        # http://docs.python.org/library/stdtypes.html#set
+        # http://docs.python.org/library/string.html#string-constants
+        return srr.upper()
+
+    def __init__(self, srr):
+        self.srr = srr
+        self.create_directories()
+
 # predictions
 
-class FeaturePredictions(Entity):
+class FeaturePredictions(Entity): # stub
     """
     Holds a reference to the output of a FeaturePredictor
     """
@@ -142,7 +164,7 @@ class FeaturePredictions(Entity):
 
 # tracks
 
-class HgTrack(Entity):
+class HgTrack(Entity): # stub
     """
     Holds the type and filename for a UCSC Genome Browser Track
     """

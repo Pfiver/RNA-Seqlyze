@@ -11,13 +11,8 @@ def check_valid_filename(name):
     """
 
     max_len = 128
-    assert len(name) < max_len, \
-        "Filename lengh (%d) exceeds limit of %d" % (len(name), max_len)
+    assert len(name) < max_len, "Filename too long"
 
-    valid_chars = [chr(c) for c in
-            range(ord("A"), ord("Z") + 1)
-            + range(ord("a"), ord("z") + 1)
-            + range(ord("0"), ord("9") + 1)] + ['_', '.']
-
-    for c in name:
-        assert c in valid_chars, "Bad character in filename: '%c'" % c
+    import string
+    assert set(srr) < set(string.digits + string.letters + '_'), \
+            "Only digits, letters and underscore are allowed in filenames"

@@ -11,15 +11,15 @@ class AnalysisMixins(object):
         return os.path.join(rnaseqlyze.analyses_path, str(self.id))
 
     @property
-    def shared_data_dir(self):
+    def gb_data_dir(self):
         acc = self.org_accession
         return os.path.join(rnaseqlyze.shared_data_path, acc)
 
     def create_directories(self):
         if not os.path.isdir(self.data_dir):
             os.makedirs(self.data_dir)
-        if not os.path.isdir(self.shared_data_dir):
-            os.makedirs(self.shared_data_dir)
+        if not os.path.isdir(self.gb_data_dir):
+            os.makedirs(self.gb_data_dir)
 
     @property
     def inputfile_path(self):

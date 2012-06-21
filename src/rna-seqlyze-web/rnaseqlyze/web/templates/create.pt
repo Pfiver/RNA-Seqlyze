@@ -57,6 +57,21 @@
           </div>
         </div>
 
+        <div class="control-group">
+          <div class="controls">
+            <p>or</p>
+          </div>
+        </div>
+
+        <div id="srrControls" class="control-group">
+          <label for="srrInput" class="control-label">SRR identifier</label>
+          <div class="controls">
+            <input type="text" name="sra_run" id="srrInput" class="input-xlarge" value="SRR"/>
+            <span id="srrStatus" class="help-inline"></span>
+          </div>
+        </div>
+
+
         <h3 id="organism">Organism</h3>
 
         <div id="organismControls" class="control-group">

@@ -16,13 +16,27 @@ def create_analysis(session, inputfile, attributes):
             owner = User("anonymous")
             session.add(owner)
         attributes['owner'] = owner
+    # srr handling
+    if 'sra_run' in attributes:
+        try:
+            attributes['sra_run'] = RNASeqRun(attributes['sra_run'])
+        except:
+            # The RNASeqRun constructor checks if the SRAnnnnnn argument
+            # and raises an exception unless it passes the checks
+            # e.g. if field was left blank/at default value
+            pass # TODO: decide/document what to do
     # create db object
     analysis = Analysis(**attributes)
     session.add(analysis)
     session.flush() # sets analysis.id
-    analysis.create_directories()
     # transfer inputfile
-    save_inputfile(analysis, inputfile)
+    if self.analysis.sra_run:
+        log.debug("transfering input file from sra")
+        self.analysis.sra_run.download()
+    else:
+        log.debug("transfering input file from user")
+        save_inputfile(analysis, inputfile)
+    log.debug("done")
     return analysis
 
 def save_inputfile(analysis, remote_file):

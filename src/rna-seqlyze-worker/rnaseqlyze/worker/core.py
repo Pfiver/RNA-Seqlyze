@@ -48,12 +48,12 @@ class Worker(Thread):
         self.analysis.started = True
         self.session.commit()
         self.data_dir = self.analysis.data_dir
-        self.shared_data_dir = self.analysis.shared_data_dir
+        self.gb_data_dir = self.analysis.gb_data_dir
 
     def run(self):
         self._thread_init()
         self._determine_inputfile_type()
-        self._convert_inpuit_file()
+        self._convert_input_file()
         self._fetch_gb()
         self._gb2fasta()
         self._bowtie_build()
@@ -69,7 +69,7 @@ class Worker(Thread):
                 getit(open(self.analysis.inputfile_path).read(8))
         self.session.commit()
 
-    def _convert_inpuit_file(self):
+    def _convert_input_file(self):
         from os import path
         type = self.analysis.inputfile_type
         fq_path = self.analysis.inputfile_fqpath
@@ -88,7 +88,7 @@ class Worker(Thread):
     def _fetch_gb(self):
         from os import path
         acc = self.analysis.org_accession
-        out_path = path.join(self.shared_data_dir, acc + ".gb")
+        out_path = path.join(self.gb_data_dir, acc + ".gb")
         if not path.exists(out_path):
             log.info("Fetching '%s' from entrez..." % acc)
             # TODO: do this earlier
@@ -99,8 +99,8 @@ class Worker(Thread):
     def _gb2fasta(self):
         from os import path
         acc = self.analysis.org_accession
-        gb_path = path.join(self.shared_data_dir, acc + ".gb")
-        fa_path = path.join(self.shared_data_dir, acc + ".fa")
+        gb_path = path.join(self.gb_data_dir, acc + ".gb")
+        fa_path = path.join(self.gb_data_dir, acc + ".fa")
         if not path.exists(fa_path):
             log.info("Converting '%s' to fasta format..." % acc)
             import Bio.SeqIO
@@ -111,10 +111,10 @@ class Worker(Thread):
     def _bowtie_build(self):
         from os import path
         acc = self.analysis.org_accession
-        bt2_path = path.join(self.shared_data_dir, acc + ".1.bt2")
+        bt2_path = path.join(self.gb_data_dir, acc + ".1.bt2")
         if not path.exists(bt2_path):
             import os
-            os.chdir(self.shared_data_dir)
+            os.chdir(self.gb_data_dir)
             cmd = "bowtie2-build", acc + ".fa", acc
             log.info("bowtie2-build %s" % acc)
             from subprocess import Popen, PIPE
@@ -130,7 +130,7 @@ class Worker(Thread):
             import os
             os.chdir(self.data_dir)
             n_cpus = os.sysconf("SC_NPROCESSORS_ONLN")
-            acc_path = path.join(self.shared_data_dir, acc)
+            acc_path = path.join(self.gb_data_dir, acc)
             fq_name = self.analysis.inputfile_fqname
             cmd = "tophat", "-p", str(n_cpus), \
                     "-o", "tophat-output", acc_path, fq_name
