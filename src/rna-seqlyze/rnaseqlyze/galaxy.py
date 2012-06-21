@@ -94,6 +94,7 @@ def upload(fileobj, filename):
     import_uploads(login())
     histories = json.loads(api_call(
         history_path_template % dict(history=default_history)))
-    for history in histories:
+    # assume objects are ordered chronologically...
+    for history in reversed(histories):
         if history['name'] == filename:
             return history['id']
