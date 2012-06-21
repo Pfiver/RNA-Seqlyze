@@ -13,6 +13,7 @@ class AnalysisMixins(object):
     @property
     def gb_data_dir(self):
         acc = self.org_accession
+        print rnaseqlyze.shared_data_path, acc
         return os.path.join(rnaseqlyze.shared_data_path, acc)
 
     def create_directories(self):

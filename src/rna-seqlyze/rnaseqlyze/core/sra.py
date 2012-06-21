@@ -28,6 +28,6 @@ class RNASeqRunMixins(object):
 
     def download(self):
         from urllib import urlretrievea
-        log.debug("fetching " + self.srr):
+        log.debug("fetching " + self.srr)
         urlretrieve(url, self.srr_data_dir)
-        log.debug("done"):
+        log.debug("done")

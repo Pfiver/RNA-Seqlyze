@@ -20,6 +20,7 @@ def create_analysis(session, inputfile, attributes):
     if 'sra_run' in attributes:
         try:
             attributes['sra_run'] = RNASeqRun(attributes['sra_run'])
+            attributes['sra_run'].create_directories()
         except:
             # The RNASeqRun constructor checks if the SRAnnnnnn argument
             # and raises an exception unless it passes the checks
@@ -29,6 +30,7 @@ def create_analysis(session, inputfile, attributes):
     analysis = Analysis(**attributes)
     session.add(analysis)
     session.flush() # sets analysis.id
+    analysis.create_directories()
     # transfer inputfile
     if self.analysis.sra_run:
         log.debug("transfering input file from sra")

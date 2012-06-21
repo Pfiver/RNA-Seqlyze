@@ -62,6 +62,7 @@ class Analysis(Entity, AnalysisMixins):
     galaxy_bam_id       = Column(String)
 
     rnaseq_run          = relationship("RNASeqRun", backref=backref("analyses"))
+    rnaseq_run_srr      = Column(String, ForeignKey('rnaseqrun.srr'))
 
     # ft_predictions    = `backref` from FeaturePredictions
     # hg_tracks         = `backref` from HgTrack
@@ -95,8 +96,6 @@ class Analysis(Entity, AnalysisMixins):
         if not self.creation_date:
             import datetime
             self.creation_date = datetime.datetime.utcnow()
-
-        self.create_directories()
 
 class User(Entity):
     """
@@ -149,7 +148,6 @@ class RNASeqRun(Entity, RNASeqRunMixins):
 
     def __init__(self, srr):
         self.srr = srr
-        self.create_directories()
 
 # predictions
 
