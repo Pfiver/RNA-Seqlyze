@@ -95,6 +95,24 @@ def path_to_unicode(path):
     return unicode(path)
 
 
+_ws_leading_re = re.compile(ur'\A[\s\u200b]+', re.UNICODE)
+_ws_trailing_re = re.compile(ur'[\s\u200b]+\Z', re.UNICODE)
+
+def stripws(text, leading=True, trailing=True):
+    """Strips unicode white-spaces and ZWSPs from ``text``.
+
+    :param leading: strips leading spaces from ``text`` unless ``leading`` is
+                    `False`.
+    :param trailing: strips trailing spaces from ``text`` unless ``trailing``
+                     is `False`.
+    """
+    if leading:
+        text = _ws_leading_re.sub('', text)
+    if trailing:
+        text = _ws_trailing_re.sub('', text)
+    return text
+
+
 _js_quote = {'\\': '\\\\', '"': '\\"', '\b': '\\b', '\f': '\\f',
              '\n': '\\n', '\r': '\\r', '\t': '\\t', "'": "\\'"}
 for i in range(0x20) + [ord(c) for c in '&<>']:
@@ -541,7 +559,7 @@ def normalize_whitespace(text, to_space=u'\u00a0', remove=u'\u200b'):
 def unquote_label(txt):
     """Remove (one level of) enclosing single or double quotes.
 
-    .. versionadded :: 0.13
+    .. versionadded :: 1.0
     """
     return txt[1:-1] if txt and txt[0] in "'\"" and txt[0] == txt[-1] else txt
 
