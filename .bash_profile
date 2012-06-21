@@ -59,6 +59,13 @@ export VISUAL=vim EDITOR=vim PYTHONSTARTUP=~/.pythonstartup.py
 PS1='\[\033[;92m\]\u@\h\[\033[00m\]:\[\033[;94m\]\w\[\033[00m\]\$ '
 PROMPT_COMMAND='echo -ne "\033]0;${USER}@'$(hostname -s)': ${PWD/$HOME/~}\007"'
 
+find-py()
+{
+	find "$@" \( -name junk -o -name setup.py \) -prune -o \
+		\( -name "*.pt" -o \( -name "*.py" \( ! -name __init__.py \
+		-o -size +1 -exec sed -n '1{/^__/{q1}}' {} \; \) \) \) -print
+}
+
 pushd() {
 	if [ $# = 0 ]
 	then
