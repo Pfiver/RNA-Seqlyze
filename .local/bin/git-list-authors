@@ -1,0 +1,136 @@
+#!/usr/bin/python
+
+from __future__ import print_function
+
+import sys
+
+from git import (
+    Repo, Commit, Tree, Blob
+)
+
+#debug = print
+debug = lambda *args, **kwargs: None
+
+class BlobInfo(object):
+    renamed = False
+    renamed_from = None
+    def __init__(self):
+        self.created_by = []
+        self.modified_by = []
+
+def iter_blobs(commit):
+    def flt(item, depth):
+        return (item.size > 0
+            and item.type == Blob.type
+            and item.name != '.gitignore')
+    return commit.tree.traverse(predicate=flt)
+
+def collect_blobinfos(commit, infos):
+    if not commit.parents:
+        for blob in iter_blobs(commit):
+            if blob.path in infos:
+                infos[blob.path].created_by.append(commit)
+            else:
+                debug("ignoring new", blob.path, file=sys.stderr)
+        return
+    for parent in commit.parents:
+        for diff in parent.diff(commit, M=True):
+            if diff.renamed:
+                if diff.rename_to in infos:
+                    infos[diff.rename_from] = BlobInfo()
+                    infos[diff.rename_from].renamed = True
+                    infos[diff.rename_to].renamed_from = infos[diff.rename_from]
+                else:
+                    debug("ignoring rename", diff.rename_to, file=sys.stderr)
+            elif diff.new_file:
+                if len(commit.parents) == 1:
+                    if diff.b_blob.path in infos:
+                        infos[diff.b_blob.path].created_by.append(commit)
+                    else:
+                        debug("ignoring added", diff.b_blob.path, file=sys.stderr)
+            elif diff.deleted_file:
+                pass
+            else:
+                if len(commit.parents) == 1:
+                    if diff.a_blob.path in infos:
+                        infos[diff.a_blob.path].modified_by.append(commit)
+                    else:
+                        debug("ignoring modified", diff.a_blob.path, file=sys.stderr)
+
+import sys
+def main(argv=sys.argv):
+
+    authors = {}
+    blobinfos = {}
+    repo = Repo(".")
+
+    if len(argv) != 2:
+        start = repo.head.commit
+    else:
+        start = repo.rev_parse(argv[1])
+
+    for blob in iter_blobs(start):
+        blobinfos[blob.path] = BlobInfo()
+
+    for commit in start.iter_parents():
+        collect_blobinfos(commit, blobinfos)
+
+    for blobinfo in blobinfos.values():
+        origin = blobinfo
+        while origin.renamed_from:
+            origin = origin.renamed_from
+            blobinfo.created_by.extend(origin.created_by)
+            blobinfo.modified_by.extend(origin.modified_by)
+
+    for path, blobinfo in blobinfos.iteritems():
+        if blobinfo.renamed:
+            continue
+        commits = blobinfo.created_by + blobinfo.modified_by
+        for author in set(commit.author for commit in commits):
+            authors.setdefault(author, []).append(path)
+
+    print("<!doctype html>")
+    print(
+"""
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>Authors</title>
+        <style>
+            .x {
+                padding: 10px;
+            }
+            .x3 {
+                column-count: 2;
+                -moz-column-count: 2;
+                -webkit-column-count: 2;
+                font-size: 8pt;
+                font-family: Monospace;
+            }
+            .patrick-pfeifer {
+                background-color: #CCE;
+                box-shadow: 0 0 4px 2px #55F;
+            }
+        </style>
+    </head>
+    <body>
+"""
+    )
+    for author in sorted(authors):
+        aname = author.name.encode("utf-8")
+        a_class = aname.lower().replace(' ', '-')
+        print('<div class="x ' + a_class + '">')
+        print('<h3>' + aname + '</h3>')
+        print('<div class="x3">')
+        for path in sorted(authors[author]):
+            path = path.encode("utf-8")
+            print('', path, end='<br>\n')
+        print('</div></div>')
+    print(
+"""
+    </body>
+</html>
+"""
+    )
+
+sys.exit(main())
