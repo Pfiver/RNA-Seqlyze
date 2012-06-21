@@ -1,8 +1,11 @@
 """
-run transterm_hp with the given arguments plus "-p expterm.dat"
+A module to run transterm_hp
 """
 
 def run(args):
+    """
+    Run transterm_hp with the given arguments plus "-p expterm.dat"
+    """
     import os, subprocess
     def findit():
         for path in os.getenv("PATH").split(os.path.pathsep):

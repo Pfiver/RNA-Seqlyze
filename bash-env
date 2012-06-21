@@ -93,9 +93,9 @@ logtail-developall ()
 	rnas-pynotify "${rnas_pkgdirs[@]}" |
 		while read event file
 		do
-			if [[ $file =~ *.py ]]
+			if [[ $file == *.py ]]
 			then
-				sigkill
+				sigint
 			fi
 		done &
 	tail -f /var/log/apache2/{access,error}.log \

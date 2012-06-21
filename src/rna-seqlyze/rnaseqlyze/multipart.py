@@ -1,4 +1,7 @@
-# based on http://code.activestate.com/recipes/146306/
+"""
+Multipart form-data handling
+based on <http://code.activestate.com/recipes/146306/>
+"""
 
 def urlopen(url, data):
     import urllib2

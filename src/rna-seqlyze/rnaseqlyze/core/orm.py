@@ -2,7 +2,10 @@
 Map Python Objects to Database Tables
 """
 
-# good read:
+from logging import getLogger
+log = getLogger(__name__)
+
+# nice tutorial showing everithing is here:
 #   http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
 
 from sqlalchemy import ForeignKey

@@ -1,3 +1,6 @@
+import logging
+log = logging.getLogger(__name__)
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from pyramid.config import Configurator
@@ -14,7 +17,6 @@ DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 # used by the .views.post() function,
 # that needs to commit the session eraly on
 DBSession.unmanaged = scoped_session(sessionmaker())
-
 
 def main(global_config, **settings):
     """

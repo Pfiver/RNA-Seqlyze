@@ -1,13 +1,13 @@
 """
-This module implements all kinds of security related checks.
+A collection of security related functions.
 
-In case a checks fails, an exception is raised, otherwise None is returned.
+In case a check fails, an exception is raised, otherwise None is returned.
 """
 
 def check_valid_filename(name):
     """
-    Make sure the name doesn't contain
-    any "funny" characters - ie. ../../../../sensitive.txt
+    Assert that the passed name doesn't contain
+    any "funny" characters (e.g. ../../../../sensitive.txt)
     """
 
     max_len = 128

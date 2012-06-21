@@ -1,3 +1,7 @@
+"""
+Property getters and methods for Analysis instances
+"""
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -15,12 +19,6 @@ class AnalysisMixins(object):
         acc = self.org_accession
         print rnaseqlyze.shared_data_path, acc
         return os.path.join(rnaseqlyze.shared_data_path, acc)
-
-    def create_directories(self):
-        if not os.path.isdir(self.data_dir):
-            os.makedirs(self.data_dir)
-        if not os.path.isdir(self.gb_data_dir):
-            os.makedirs(self.gb_data_dir)
 
     @property
     def inputfile_path(self):
@@ -49,7 +47,12 @@ class AnalysisMixins(object):
                                     dict(dataset=self.galaxy_bam_id)
         from urllib import quote
         from rnaseqlyze import ucscbrowser
-        log.debug("hg_url = %... " + ucscbrowser.custom_track_url)
         hg_url = ucscbrowser.custom_track_url % \
                         dict(db="sulSol1", track_url=quote(track_url))
         return hg_url
+
+    def create_directories(self):
+        if not os.path.isdir(self.data_dir):
+            os.makedirs(self.data_dir)
+        if not os.path.isdir(self.gb_data_dir):
+            os.makedirs(self.gb_data_dir)

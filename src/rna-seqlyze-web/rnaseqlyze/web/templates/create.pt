@@ -66,7 +66,7 @@
         <div id="srrControls" class="control-group">
           <label for="srrInput" class="control-label">SRR identifier</label>
           <div class="controls">
-            <input type="text" name="sra_run" id="srrInput" class="input-xlarge" value="SRR"/>
+            <input type="text" name="rnaseq_run" id="srrInput" class="input-xlarge" value="SRR"/>
             <span id="srrStatus" class="help-inline"></span>
           </div>
         </div>

@@ -6,7 +6,7 @@ import urllib2
 
 import rnaseqlyze
 from rnaseqlyze.core import security
-from rnaseqlyze.core.orm import Analysis, User
+from rnaseqlyze.core.orm import Analysis, User, RNASeqRun
 
 def create_analysis(session, inputfile, attributes):
     # owner handling
@@ -17,24 +17,29 @@ def create_analysis(session, inputfile, attributes):
             session.add(owner)
         attributes['owner'] = owner
     # srr handling
-    if 'sra_run' in attributes:
-        try:
-            attributes['sra_run'] = RNASeqRun(attributes['sra_run'])
-            attributes['sra_run'].create_directories()
-        except:
-            # The RNASeqRun constructor checks if the SRAnnnnnn argument
-            # and raises an exception unless it passes the checks
-            # e.g. if field was left blank/at default value
-            pass # TODO: decide/document what to do
+    if 'rnaseq_run' in attributes:
+        rnaseq_run = session.query(RNASeqRun).get(attributes['rnaseq_run'])
+        if not rnaseq_run:
+            try:
+                rnaseq_run = RNASeqRun(attributes['rnaseq_run'])
+                rnaseq_run.create_directories()
+                session.add(rnaseq_run)
+                attributes['rnaseq_run'] = rnaseq_run
+            except:
+                # The RNASeqRun constructor checks if the SRAnnnnnn argument
+                # and raises an exception unless it passes the checks
+                # e.g. if field was left blank/at default value
+                pass # TODO: decide/document what to do
+
     # create db object
     analysis = Analysis(**attributes)
     session.add(analysis)
     session.flush() # sets analysis.id
     analysis.create_directories()
     # transfer inputfile
-    if self.analysis.sra_run:
+    if analysis.rnaseq_run:
         log.debug("transfering input file from sra")
-        self.analysis.sra_run.download()
+        analysis.rnaseq_run.download()
     else:
         log.debug("transfering input file from user")
         save_inputfile(analysis, inputfile)

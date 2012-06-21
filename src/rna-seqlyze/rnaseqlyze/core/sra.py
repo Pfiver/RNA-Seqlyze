@@ -11,7 +11,7 @@ from os import path
 import rnaseqlyze
 
 srr_url_template = "http://ftp-private.ncbi.nlm.nih.gov" \
-        "/sra/sra-instant/reads/ByRun/sra/SRR/{srr:.3}/{srr:.6}/{srr}.sra"
+        "/sra/sra-instant/reads/ByRun/sra/SRR/{srr:.6}/{srr}/{srr}.sra"
 # e.g.  "/sra/sra-instant/reads/ByRun/sra/SRR/SRR000/SRR000001/SRR000001.sra"
 
 class RNASeqRunMixins(object):
@@ -27,7 +27,8 @@ class RNASeqRunMixins(object):
             os.makedirs(self.srr_data_dir)
 
     def download(self):
-        from urllib import urlretrievea
+        from urllib import urlretrieve
         log.debug("fetching " + self.srr)
-        urlretrieve(url, self.srr_data_dir)
+        urlretrieve(srr_url_template.format(srr=self.srr),
+                    path.join(self.srr_data_dir, self.srr) + ".sra")
         log.debug("done")

@@ -9,6 +9,9 @@ def main(argv=sys.argv):
     wm = WatchManager()
     for d in argv[1:]:
         wm.add_watch(d, mask, rec=True)
-    eh = ProcessEvent()
-    eh.process_default = lambda event: print(event.maskname, event.name)
+    class PrintEvents(ProcessEvent):
+        def process_default(self, event):
+            print(event.maskname, event.name)
+            sys.stdout.flush()
+    eh = PrintEvents()
     Notifier(wm, eh).loop()

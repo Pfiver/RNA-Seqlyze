@@ -23,8 +23,15 @@ def post(request):
     post = request.POST
 
     # inputfile handling
-    post['inputfile_name'] = post['inputfile'].filename
-    inputfile = post['inputfile'].file
+    try:
+        # .filename attribute access will fail if no file is specified
+        post['inputfile_name'] = post['inputfile'].filename
+        inputfile = post['inputfile'].file
+    except:
+        inputfile = None
+        # the user should have provided a
+        # meaningful SRR identifier in sra_run in this case
+        pass
     del post['inputfile']
 
     # organism handling
