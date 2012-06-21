@@ -9,6 +9,8 @@ rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
 if [ "$PS1" ]
 then
 	dirs -c
+	pushd ~/data/rna-seqlyze/analyses
+	pushd ~/data/rna-seqlyze/shared_data
 	for ((i=${#rnas_pkgdirs[@]}-1; i>0; i--))
 	do
 		pkg=${rnas_pkgdirs[i]##*-}
@@ -88,7 +90,14 @@ logtail-developall ()
 			sleep 10
 		done
 	) &
-	auto-restart-mod-wsgi "${rnas_pkgdirs[@]}" &
+	rnas-pynotify "${rnas_pkgdirs[@]}" |
+		while read event file
+		do
+			if [[ $file =~ *.py ]]
+			then
+				sigkill
+			fi
+		done &
 	tail -f /var/log/apache2/{access,error}.log \
 		$rnas_topdir/src/rna-seqlyze-{web,worker}/*.log
 }
