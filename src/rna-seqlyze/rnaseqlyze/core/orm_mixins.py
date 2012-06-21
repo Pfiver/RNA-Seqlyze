@@ -45,8 +45,7 @@ class AnalysisMixins(object):
         from rnaseqlyze import galaxy
         track_url = "http://" + galaxy.hostname + \
                         galaxy.ucsc_bam_track_template % \
-                                dict(dataset=self.galaxy_bam_id)
-
+                                    dict(dataset=self.galaxy_bam_id)
         from urllib import quote
         from rnaseqlyze import ucscbrowser
         log.debug("hg_url = %... " + ucscbrowser.custom_track_url)

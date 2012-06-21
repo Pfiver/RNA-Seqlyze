@@ -104,8 +104,9 @@ class Worker(Thread):
         if not path.exists(fa_path):
             log.info("Converting '%s' to fasta format..." % acc)
             import Bio.SeqIO
-            parse = Bio.SeqIO.parse(open(gb_path), "genbank")
-            Bio.SeqIO.write(parse, open(fa_path, "w"), "fasta") 
+            record = Bio.SeqIO.parse(open(gb_path), "genbank").next()
+            record.id = "chr" # required (!) for ucsc browser
+            Bio.SeqIO.write(record, open(fa_path, "w"), "fasta")
 
     def _bowtie_build(self):
         from os import path
