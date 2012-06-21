@@ -1,6 +1,3 @@
 /log
-/files
-dist
-build
-*.egg-info
+# generated from _template.svg
 /htdocs/Milestones & Activites.svg
