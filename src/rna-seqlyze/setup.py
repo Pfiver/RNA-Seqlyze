@@ -43,7 +43,6 @@ setup(
     install_requires=[
         "sphinx",                   # Apidoc
         "pyflakes",                 # Style checker
-        "pyinotify",                # Auto-Restarting mod_wsgi daemons
         "pyramid >= 1.3.2",         # Web framework
         "MarkupSafe >= 0.15",       # Syntax highlighting in Trac
         "MySQL-python >= 1.2.2",    # Trac database backend

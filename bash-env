@@ -46,6 +46,21 @@ sigint ()
 	curl localhost/biopython/debug?{sig_int,sig_int}
 }
 
+auto-sigint ()
+{
+	inotifywait --monitor --recursive \
+		-e modify -e moved_to --format "%e %f" "${rnas_pkgdirs[@]}" |
+	while read event arg
+	do
+		if [[ "$arg" = *.py ]]
+		then
+			echo $event on $arg
+			sigint
+		fi
+	done
+
+}
+
 re-apidoc()
 (
 	cd $rnas_topdir/report/apidoc
@@ -82,6 +97,8 @@ re-cover ()
 
 logtail-developall ()
 {
+	auto-sigint &
+
 	(
 		cd $rnas_topdir
 		while true
@@ -90,14 +107,7 @@ logtail-developall ()
 			sleep 10
 		done
 	) &
-	rnas-pynotify "${rnas_pkgdirs[@]}" |
-		while read event file
-		do
-			if [[ $file == *.py ]]
-			then
-				sigint
-			fi
-		done &
+
 	tail -f /var/log/apache2/{access,error}.log \
 		$rnas_topdir/src/rna-seqlyze-{web,worker}/*.log
 }
