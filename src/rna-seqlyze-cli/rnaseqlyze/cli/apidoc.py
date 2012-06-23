@@ -1,20 +1,35 @@
-import os, sys
-from string import Template
-from pkgutil import walk_packages
+"""\
+RNA-Seqlyze ApiDoc Generator
 
-Package = type('Package', (object,), dict())
+Usage:
+    rnas-apidoc -h|--help
+    rnas-apidoc [-s|--source] <path> ...
+    
+generates one <package>.rst sphinx apidoc source file,
+in the current directory, for each package found in <path>
 
-def main(argv=sys.argv):
+Options:
+    -s --source    use `literalinclude` instead of `automodule` 
+"""
 
+def main():
+    import os, sys
+    from pkgutil import walk_packages
+
+    import docopt
+    opts = docopt.docopt(__doc__)
+
+    Package = type('', (), {})
     packages = {}
-    module_tmpl = module
-    subwrite = lambda tpl, **vals: \
-            pkg.outfile.write(tpl.substitute(**vals))
+    global mod_tpl
+    if opts['--source']:
+        mod_tpl = mod_src_tpl
+    write = lambda tpl, **vals: \
+            pkg.outfile.write(tpl.format(**vals))
 
-    for loader, name, is_pkg in walk_packages(argv[1:]):
+    for loader, name, is_pkg in walk_packages(opts['<path>']):
         pkgname = name.rsplit('.', 1)[0]
         if is_pkg:
-            print name
             if pkgname == name:
                 modname, pkgname = pkgname, ''
             else:
@@ -22,8 +37,9 @@ def main(argv=sys.argv):
                 packages[pkgname].subpackages.append(name)
             pkg = packages[name] = Package()
             pkg.subpackages = []
+            print "creating %s.rst" % name
             pkg.outfile = open(name + '.rst', 'w')
-            subwrite(package, name=name, equals="="*len(name))
+            write(pkg_tpl, name=name, equals="=" * len(name))
             filename = modname + os.sep + '__init__.py'
 
         else:
@@ -33,51 +49,45 @@ def main(argv=sys.argv):
             pkg = packages[pkgname]
             filename = name[len(pkgname)+1:] + '.py'
 
-        if not pkgname:
-            modpath, basepath = '', loader.path
-        else:
-            basepath = loader.path[:-len(pkgname)-1]
-            modpath = loader.path[len(basepath)+1:] + os.sep
-
-        pkgpath = os.path.basename(basepath) + os.sep
-        subwrite(module_tmpl, name=name, dashes="-"*len(name),
-                              path=pkgpath + modpath + filename)
+        pkgpath = os.path.relpath(loader.path, ".")
+        write(mod_tpl, name=name, dashes="-" * len(name),
+                                  path=pkgpath + os.sep + filename)
 
     for pkg in packages.values():
         if pkg.subpackages:
-            subwrite(subpackages, names="\n\t".join(pkg.subpackages))
+            write(sub_pkg_tpl, names="\n\t".join(pkg.subpackages))
 
-package = Template("""\
-Package `${name}`
-${equals}==========
+pkg_tpl = """\
+Package `{name}`
+{equals}==========
 
-""")
+"""
 
-module = Template("""\
-:mod:`${name}`
-${dashes}-------
+mod_tpl = """\
+:mod:`{name}`
+{dashes}-------
 
-.. automodule:: ${name}
+.. automodule:: {name}
 	:members:
 	:undoc-members:
 	:show-inheritance:
 
-""")
+"""
 
-modulesrc = Template("""\
-:mod:`${name}`
-${dashes}-------
+mod_src_tpl = """\
+:mod:`{name}`
+{dashes}-------
 
-.. literalinclude:: ${path}
+.. literalinclude:: {path}
 
-""")
+"""
 
-subpackages = Template("""\
+sub_pkg_tpl = """\
 Subpackages
 -----------
 
 .. toctree::
 
-	${names}
+	{names}
 
-""")
+"""
