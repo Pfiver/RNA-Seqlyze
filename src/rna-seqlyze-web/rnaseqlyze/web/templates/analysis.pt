@@ -13,7 +13,7 @@
     <div class="page-header">
       <h1>Analysis ${analysis.id}<br>
         <small>created
-            on <span class="date">${analysis.creation_date.strftime("%Y-%m-%d %H:%M")}</span>
+            on <span class="date">${analysis.creation_date.strftime("%Y-%m-%d %H:%M")} UTC</span>
             by <span class="username">${analysis.owner.name}</span>
         </small>
       </h1>
