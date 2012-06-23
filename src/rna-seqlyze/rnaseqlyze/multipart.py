@@ -1,6 +1,6 @@
 """
 Multipart form-data handling
-based on <http://code.activestate.com/recipes/146306/>
+based on http://code.activestate.com/recipes/146306/
 """
 
 def urlopen(url, data):
