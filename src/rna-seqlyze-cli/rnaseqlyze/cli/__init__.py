@@ -1,9 +1,6 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+"""\
+Programs runnable from the command line.
 
-import rnaseqlyze
-
-DBSession = sessionmaker(create_engine(rnaseqlyze.db_url))
-
-def main():
-    session = DBSession()
+For each module contained in this package, a wrapper script
+called `rnas-<module name>` will be installed in `<prefix>/bin`.
+"""
