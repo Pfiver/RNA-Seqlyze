@@ -14,7 +14,10 @@ def application(env, start_request):
     try:
         script_name_len = env['REQUEST_URI'].index("/", base_path_len)
     except ValueError:
-        script_name_len = len(env['REQUEST_URI'])
+        try:
+            script_name_len = env['REQUEST_URI'].index("?", base_path_len)
+        except ValueError:
+            script_name_len = len(env['REQUEST_URI'])
 
     env['SCRIPT_NAME'] = env['REQUEST_URI'][:script_name_len]
     appname = env['SCRIPT_NAME'][base_path_len:]
