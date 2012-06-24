@@ -101,7 +101,7 @@ logtail-developall ()
 	do
 		rnas-worker --development
 		sleep 10
-	done
+	done &
 
 	tail -f /var/log/apache2/{access,error}.log \
 		$rnas_topdir/src/rna-seqlyze-{web,worker}/*.log
