@@ -80,33 +80,28 @@ re-install ()
 }
 
 re-cover ()
-{
+(
 	# compute test coverage
 	#  --cover-inclusive: include modules not loaded by test scripts
 	#  --cover-package: restrict coverage report to packge
 	#  --cover-html: generate html coverage report
-	(
-		cd "$rnas_topdir"
-		nosetests --with-coverage		\
-			--cover-inclusive		\
-			--cover-package rnaseqlyze	\
-			--cover-html --cover-html-dir=report/coverage "${rnas_pkgdirs[@]}"
-		rm -f .coverage
-	)
-}
+	cd "$rnas_topdir"
+	nosetests --with-coverage		\
+		--cover-inclusive		\
+		--cover-package rnaseqlyze	\
+		--cover-html --cover-html-dir=report/coverage "${rnas_pkgdirs[@]}"
+	rm -f .coverage
+)
 
 logtail-developall ()
 {
 	auto-sigint &
 
-	(
-		cd $rnas_topdir
-		while true
-		do
-			pserve --reload src/rna-seqlyze-worker/development.ini
-			sleep 10
-		done
-	) &
+	while true
+	do
+		rnas-worker --development
+		sleep 10
+	done
 
 	tail -f /var/log/apache2/{access,error}.log \
 		$rnas_topdir/src/rna-seqlyze-{web,worker}/*.log

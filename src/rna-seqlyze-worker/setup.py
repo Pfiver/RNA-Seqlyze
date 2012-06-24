@@ -26,6 +26,9 @@ setup(
         'waitress',
     ],
     entry_points={
+        'console_scripts': [
+            'rnas-worker = rnaseqlyze.worker.daemon:main',
+        ],
         'paste.app_factory': [
             'main = rnaseqlyze.worker:wsgi_app',
         ],
