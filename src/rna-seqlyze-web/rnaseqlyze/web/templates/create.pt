@@ -13,7 +13,7 @@
       </h1>
     </div>
 
-    <form class="form-horizontal" action="${path('analyses')}"
+    <form id="create_form" class="form-horizontal" action="${path('analyses')}"
           method="POST" accept-charset="utf-8" enctype="multipart/form-data">
   
       <fieldset>
@@ -28,9 +28,13 @@
   -->
 
         <div class="control-group">
-          <label for="inputfileInput" class="control-label">SRA or FASTQ File</label>
+          <label for="inputfile_browse" class="control-label">SRA or FASTQ File</label>
           <div class="controls">
-            <input type="file" name="inputfile" id="inputfileInput" class="input-file">
+            <div id="inputfile_progress" class="progress progress-striped input-prepend input-xlarge">
+              <div class="filestatus"></div>
+              <div class="bar" style="width: 20%;"></div>
+            </div>
+            <button class="btn" id="inputfile_browse">Browse...</button>
           </div>
         </div>
         <div class="control-group">
@@ -72,7 +76,25 @@
         </div>
 
 
-        <h3 id="organism">Organism</h3>
+        <h2 id="organism">Organism</h2>
+
+        <div class="control-group">
+          <label for="genbankfile_browse" class="control-label">Genebank File</label>
+          <div class="controls">
+            <div id="genbankfile_progress" class="progress progress-striped input-prepend input-xlarge">
+              <div class="filestatus"></div>
+              <div class="bar" style="width: 20%;"></div>
+            </div>
+            <button class="btn" id="genbankfile_browse">Browse...</button>
+            <p class="help-block">Nucleotide Sequence in Genebank format</p>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="controls">
+            <p>or</p>
+          </div>
+        </div>
 
         <div id="organismControls" class="control-group">
           <label for="organismInput" class="control-label">Accession Number</label>
@@ -83,24 +105,10 @@
           </div>
         </div>
 
-        <div class="control-group">
-          <div class="controls">
-            <p>or</p>
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label for="genbankfileInput" class="control-label">Genebank File</label>
-          <div class="controls">
-            <input type="file" name="genebankfile" id="genbankfileInput" class="input-file">
-            <p class="help-block">Nucleotide Sequence in Genebank format</p>
-          </div>
-        </div>
-
         <br style="margin: 10px;"/>
 
         <div class="form-actions">
-          <button class="btn btn-primary" type="submit">Submit</button>
+          <button id="create_form_submit" class="btn btn-primary">Submit</button>
         </div>
 
       </fieldset>
@@ -109,7 +117,23 @@
   </tal:block>
 
   <tal:block metal:fill-slot="footer">
-    <script src="${path('js/rnaseqlyze-create.js')}"></script>
+      <script type="text/javascript">
+	//<![CDATA[
+	path_js = "${path('js')}";
+	//]]>
+      </script>
+      
+      <script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
+  
+      <script type="text/javascript" src="${path('js/plupload.js')}"></script>
+      <script type="text/javascript" src="${path('js/plupload.gears.js')}"></script>
+      <script type="text/javascript" src="${path('js/plupload.silverlight.js')}"></script>
+      <script type="text/javascript" src="${path('js/plupload.flash.js')}"></script>
+      <script type="text/javascript" src="${path('js/plupload.browserplus.js')}"></script>
+      <script type="text/javascript" src="${path('js/plupload.html4.js')}"></script>
+      <script type="text/javascript" src="${path('js/plupload.html5.js')}"></script>
+
+      <script type="text/javascript" src="${path('js/rnaseqlyze-create.js')}"></script>
   </tal:block>
 
 </tal:block>

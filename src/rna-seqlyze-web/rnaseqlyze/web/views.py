@@ -56,7 +56,6 @@ def post(request):
 
     return HTTPFound(request.route_path('analysis', id=analysis.id))
 
-
 @view_config(route_name='analysis', renderer='templates/analysis.pt')
 def display(request):
     id = int(request.matchdict["id"])

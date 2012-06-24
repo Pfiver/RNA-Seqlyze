@@ -37,6 +37,7 @@ def main(global_config, **settings):
     config.scan()
 
     config.add_route('home', '/')
+    config.add_route('files', '/files')
     config.add_route('analyses', '/analyses')
     config.add_route('analysis', '/analyses/{id}')
 
