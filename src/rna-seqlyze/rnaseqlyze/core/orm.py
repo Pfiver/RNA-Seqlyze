@@ -76,6 +76,10 @@ class Analysis(Entity, AnalysisMixins):
         security.check_valid_filename(acc)
         return acc.upper()
 
+    @validates('strandspecific', 'pairended')
+    def validate_boolean(self, attr, val):
+        return val and True or False
+
     @validates('inputfile_name', 'genbankfile_name')
     def validate_org_accession(self, attr, name):
         if '\\' in name:
