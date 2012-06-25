@@ -25,22 +25,32 @@ def get_uploadfile(db_session, session, name, type):
         db_session.flush() # sets analysis.id
         session.analysis.create_data_dir()
 
-    if type == 'inputfile':     # Short Reads in SRA or FASTQ format
-        if session.analysis.inputfile_name:
-            pass # TODO: remove
-        session.analysis.inputfile_name = name
-        log.debug("creating upload file '%s' for analysis #%d" % (
-                                         name,             session.analysis.id))
-        return open(session.analysis.inputfile_path, "w+b")
-    elif type == 'genbankfile': # Organism genbank file
-        if session.analysis.genbankfile_name:
-            pass # TODO: remove
-        session.analysis.genbankfile_name = name
-        log.debug("creating upload file '%s' for analysis #%d" % (
-                                         name,             session.analysis.id))
-        return open(session.analysis.genbankfile_path, "w+b")
-    else:
-        raise Exception()
+    assert type in ('inputfile', 'genbankfile')
+
+    typename = type + '_name'
+
+    # inputfile_name -> Short Reads in SRA or FASTQ format
+    # genabnkfile_name -> Organism genbank file
+    #=if session.analysis.inputfile_name:
+    if getattr(session.analysis, typename):
+        # we land here if a user uploads
+        # more than one file per type
+        # this is not intended, BUT
+        # these are the interwebs!
+        pass # FIXE: remove old
+
+    #=session.analysis.inputfile_name = name
+    setattr(session.analysis, typename, name)
+
+    log.debug("creating upload file '%s' for analysis #%d" % (
+                                     name,             session.analysis.id))a
+
+    # this would be the place to throw in a wrapper
+    # to track upload progress the old way, i.e.
+    # with server callbacks...
+
+    #inputfile_path is a @property
+    return open(getattr(session.analysis, type + '_path'), "w+b")
 
 def get_analysis(db_session, attributes):
 
