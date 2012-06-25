@@ -48,11 +48,16 @@ $(document).ready(function() {
      * plupload -- from src/plupload/examples/custom.html
      */
 
-    var uploads = ['inputfile', 'genbankfile'];
+    var uploads = {
+        'inputfile': {},
+        'genbankfile': {}
+    };
 
     var context = function(name) {
+
         var self = this;
-        this.options = {
+
+        var options = {
             url:      'upload',
             runtimes:      'html5,gears,flash,silverlight,browserplus,html4',
             browse_button:    name + '_browse',
@@ -62,32 +67,33 @@ $(document).ready(function() {
             flash_swf_url:          path_js + '/plupload.flash.swf',
             silverlight_xap_url:      path_js + '/plupload.silverlight.xap',
         };
-        this.events = {
-            'Init': function(up, params) {
-console.log("1111111 " + name);
-                $('#' + name + '_progress .filestatus').text(
-                                "Current runtime: " + params.runtime);
-            },
+
+        var events = {
+            // 'Init': function(up, params) {
+            //     $('#' + name + '_progress .filestatus').text(
+            //                     "Current runtime: " + params.runtime);
+            // },
             'FilesAdded': function(up, up_files) {
-console.log("4444444 " + self.up.id);
-console.log("4444445 " + self.up.files);
-console.log("4444446 " + up_files);
                 // remove all other files already present
                 // plupload features multiple files in one widget
                 // we have two widgets and one name per widget
                 up.splice();
-                this.active = true;
+                self.active = true;
                 $('#' + name + '_progress .filestatus').text(
                     up_files[0].name +
                         ' (' + plupload.formatSize(up_files[0].size) + ')');
             },
             'UploadComplete': function(up, up_files) {
-                this.complete = true;
+                self.complete = true;
+                console.log("go1" + uploads.inputfile.active);
+                console.log("go1" + uploads.genbankfile.active);
+                console.log("go1" + uploads.inputfile.complete);
+                console.log("go1" + uploads.genbankfile.complete);
                 for (nam in uploads)
                     if (uploads[nam].active)
                         if(!uploads[nam].complete)
                             return;
-                console.log("go");
+                console.log("go2");
                 $('#create_form').submit();
             },
             'UploadProgress': function(up, up_file) {
@@ -97,33 +103,28 @@ console.log("4444446 " + up_files);
                 //                             up_file.percent + '%');
             },
         };
-        this.init = function() {
-            this.up = new plupload.Uploader(this.options);
-            for (x in this.events) {
-console.log("2222222 " + x);
-                this.up.bind(x, this.events[x]);}
-            this.up.init();
-console.log("5555555 " + self.up.id);
-console.log("6666666 " + this.up.id);
 
-            $('#create_form_submit').click(function() {
-                console.log(name + " start...")
-                self.up.start();
-console.log("3333333 " + self.up.id);
-                return false;
-            });
-            $('#' + name + '_progress').click(function() {
-                $('#' + name + '_browse').click();
-            });
-        };
         this.active = false;
         this.complete = false;
+        var up = this.up = new plupload.Uploader(options);
+
+        for (x in events)
+            up.bind(x, events[x]);
+
+        $('#' + name + '_progress').click(function() {
+            $('#' + name + '_browse').click();
+        });
+
+        $('#create_form_submit').click(function() {
+            console.log(name + " start...")
+            up.start(); return false;
+        });
+
+        up.init();
     };
 
-    for (i = 0; i < uploads.length; i++) {
-        ctx = new context(uploads[i]);
-        ctx.init();
-    }
+    for (name in uploads)
+        uploads[name] = new context(name);
 
 });
 
