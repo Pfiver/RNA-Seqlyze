@@ -85,15 +85,10 @@ $(document).ready(function() {
             },
             'UploadComplete': function(up, up_files) {
                 self.complete = true;
-                console.log("go1" + uploads.inputfile.active);
-                console.log("go1" + uploads.genbankfile.active);
-                console.log("go1" + uploads.inputfile.complete);
-                console.log("go1" + uploads.genbankfile.complete);
                 for (nam in uploads)
                     if (uploads[nam].active)
                         if(!uploads[nam].complete)
                             return;
-                console.log("go2");
                 $('#create_form').submit();
             },
             'UploadProgress': function(up, up_file) {
@@ -106,26 +101,25 @@ $(document).ready(function() {
 
         this.active = false;
         this.complete = false;
-        var up = this.up = new plupload.Uploader(options);
 
-        for (x in events)
-            up.bind(x, events[x]);
+        var up = this.up = new plupload.Uploader(options);
 
         $('#' + name + '_progress').click(function() {
             $('#' + name + '_browse').click();
         });
 
         $('#create_form_submit').click(function() {
-            console.log(name + " start...")
             up.start(); return false;
         });
+
+        for (x in events)
+            up.bind(x, events[x]);
 
         up.init();
     };
 
     for (name in uploads)
         uploads[name] = new context(name);
-
 });
 
 // vim: et:sw=4
