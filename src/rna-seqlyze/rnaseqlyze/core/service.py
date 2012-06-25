@@ -42,7 +42,8 @@ def get_uploadfile(db_session, session, name, type):
     else:
         raise Exception()
 
-def create_analysis(db_session, attributes):
+def get_analysis(db_session, attributes):
+
     # owner handling
     if 'owner' not in attributes:
         owner = db_session.query(User).get("anonymous")
@@ -50,6 +51,7 @@ def create_analysis(db_session, attributes):
             owner = User("anonymous")
             db_session.add(owner)
         attributes['owner'] = owner
+
     # srr handling
     if 'rnaseq_run' in attributes:
         rnaseq_run = db_session.query(RNASeqRun).get(attributes['rnaseq_run'])
@@ -66,21 +68,25 @@ def create_analysis(db_session, attributes):
                 del attributes['rnaseq_run']
                 pass # TODO: decide/document what to do
 
-    # get analysis
-    # it already exists in case the user has uploaded something
-    analysis = db_session.query(UploadSession) \
-                    .get(attributes['upload_session']).analysis
+    # in case the user has uploaded something
+    upload_session = db_session.query(UploadSession) \
+                            .get(attributes['upload_session'])
     del attributes['upload_session']
-    log.info(attributes)
-    if not analysis:
+
+    if upload_session:
+        # the analysis will already exist
+        analysis = upload_session.analysis
+        # allow no more uploads to this analysis
+        db_session.delete(upload_session)
+        for attr, value in attributes.items():
+            setattr(analysis, attr, value)
+
+    else:
         # create db object
         analysis = Analysis(**attributes)
         db_session.add(analysis)
         db_session.flush() # sets analysis.id
         analysis.create_data_dir()
-    else:
-        for attr, value in attributes.items():
-            setattr(analysis, attr, value)
 
     # if no input file has been uploaded
     if not analysis.inputfile_name:

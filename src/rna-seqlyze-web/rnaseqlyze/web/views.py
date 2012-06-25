@@ -61,22 +61,24 @@ def post(request):
 
     # TODO: csrf security checks
     #       see "shootout" pyramid demo app
+    try:
+        analysis = service.get_analysis(
+                    DBSession.unmanaged, attributes=request.POST)
 
-    analysis = service.create_analysis(
-                DBSession.unmanaged, attributes=request.POST)
+        # the analysis must exist in the database
+        # so the worker can find it and start working
+        DBSession.unmanaged.commit()
 
-    # no more uploads to this analysis
-    DBSession.query(analysis.upload_session).delete()
+        service.start_analysis(analysis)
+        log.debug("started analysis #%d by '%s'" % (
+                            analysis.id, analysis.owner.name))
 
-    # the analysis must exist in the database
-    # so the worker can find it and start working
-    DBSession.unmanaged.commit()
-
-    service.start_analysis(analysis)
-    log.debug("started analysis #%d by '%s'" % (
-                        analysis.id, analysis.owner.name))
-
-    return HTTPFound(request.route_path('analysis', id=analysis.id))
+        return HTTPFound(request.route_path('analysis', id=analysis.id))
+    except:
+        log.info("abort")
+        DBSession.unmanaged.rollback()
+        log.debug("rollback complete")
+        raise
 
 @view_config(route_name='analysis', renderer='templates/analysis.pt')
 def display(request):

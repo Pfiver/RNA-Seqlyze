@@ -48,31 +48,10 @@ $(document).ready(function() {
      * plupload -- from src/plupload/examples/custom.html
      */
 
-    var uploaders = {
-        'inputfile': {},
-        'genbankfile': {},
-    }
+    var uploads = ['inputfile', 'genbankfile'];
 
-    function upload_complete(up, up_files) {
-
-        uploads[up.id].complete = true;
-
-        complete = true;
-        for (name in uploaders)
-            if (!uploaders[name].complete) {
-                complete = false;
-                break;
-            }
-
-        if (complete)
-            $('#create_form').submit();
-
-    }
-
-    for (name in uploaders) (function(name) {
-
-        options = {
-            id:     name,
+    var context = function(name) {
+        options: {
             url:      'upload',
             runtimes:      'html5,gears,flash,silverlight,browserplus,html4',
             browse_button:    name + '_browse',
@@ -81,57 +60,62 @@ $(document).ready(function() {
                                       'session': upload_session },
             flash_swf_url:          path_js + '/plupload.flash.swf',
             silverlight_xap_url:      path_js + '/plupload.silverlight.xap',
-        };
-
-        var ul = uploaders[name];
-
-        ul.complete = false;
-
-        ul = ul.plupload = new plupload.Uploader(options);
-
-        /*
-            ul.bind('Init', function(up, params) {
+        },
+        events: {
+            'Init': function(up, params) {
                 $('#' + name + '_container .filestatus').text(
                                 "Current runtime: " + params.runtime);
-            });
-        */
-
-        ul.bind('FilesAdded', function(up, up_files) {
-            // remove all other files already present
-            // plupload features multiple files in one widget
-            // we have two widgets and one name per widget
-            up.splice();
-            $('#' + name + '_progress .filestatus').text(
-                up_files[0].name +
-                    ' (' + plupload.formatSize(up_files[0].size) + ')');
-        });
-
-        ul.bind('UploadComplete', upload_complete);
-
-        /*    
-            ul.bind('UploadProgress', function(up, up_file) {
+            },
+            'FilesAdded': function(up, up_files) {
+                // remove all other files already present
+                // plupload features multiple files in one widget
+                // we have two widgets and one name per widget
+                up.splice();
+                this.active = true;
+                $('#' + name + '_progress .filestatus').text(
+                    up_files[0].name +
+                        ' (' + plupload.formatSize(up_files[0].size) + ')');
+            },
+            'UploadComplete': function(up, up_files) {
+                this.complete = true;
+                for (nam in uploads)
+                    if (uploads[nam].active)
+                        if(!uploads[nam].complete)
+                            return;
+                console.log("go");
+                $('#create_form').submit();
+            },
+            'UploadProgress': function(up, up_file) {
                 $('#' + name + '_progress .bar').css(
                             "width", up_file.percent + '%');
-                $('#' + name + '_progress .filestatus').text(
-                                            up_file.percent + '%');
+                // $('#' + name + '_progress .filestatus').text(
+                //                             up_file.percent + '%');
+            },
+        },
+        init: function() {
+            var up = new plupload.Uploader(this.options);
+            this.up = up;
+            up.init();
+            for (x in this.events)
+                up.bind(x, up.events[x]);
+            $('#create_form_submit').click(this.start);
+            $('#' + name + '_progress').click(function() {
+                $('#' + name + '_browse').click();
             });
-        */
+        },
+        start: function() {
+                console.log(name + " start...")
+                this.up.start(); return false;
+        },
+        active: false,
+        complete = false,
+    };
 
-        $('#' + name + '_container .progress').click(function() {
-            $('#' + name + '_browse').click();
-        });
-    
-        $('#create_form_submit').click(function() {
-            console.log(name + " start...")
-            uploader.start();
-            return false;
-        });
+    for (i = 0; i < uploads.length; i++) {
+        ctx = new context(uploads[i]);
+        ctx.init();
+    }
 
-        // console.log(name + "_uploader init " + ul.id);
-        
-        ul.init();
-
-    })(name);
 });
 
 // vim: et:sw=4
