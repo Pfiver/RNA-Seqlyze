@@ -54,7 +54,7 @@ $(document).ready(function() {
             runtimes:           'html5,gears,flash,silverlight,browserplus,html4',
             browse_button:      file + '_browse',
             drop_element:       file + '_progress',
-            url:                'files',
+            url:                'upload',
             multipart_params:   { 'file': file },
             flash_swf_url:      path_js + '/plupload.flash.swf',
             silverlight_xap_url:    path_js + '/plupload.silverlight.xap',

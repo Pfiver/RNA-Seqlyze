@@ -15,6 +15,48 @@ from rnaseqlyze.web import DBSession
 from rnaseqlyze.core import service
 from rnaseqlyze.core.orm import Analysis
 
+@view_config(route_name='upload', request_method='POST', renderer="json")
+def upload(request):
+    log.debug(request.content_type)
+    fs = FieldStoragx.from_request(request)
+    return dict(jsonrpc="2.0", result=None, id=None)
+
+import cgi
+class FieldStoragx(cgi.FieldStorage):
+    @classmethod
+    def from_request(request):
+        wsgi_input = request.environ['wsgi.input']
+        return FieldStoragx(fp=wsgi_input, environ=request.environ)
+
+    def __init__(self, *args, **kwargs):
+        cgi.FieldStorage.__init_(self, *args, **kwargs)
+        log.debug("FieldStoragx: %s -> %s" % (self.name, self.value))
+
+        if self.filename:
+            args = {}
+            for kw in 'session', 'name', 'type':
+                args[kw] = self.environ['rnaseqlyse.upload_' + info]
+            self.uploadfile = service.get_uploadfile(DBSession, **args)
+
+        assert len(self.value) < 1000
+        if self.name = 'upload_session':
+            self.environ['rnaseqlyse.upload_session'] = \
+                          service.get_upload_session(DBSession, self.value)
+        elif self.name in ('name', 'type'):
+            self.environ['rnaseqlyse.upload_' + self.name] = self.value
+        else
+            raise
+
+    def make_file(self, binary=None):
+        if not hasattr(self, 'uploadfile'):
+            raise "Unexpected input"
+        return self.uploadfile
+
+@view_config(route_name='analyses', renderer='templates/create.pt')
+def create(request):
+    import sha, datetime
+    return { 'session': sha.new(str(datetime.datetime.now())).hexdigest() }
+
 @view_config(route_name='analyses', request_method='POST')
 def post(request):
 
@@ -72,6 +114,7 @@ def dbapi_error(request):
 def error(request):
     import traceback
     detail = traceback.format_exc(999)
+    log.debug(detail)
     return HTTPInternalServerError(detail=detail)
 
 import string

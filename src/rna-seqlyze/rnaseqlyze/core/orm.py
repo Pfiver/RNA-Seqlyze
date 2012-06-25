@@ -50,6 +50,7 @@ class Analysis(Entity, AnalysisMixins):
 
     inputfile_name      = Column(String)
     inputfile_type      = Column(String)
+    genbankfile_name    = Column(String)
 
     strandspecific      = Column(Boolean)
     pairended           = Column(Boolean)
@@ -67,6 +68,7 @@ class Analysis(Entity, AnalysisMixins):
     rnaseq_run          = relationship("RNASeqRun", backref=backref("analyses"))
     rnaseq_run_srr      = Column(String, ForeignKey('rnaseqrun.srr'))
 
+    # upload_session    = `backref` from UploadSession
     # ft_predictions    = `backref` from FeaturePredictions
     # hg_tracks         = `backref` from HgTrack
 
@@ -75,7 +77,7 @@ class Analysis(Entity, AnalysisMixins):
         security.check_valid_filename(acc)
         return acc.upper()
 
-    @validates('inputfile_name')
+    @validates('inputfile_name', 'genbankfile_name')
     def validate_org_accession(self, attr, name):
         security.check_valid_filename(name)
         if name.find('.') < 0:
@@ -99,6 +101,17 @@ class Analysis(Entity, AnalysisMixins):
         if not self.creation_date:
             import datetime
             self.creation_date = datetime.datetime.utcnow()
+
+class UploadSession(Entity):
+    """
+    Is created when somebody uploads a file
+    """
+    sha             = Column(String, primary_key=True)
+    analysis_id     = Column(Integer)
+    analysis        = relationship("UploadSession",
+                                   backref=backref("upload_session"))
+    def __init__(self, sha):
+        self.sha = sha
 
 class User(Entity):
     """
