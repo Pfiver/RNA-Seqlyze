@@ -15,7 +15,7 @@
 
     <form id="create_form" class="form-horizontal" action="${path('analyses')}"
           method="POST" accept-charset="utf-8" enctype="multipart/form-data">
-  
+      <input type="hidden" name="upload_session" value="${upload_session}"/>
       <fieldset>
 
         <h2 id="shortreads">Short Reads</h2>
@@ -107,7 +107,7 @@
 
         <br style="margin: 10px;"/>
 
-        <div class="form-actions">
+	<div class="form-actions">
           <button id="create_form_submit" class="btn btn-primary">Submit</button>
         </div>
 
@@ -120,6 +120,7 @@
       <script type="text/javascript">
 	//<![CDATA[
 	path_js = "${path('js')}";
+	upload_session = "${upload_session}";
 	//]]>
       </script>
       

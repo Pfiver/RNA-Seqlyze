@@ -55,7 +55,7 @@ class FieldStoragx(cgi.FieldStorage):
 @view_config(route_name='analyses', renderer='templates/create.pt')
 def create(request):
     import sha, datetime
-    return { 'session': sha.new(str(datetime.datetime.now())).hexdigest() }
+    return { 'upload_session': sha.new(str(datetime.datetime.now())).hexdigest() }
 
 @view_config(route_name='analyses', request_method='POST')
 def post(request):
