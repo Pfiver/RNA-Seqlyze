@@ -91,7 +91,7 @@ function SBRun()
 	elseif l:pkey =~ "E$"
 		let s:cursel = s:blen
 	elseif l:pkey =~ "k$"
-		if s:cursel > 1
+		if s:cursel > 0
 			let s:cursel -= 1
 		endif
 	elseif l:pkey =~ "K$"
