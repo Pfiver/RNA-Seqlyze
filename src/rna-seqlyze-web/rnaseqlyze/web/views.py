@@ -17,80 +17,60 @@ from rnaseqlyze.core.orm import Analysis
 
 @view_config(route_name='upload', request_method='POST', renderer="json")
 def upload(request):
-    log.debug(request.content_type)
-    fs = FieldStoragx.from_request(request)
+    log.debug("upload(): content-type '%s'" % request.content_type)
+    fs = FieldStoragx(fp=request.environ['wsgi.input'], environ=request.environ)
     return dict(jsonrpc="2.0", result=None, id=None)
 
 import cgi
 class FieldStoragx(cgi.FieldStorage):
-    @classmethod
-    def from_request(request):
-        wsgi_input = request.environ['wsgi.input']
-        return FieldStoragx(fp=wsgi_input, environ=request.environ)
-
-    def __init__(self, *args, **kwargs):
-        cgi.FieldStorage.__init_(self, *args, **kwargs)
-        log.debug("FieldStoragx: %s -> %s" % (self.name, self.value))
-
+    def __init__(self, fp=None, headers=None, outerboundary="",
+                 environ=None, keep_blank_values=0, strict_parsing=0):
+        self.environ = environ
+        cgi.FieldStorage.__init__(self, fp, headers, outerboundary,
+                                  environ, keep_blank_values, strict_parsing)
         if self.filename:
-            args = {}
-            for kw in 'session', 'name', 'type':
-                args[kw] = self.environ['rnaseqlyse.upload_' + info]
-            self.uploadfile = service.get_uploadfile(DBSession, **args)
-
+            return
         assert len(self.value) < 1000
-        if self.name = 'upload_session':
-            self.environ['rnaseqlyse.upload_session'] = \
-                          service.get_upload_session(DBSession, self.value)
+        if self.name == 'session':
+            environ['rnaseqlyse.upload_session'] = \
+                   service.get_upload_session(DBSession, self.value)
         elif self.name in ('name', 'type'):
-            self.environ['rnaseqlyse.upload_' + self.name] = self.value
-        else
-            raise
+            environ['rnaseqlyse.upload_' + self.name] = self.value
+        else:
+            return
+        log.debug("FieldStoragx(%s -> %s)" % (self.name, self.value))
 
     def make_file(self, binary=None):
-        if not hasattr(self, 'uploadfile'):
-            raise "Unexpected input"
-        return self.uploadfile
+        args = {}
+        assert self.filename
+        for kw in 'session', 'name', 'type':
+            args[kw] = self.environ['rnaseqlyse.upload_' + kw]
+        log.debug("FieldStoragx.make_file(%s)" % self.filename)
+        fd = service.get_uploadfile(DBSession, **args)
+        import transaction
+        transaction.commit()
+        return fd
 
 @view_config(route_name='analyses', renderer='templates/create.pt')
 def create(request):
-    import sha, datetime
-    return { 'upload_session': sha.new(str(datetime.datetime.now())).hexdigest() }
+    sess = service.get_upload_session(DBSession)
+    return { 'upload_session': sess.id }
 
 @view_config(route_name='analyses', request_method='POST')
 def post(request):
 
     # TODO: csrf security checks
     #       see "shootout" pyramid demo app
-    post = request.POST
 
-    # inputfile handling
-    try:
-        # .filename attribute access will fail if no file is specified
-        post['inputfile_name'] = post['inputfile'].filename
-        inputfile = post['inputfile'].file
-    except:
-        inputfile = None
-        # the user should have provided a
-        # meaningful SRR identifier in sra_run in this case
-        pass
-    del post['inputfile']
+    analysis = service.create_analysis(
+                DBSession.unmanaged, attributes=request.POST)
 
-    # organism handling
-    if 'org_accession' not in post:
-        if 'genebankfile' in post:
-            raise Exception('Genebank file upload not yet implemented')
-        else:
-            raise Exception('Organism not specified')
-    else:
-        if 'genebankfile' in post:
-            del post['genebankfile']
+    # no more uploads to this analysis
+    DBSession.query(analysis.upload_session).delete()
 
-    analysis = service.create_analysis(DBSession.unmanaged,
-                                       inputfile, attributes=post)
-    DBSession.unmanaged.commit()
     # the analysis must exist in the database
     # so the worker can find it and start working
+    DBSession.unmanaged.commit()
 
     service.start_analysis(analysis)
     log.debug("started analysis #%d by '%s'" % (
@@ -108,6 +88,7 @@ def dbapi_error(request):
     import traceback
     detail = conn_err_msg
     detail += traceback.format_exc(999)
+    log.debug(detail)
     return HTTPInternalServerError(detail=detail)
 
 @view_config(context=Exception)

@@ -47,49 +47,91 @@ $(document).ready(function() {
     /*
      * plupload -- from src/plupload/examples/custom.html
      */
-    
-    jQuery.each(['inputfile', 'genbankfile'], function(i, file) { (function(file) {
-        
-        var uploader = new plupload.Uploader({
-            runtimes:           'html5,gears,flash,silverlight,browserplus,html4',
-            browse_button:      file + '_browse',
-            drop_element:       file + '_progress',
-            url:                'upload',
-            multipart_params:   { 'type': file,
-                                  'session': upload_session },
+
+    var uploaders = {
+        'inputfile': {},
+        'genbankfile': {},
+    }
+
+    function upload_complete(up, up_files) {
+
+        uploads[up.id].complete = true;
+
+        complete = true;
+        for (name in uploaders)
+            if (!uploaders[name].complete) {
+                complete = false;
+                break;
+            }
+
+        if (complete)
+            $('#create_form').submit();
+
+    }
+
+    for (name in uploaders) (function(name) {
+
+        options = {
+            id:     name,
+            url:      'upload',
+            runtimes:      'html5,gears,flash,silverlight,browserplus,html4',
+            browse_button:    name + '_browse',
+            drop_element:       name + '_progress',
+            multipart_params:     { 'type': name,
+                                      'session': upload_session },
             flash_swf_url:          path_js + '/plupload.flash.swf',
-            silverlight_xap_url:    path_js + '/plupload.silverlight.xap',
-        });
+            silverlight_xap_url:      path_js + '/plupload.silverlight.xap',
+        };
+
+        var ul = uploaders[name];
+
+        ul.complete = false;
+
+        ul = ul.plupload = new plupload.Uploader(options);
 
         /*
-            uploader.bind('Init', function(up, params) {
-                $('#' + file + '_container .filestatus').text("Current runtime: " + params.runtime);
+            ul.bind('Init', function(up, params) {
+                $('#' + name + '_container .filestatus').text(
+                                "Current runtime: " + params.runtime);
             });
         */
 
-        uploader.bind('FilesAdded', function(up, files) {
-            up.splice();    // removes all other files already present
-            $('#' + file + '_progress .filestatus').text(files[0].name + ' (' + plupload.formatSize(files[0].size) + ')');
+        ul.bind('FilesAdded', function(up, up_files) {
+            // remove all other files already present
+            // plupload features multiple files in one widget
+            // we have two widgets and one name per widget
+            up.splice();
+            $('#' + name + '_progress .filestatus').text(
+                up_files[0].name +
+                    ' (' + plupload.formatSize(up_files[0].size) + ')');
         });
-    
-        uploader.bind('UploadProgress', function(up, file) {
-            $('#' + file + '_progress .filestatus').text(file.percent + '%');
-        });
-        
-        $('#' + file + '_container .progress').click(function() {
-            $('#' + file + '_browse').click();
+
+        ul.bind('UploadComplete', upload_complete);
+
+        /*    
+            ul.bind('UploadProgress', function(up, up_file) {
+                $('#' + name + '_progress .bar').css(
+                            "width", up_file.percent + '%');
+                $('#' + name + '_progress .filestatus').text(
+                                            up_file.percent + '%');
+            });
+        */
+
+        $('#' + name + '_container .progress').click(function() {
+            $('#' + name + '_browse').click();
         });
     
         $('#create_form_submit').click(function() {
-            console.log(file + " start...")
+            console.log(name + " start...")
             uploader.start();
             return false;
         });
 
-        // console.log(file + "_uploader init " + uploader.id);
+        // console.log(name + "_uploader init " + ul.id);
         
-        uploader.init();
-        
-    })(file);});
+        ul.init();
 
+    })(name);
 });
+
+// vim: et:sw=4

@@ -14,5 +14,5 @@ def check_valid_filename(name):
     assert len(name) < max_len, "Filename too long"
 
     import string
-    assert set(srr) < set(string.digits + string.letters + '_'), \
-            "Only digits, letters and underscore are allowed in filenames"
+    assert set(name) < set(string.digits + string.letters + '._'), \
+            "Only digits, letters, point and underscore allowed in filenames"

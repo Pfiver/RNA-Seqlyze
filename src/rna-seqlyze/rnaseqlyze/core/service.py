@@ -6,52 +6,43 @@ import urllib2
 
 import rnaseqlyze
 from rnaseqlyze.core import security
-from rnaseqlyze.core.orm import Analysis, User, RNASeqRun
+from rnaseqlyze.core.orm import Analysis, User, RNASeqRun, UploadSession
 
-def get_upload_session(db_session, sha):
-    sess = db_session.query(UploadSession).get(sha)
-    if not sess:
-        sess = UploadSession(sha)
+def get_upload_session(db_session, id=None):
+    if id:
+        sess = db_session.query(UploadSession).get(id)
+    else:
+        sess = UploadSession()
         db_session.add(sess)
+        db_session.flush()
+        log.info("created upload session %d" % sess.id)
     return sess
 
 def get_uploadfile(db_session, session, name, type):
     if not session.analysis:
-        session.analysis = Analysis(upload_session=session)
-        db_session.add(session.analysis)
+        session.analysis = Analysis()
+        db_session.add(session.analysis) # needed ?
         db_session.flush() # sets analysis.id
-        analysis.create_directories()
-    if type == 'input':     # Short Reads in SRA or FASTQ format
+        session.analysis.create_data_dir()
+
+    if type == 'inputfile':     # Short Reads in SRA or FASTQ format
         if session.analysis.inputfile_name:
             pass # TODO: remove
         session.analysis.inputfile_name = name
         log.debug("creating upload file '%s' for analysis #%d" % (
                                          name,             session.analysis.id))
-        return uploadfile(session.analysis.inputfile_path)
-    elif type == 'genbank': # Organism genbank file
+        return open(session.analysis.inputfile_path, "w+b")
+    elif type == 'genbankfile': # Organism genbank file
         if session.analysis.genbankfile_name:
             pass # TODO: remove
         session.analysis.genbankfile_name = name
         log.debug("creating upload file '%s' for analysis #%d" % (
                                          name,             session.analysis.id))
-        return uploadfile(session.analysis.genbankfile_path)
+        return open(session.analysis.genbankfile_path, "w+b")
     else:
-        raise
+        raise Exception()
 
-class uploadfile(file):
-    def __init__(self, name):
-        self.len = 0
-        file.__init__(self, name, "w+b")
-    def write(self, data):
-        written = file.write(self, data)
-        self.len += written
-        log.debug("%s: %d" % (self.name, self.len))
-        return written
-    def close(self):
-        file.close(self)
-        log.info("%s closed")
-
-def create_analysis(db_session, inputfile, attributes):
+def create_analysis(db_session, attributes):
     # owner handling
     if 'owner' not in attributes:
         owner = db_session.query(User).get("anonymous")
@@ -72,18 +63,21 @@ def create_analysis(db_session, inputfile, attributes):
                 # The RNASeqRun constructor checks if the SRAnnnnnn argument
                 # and raises an exception unless it passes the checks
                 # e.g. if field was left blank/at default value
+                del attributes['rnaseq_run']
                 pass # TODO: decide/document what to do
 
     # get analysis
     # it already exists in case the user has uploaded something
     analysis = db_session.query(UploadSession) \
                     .get(attributes['upload_session']).analysis
+    del attributes['upload_session']
+    log.info(attributes)
     if not analysis:
         # create db object
         analysis = Analysis(**attributes)
         db_session.add(analysis)
         db_session.flush() # sets analysis.id
-        analysis.create_directories()
+        analysis.create_data_dir()
     else:
         for attr, value in attributes.items():
             setattr(analysis, attr, value)
@@ -92,7 +86,7 @@ def create_analysis(db_session, inputfile, attributes):
     if not analysis.inputfile_name:
         # an SRR identifier is needed
         if not analysis.rnaseq_run:
-            raise "Please upload an input file or specify an SRR id"
+            raise Exception("Please upload an input file or specify an SRR id")
         log.debug("transfering input file from sra")
         analysis.rnaseq_run.download()
         log.debug("done")

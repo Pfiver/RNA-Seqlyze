@@ -17,8 +17,12 @@ class AnalysisMixins(object):
     @property
     def gb_data_dir(self):
         acc = self.org_accession
-        print rnaseqlyze.shared_data_path, acc
         return os.path.join(rnaseqlyze.shared_data_path, acc)
+
+    @property
+    def genbankfile_path(self):
+        gb_name = self.genbankfile_name
+        return os.path.join(self.data_dir, gb_name)
 
     @property
     def inputfile_path(self):
@@ -51,8 +55,10 @@ class AnalysisMixins(object):
                         dict(db="sulSol1", track_url=quote(track_url))
         return hg_url
 
-    def create_directories(self):
+    def create_data_dir(self):
         if not os.path.isdir(self.data_dir):
             os.makedirs(self.data_dir)
-        if not os.path.isdir(self.gb_data_dir):
+
+    def create_gb_data_dir(self):
+        if self.gb_data_dir and not os.path.isdir(self.gb_data_dir):
             os.makedirs(self.gb_data_dir)

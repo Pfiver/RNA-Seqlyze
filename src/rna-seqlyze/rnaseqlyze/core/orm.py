@@ -68,7 +68,6 @@ class Analysis(Entity, AnalysisMixins):
     rnaseq_run          = relationship("RNASeqRun", backref=backref("analyses"))
     rnaseq_run_srr      = Column(String, ForeignKey('rnaseqrun.srr'))
 
-    # upload_session    = `backref` from UploadSession
     # ft_predictions    = `backref` from FeaturePredictions
     # hg_tracks         = `backref` from HgTrack
 
@@ -79,6 +78,8 @@ class Analysis(Entity, AnalysisMixins):
 
     @validates('inputfile_name', 'genbankfile_name')
     def validate_org_accession(self, attr, name):
+        if '\\' in name:
+            name = name.rsplit('\\', 1)[1]
         security.check_valid_filename(name)
         if name.find('.') < 0:
             raise Exception("Please make sure your input file has a"
@@ -106,12 +107,9 @@ class UploadSession(Entity):
     """
     Is created when somebody uploads a file
     """
-    sha             = Column(String, primary_key=True)
-    analysis_id     = Column(Integer)
-    analysis        = relationship("UploadSession",
-                                   backref=backref("upload_session"))
-    def __init__(self, sha):
-        self.sha = sha
+    id              = Column(Integer, primary_key=True)
+    analysis_id     = Column(Integer, ForeignKey(Analysis.id))
+    analysis        = relationship(Analysis, uselist=False)
 
 class User(Entity):
     """

@@ -88,6 +88,7 @@ class Worker(Thread):
     def _fetch_gb(self):
         from os import path
         acc = self.analysis.org_accession
+        self.analysis.create_gb_data_dir()
         out_path = path.join(self.gb_data_dir, acc + ".gb")
         if not path.exists(out_path):
             log.info("Fetching '%s' from entrez..." % acc)
