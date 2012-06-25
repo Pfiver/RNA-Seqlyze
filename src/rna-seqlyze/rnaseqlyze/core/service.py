@@ -43,7 +43,7 @@ def get_uploadfile(db_session, session, name, type):
     setattr(session.analysis, typename, name)
 
     log.debug("creating upload file '%s' for analysis #%d" % (
-                                     name,             session.analysis.id))a
+                                     name,             session.analysis.id))
 
     # this would be the place to throw in a wrapper
     # to track upload progress the old way, i.e.
