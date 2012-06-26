@@ -1,112 +1,145 @@
-: ${bt:=/data/school/06_BT}
+# This file should be kept in TOPDIR
+
+: ${rnas_topdir:=$(dirname $(readlink -f $BASH_SOURCE))}
+: ${rnas_datadir:=${rnas_topdir}-data}
 
 rnas_pkgs=("" -cli -web -worker)
 rnas_pkgs=("${rnas_pkgs[@]/#/rna-seqlyze}")
-
-rnas_topdir=$bt
 rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
 
-if [ "$PS1" ]
-then
-	dirs -c
-	pushd ~/data/rna-seqlyze/analyses
-	pushd ~/data/rna-seqlyze/shared_data
-	for ((i=${#rnas_pkgdirs[@]}-1; i>0; i--))
-	do
-		pkg=${rnas_pkgdirs[i]##*-}
-		pushd "${rnas_pkgdirs[i]}/rnaseqlyze/$pkg"
-	done
-	pushd "${rnas_pkgdirs[0]}/rnaseqlyze/core"
-	pushd "${rnas_pkgdirs[0]}/rnaseqlyze"
-	cd "$rnas_topdir"
-fi
+cron-hourly ()
+{
+    [ $(date +%k) = 4 ] && ( # around 4 am, backup the wiki database
+        cd $rnas_topdir/src/trac_env
+        trac-mysqlbackup && # only if it contains changes
+            git commit -qm 'automatic nightly wiki backup' mysql-db-backup.sql
+    )
+    ( # push home directory repository to 'biocalc-env' branch
+        cd ~
+        git push -q $rnas_topdir master:biocalc-env
+    )
+    ( # push all branches to 'fhnw' remote for backup
+        cd $rnas_topdir
+        git push -q fhnw
+    )
+    re-install
+    re-apidoc
+    re-cover
+    buildbot sendchange
+}
 
 buildbot ()
 (
-	set -e
-	cd ~/buildbot-virtualenv
-	. bin/activate
-	command buildbot $1 buildmaster
-	command buildslave $1 buildslave
+    cd ~/buildbot-virtualenv
+    . bin/activate
+    case "$1"
+    in
+        start|stop)
+            command buildbot $1 buildmaster &&
+            command buildslave $1 buildslave
+        ;;
+        sendchange)
+            cd $rnas_topdir
+            head=$(git rev-parse HEAD)
+            branch=$(git symbolic-ref HEAD | sed 's,.*/,,')
+            IFS=$'\n'; files=($(git diff HEAD@{1} --name-only))
+
+            command buildbot sendchange                         \
+                --master localhost:9989                         \
+                --branch $branch                                \
+                --revision $head                                \
+                --who "$(git show -s --format=%cn HEAD)"        \
+                --comments "$(git show -s --format=%s HEAD)"    \
+                "${files[@]}"
+        ;;
+    esac
 )
 
 viall()
 {
-	cd $rnas_topdir/src
-	vi $(find rna-seqlyze* \( -name junk -o -name setup.py \) -prune -o 	\
-		\( -name "rnaseqlyze*.js"					\
-		   -o -name "rnaseqlyze*.less" 					\
-		   -o -name "*.pt" -o -name "*.py" \(				\
-			-not -name __init__.py -o				\
-			-size +1 -exec sed -n '1{/^__/{q1}}' {} \; \) \)	\
-										\
-			-print | tr '/-' '[]' | sort | tr '[]' '/-')
+    cd $rnas_topdir/src
+
+    not_starts_with__="-exec sed -n 1{/^__/{q1}} {} ;"
+
+    vi $(find rna-seqlyze* \(                           \
+            -name junk -o -name setup.py                \
+        \) -prune -o \(                                 \
+            -name "rnaseqlyze*.js"                      \
+            -o -name "rnaseqlyze*.less"                 \
+            -o -name "*.pt"                             \
+            -o -name "*.py" \(                          \
+                -not -name __init__.py                  \
+                -o -size +1 $not_starts_with__ \)       \
+        \) -print |
+                        tr '/-' '[]' | sort | tr '[]' '/-'
+    ) 
 }
 
 sigint ()
 {
-	curl localhost/biopython/debug?{sig_int,sig_int}
+    curl localhost/biopython/debug?{sig_int,sig_int}
 }
 
 auto-sigint ()
 {
-	inotifywait --monitor --recursive \
-		-e modify -e moved_to --format "%e %f" "${rnas_pkgdirs[@]}" |
-	while read event arg
-	do
-		if [[ "$arg" = *.py ]]
-		then
-			echo $event on $arg
-			sigint
-		fi
-	done
+    inotifywait --monitor --recursive \
+        -e modify -e moved_to --format "%e %f" "${rnas_pkgdirs[@]}" |
+    while read event arg
+    do
+        if [[ "$arg" = *.py ]]
+        then
+            echo $event on $arg
+            sigint
+        fi
+    done
 
 }
 
 re-apidoc()
 (
-	cd $rnas_topdir/report/apidoc
-	rm -rf _build/{doctrees,html} rnaseqlyze*.rst
-	rnas-apidoc ${rnas_pkgdirs[0]}
-	make html
+    cd $rnas_topdir/report/apidoc
+    rm -rf _build/{doctrees,html} rnaseqlyze*.rst
+    rnas-apidoc ${rnas_pkgdirs[0]}
+    make html
 )
 
 re-install ()
 {
-	for dir in "${rnas_pkgdirs[@]}"
-	do (
-		cd "$dir"
-		python setup.py develop --user
-		rm -rf build 
-	) done
+    for dir in "${rnas_pkgdirs[@]}"
+    do (
+        cd "$dir"
+        python setup.py develop --user
+        rm -rf build 
+    ) done
 }
 
 re-cover ()
 (
-	# compute test coverage
-	#  --cover-inclusive: include modules not loaded by test scripts
-	#  --cover-package: restrict coverage report to packge
-	#  --cover-html: generate html coverage report
-	cd "$rnas_topdir"
-	nosetests --with-coverage		\
-		--cover-inclusive		\
-		--cover-package rnaseqlyze	\
-		--cover-html --cover-html-dir=report/coverage "${rnas_pkgdirs[@]}"
-	rm -f .coverage
+    # compute test coverage
+    #  --cover-inclusive: include modules not loaded by test scripts
+    #  --cover-package: restrict coverage report to packge
+    #  --cover-html: generate html coverage report
+    cd "$rnas_topdir"
+    nosetests --with-coverage       \
+        --cover-inclusive           \
+        --cover-package rnaseqlyze  \
+        --cover-html                \
+        --cover-html-dir=report/coverage    "${rnas_pkgdirs[@]}"
+    rm -f .coverage
 )
 
 logtail-developall ()
 {
-	auto-sigint &
+    auto-sigint &
 
-	while true
-	do
-		rnas-worker --development
-		sleep 10
-	done &
+    while true
+    do
+        rnas-worker --development
+        sleep 10
+    done &
 
-	tail -f /var/log/apache2/{access,error}.log \
-		$rnas_topdir/src/rna-seqlyze-{web,worker}/*.log
+    tail -f /var/log/apache2/{access,error}.log \
+        $rnas_topdir/src/rna-seqlyze-{web,worker}/*.log
 }
 
-# vim: ft=sh
+# vim: ft=sh:sw=4:ts=4:et
