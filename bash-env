@@ -66,7 +66,7 @@ auto-sigint ()
 re-apidoc()
 (
 	cd $rnas_topdir/report/apidoc
-	rm -f rnaseqlyze*.rst
+	rm -rf _build/{doctrees,html} rnaseqlyze*.rst
 	rnas-apidoc ${rnas_pkgdirs[0]}
 	make html
 )

@@ -58,8 +58,8 @@ def main():
             write(sub_pkg_tpl, names="\n\t".join(pkg.subpackages))
 
 pkg_tpl = """\
-Package `{name}`
-{equals}==========
+:mod:`{name}`
+{equals}=======
 
 """
 
@@ -68,9 +68,6 @@ mod_tpl = """\
 {dashes}-------
 
 .. automodule:: {name}
-	:members:
-	:undoc-members:
-	:show-inheritance:
 
 """
 
@@ -87,6 +84,7 @@ Subpackages
 -----------
 
 .. toctree::
+	:titlesonly:
 
 	{names}
 
