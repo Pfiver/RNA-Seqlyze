@@ -6,7 +6,7 @@ nc_db = "nuccore"
 gb_type = "gb"
 gb_mode = "text"
 
-Entrez.email = rnaseqlyze.entrez_email
+Entrez.email = rnaseqlyze.admin_email
 
 def get_nc_id(accession):
     handle = Entrez.esearch(db=nc_db, term=accession + "[Accession]")
