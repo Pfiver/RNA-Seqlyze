@@ -1,22 +1,37 @@
+"""
+**pyramid.web** is a pyramid web framework application.
+
+It has initially been created using the ``pcreate`` command
+with the ``-s alchemy`` option to create and sqlalchemy
+scaffold. There is plenty of `very good documentation
+<http://docs.pylonsproject.org/projects/pyramid/en/latest/"""
+"""narr/project.html#scaffolds-included-with-pyramid>`_
+available on how to do it.
+"""
+
 import logging
 log = logging.getLogger(__name__)
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from pyramid.config import Configurator
+#: the zope transaction extension
 from zope.sqlalchemy import ZopeTransactionExtension
 
 import rnaseqlyze
 
-# why ZopeTransactionExtension ?
-# -> http://stackoverflow.com/a/6044925
-# -> pyramid_tm (transaction manager) is configured
+#: a session managed by
+#: ZopeTransactionExtension
+#:
+#: - http://stackoverflow.com/a/6044925
+#: - pyramid_tm (transaction manager) is configured
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
-# an unmanaged session
-# used by the .views.post() function,
-# that needs to commit the session eraly on
-DBSession.unmanaged = scoped_session(sessionmaker())
+#: an unmanaged session
+#:
+#: used by :meth:`rnaseqlyze.web.views.post`
+#: because the session needs to be commited early there
+DBSession_unmanaged = scoped_session(sessionmaker())
 
 def main(global_config, **settings):
     """
@@ -30,7 +45,7 @@ def main(global_config, **settings):
 
     engine = create_engine(rnaseqlyze.db_url)
     DBSession.configure(bind=engine)
-    DBSession.unmanaged.configure(bind=engine)
+    DBSession_unmanaged.configure(bind=engine)
 
     config = Configurator(settings=settings)
 
@@ -40,14 +55,12 @@ def main(global_config, **settings):
     config.add_route('upload', '/upload')
     config.add_route('analyses', '/analyses')
     config.add_route('analysis', '/analyses/{id}')
-
-    config.add_view(route_name='home', renderer='templates/home.pt')
+    config.add_route('analysis_files', '/analyses/{id}/files*subpath')
 
     for path in 'less', 'css', 'img', 'js':
         config.add_static_view(path, path)
 
     return config.make_wsgi_app()
-
 
 from pyramid.events import subscriber
 from pyramid.events import BeforeRender

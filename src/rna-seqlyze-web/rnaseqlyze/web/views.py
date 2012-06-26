@@ -1,9 +1,20 @@
+"""
+Pyramid Application Views
+
+To understand the applicatios architecture, head over to the
+wonderful world of the pyramid web framework at http://www.pylonsproject.org/.
+
+In case you have trouble with anything pyramid-related,
+use the `source code on github <https://github.com/Pylons/pyramid>`_
+or ask 'mcdonc' on freenode irc
+`#pyramid <http://webchat.freenode.net/?channels=#pyramid>`_.
+"""
+
 import logging
 log = logging.getLogger(__name__)
 
 from pyramid.view import view_config
-from pyramid.response import Response
-from pyramid.renderers import get_renderer
+from pyramid.response import Response, FileResponse
 from pyramid.httpexceptions import (
         HTTPFound, HTTPError, HTTPServiceUnavailable, HTTPInternalServerError
 )
@@ -15,59 +26,87 @@ from rnaseqlyze.web import DBSession
 from rnaseqlyze.core import service
 from rnaseqlyze.core.orm import Analysis
 
-@view_config(route_name='upload', request_method='POST', renderer="json")
-def upload(request):
-    log.debug("upload(): content-type '%s'" % request.content_type)
-    fs = FieldStoragx(fp=request.environ['wsgi.input'], environ=request.environ)
-    return dict(jsonrpc="2.0", result=None, id=None)
+@view_config(route_name='home', renderer='templates/home.pt')
+def home(request):
+    """
+    **Home Page**
 
-import cgi
-class FieldStoragx(cgi.FieldStorage):
-    def __init__(self, fp=None, headers=None, outerboundary="",
-                 environ=None, keep_blank_values=0, strict_parsing=0):
-        self.environ = environ
-        cgi.FieldStorage.__init__(self, fp, headers, outerboundary,
-                                  environ, keep_blank_values, strict_parsing)
-        if self.filename:
-            return
-        assert len(self.value) < 1000
-        if self.name == 'session':
-            environ['rnaseqlyse.upload_session'] = \
-                   service.get_upload_session(DBSession, self.value)
-        elif self.name in ('name', 'type'):
-            environ['rnaseqlyse.upload_' + self.name] = self.value
-        else:
-            return
-        log.debug("FieldStoragx(%s -> %s)" % (self.name, self.value))
-
-    def make_file(self, binary=None):
-        args = {}
-        assert self.filename
-        for kw in 'session', 'name', 'type':
-            args[kw] = self.environ['rnaseqlyse.upload_' + kw]
-        log.debug("FieldStoragx.make_file(%s)" % self.filename)
-        fd = service.get_uploadfile(DBSession, **args)
-        import transaction
-        transaction.commit()
-        return fd
+    This is the main entry point to the application. I.e. the landing page,
+    the page that users see first.
+    """
+    return {}
 
 @view_config(route_name='analyses', renderer='templates/create.pt')
 def create(request):
+    """
+    **Create Page**
+
+    This page is shown when the "New Analysis" button is clicked.
+    """
     sess = service.get_upload_session(DBSession)
     return { 'upload_session': sess.id }
 
+@view_config(route_name='analysis', renderer='templates/analysis.pt')
+def display(request):
+    """
+    **Analysis Page**
+
+    This page is displayed after the the anaysis has been created.
+    When the user clicks "Submit" on the 'create' page, after
+    the files are uploaded and the form information is submitted
+    to the :func:`~post` view, the browser is redirected here.
+
+    The page can also be viewed any time later on, no matter
+    weather the analysis has already been completed or not.
+
+    In case it is not yet completed, the page is constantly
+    updated via XMLHTTPRequests to reflect the current status.
+    """
+    
+    id = int(request.matchdict["id"])
+    return { 'analysis': DBSession.query(Analysis).get(id) }
+
+@view_config(route_name='analysis_files')
+def analysis_files(request):
+    """
+    **Files View**
+
+    This view serves up the files associated with
+    an analysis on 'http://<rnaseqlyze>/analysis/{id}/files'.
+    """
+    import os
+    return FileResponse(
+            os.path.join(rnaseqlyze.analyses_path,
+                request.matchdict['id'], *request.subpath))
+
 @view_config(route_name='analyses', request_method='POST')
 def post(request):
+    """
+    **Create-Form Action**
+
+    This view just redirects the client to the created analysis page.
+    Before it is actually called, the files to be analyzed, are uploaded
+    using the :func:`~.upload.upload` view callable.
+    """
+    # for documentation on the documentation reference syntax, see
+    # http://sphinx.pocoo.org/domains.html#cross-referencing-python-objects
 
     # TODO: csrf security checks
     #       see "shootout" pyramid demo app
+
+    # when using the "DBSession" (managed), the
+    # try:/except: rollback construct is not needed
+    # because the session is automatically rolled back
+
+    # otoh, if the .unmanaged session is used, it _has_ to
+    # be manually commited or rolled back if objects are modified
     try:
         analysis = service.get_analysis(
-                    DBSession.unmanaged, attributes=request.POST)
+                    DBSession_unmanaged, attributes=request.POST)
 
         # the analysis must exist in the database
         # so the worker can find it and start working
-        DBSession.unmanaged.commit()
+        DBSession_unmanaged.commit()
 
         service.start_analysis(analysis)
         log.debug("started analysis #%d by '%s'" % (
@@ -76,42 +115,39 @@ def post(request):
         return HTTPFound(request.route_path('analysis', id=analysis.id))
     except:
         log.info("abort")
-        DBSession.unmanaged.rollback()
+        DBSession_unmanaged.rollback()
         log.debug("rollback complete")
         raise
 
-@view_config(route_name='analysis', renderer='templates/analysis.pt')
-def display(request):
-    id = int(request.matchdict["id"])
-    return { 'analysis': DBSession.query(Analysis).get(id) }
-
-@view_config(context=DBAPIError)
-def dbapi_error(request):
-    import traceback
-    detail = conn_err_msg
-    detail += traceback.format_exc(999)
-    log.debug(detail)
-    return HTTPInternalServerError(detail=detail)
-
 @view_config(context=Exception)
 def error(request):
-    import traceback
-    detail = traceback.format_exc(999)
-    log.debug(detail)
+    """
+    **Exception view**
+
+    This is a catch-all view that serves up any errors
+    that have occured while processing the a request.
+    """
+    detail = "An Exception was raised in rnaseqlyze.web: %s" % request.context
+
+    if log.getEffectiveLevel() <= log.DEBUG:
+        if isinstance(request.context, DBAPIError):
+            detail += """
+                This is a database related eror.
+
+                If it is not yet initialized or the schema has changed,
+                just run the "rnas-dbinit" script to (re-)initialize it.
+
+                Afterwards, restart the Pyramid application, i.e. send a
+                SIG_INT to the apache mod_wsgi daemon processes, and try again.
+
+                """
+        import traceback
+        detail += '\n' + traceback.format_exc(999)
+
+    log.error(detail)
     return HTTPInternalServerError(detail=detail)
 
-import string
-HTTPError.body_template_obj = string.Template(
+# `Patch` HTTPError to get custom error messages (adding the <pre> tags)
+from string import Template
+HTTPError.body_template_obj = Template(
     "${explanation}${br}${br}\n<pre>${detail}</pre>\n${html_comment}\n\n")
-
-conn_err_msg = """\
-Pyramid is having
-a problem connecting to to database.
-
-You may need to run the
-"initialize_rnaseqlyze_db" script to create it.
-
-Afterwards, restart the Pyramid application, i.e. send a
-SIG_INT to the apache mod_wsgi daemon processes, and try again.
-
-"""

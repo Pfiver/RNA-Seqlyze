@@ -1,7 +1,5 @@
 """
-rnaseqlyze.web.upload
-
-Handles the upload of analysis files.
+This module handles the upload of analysis files.
 
 The upload interface consists of plupload
 (from http://www.plupload.com/) on the client
@@ -11,12 +9,12 @@ two and creating a working solution was not trivial.
 Documentation and inspiration to create this
 was, amongst others, taken from the following documents:
 
-    http://www.plupload.com/documentation.php
-    http://hg.python.org/cpython/file/2.7/Lib/cgi.py#l353
-    https://raw.github.com/moxiecode/plupload/master/examples/upload.php
-    https://github.com/hcwebdev/plupload/blob/master/examples/server.py
-    https://github.com/Pylons/webob/blob/master/webob/request.py#L102
-    https://hg.gawel.org/gp.fileupload/file/default/gp/fileupload/storage.py#l97
+- http://www.plupload.com/documentation.php
+- http://hg.python.org/cpython/file/2.7/Lib/cgi.py#l353
+- https://raw.github.com/moxiecode/plupload/master/examples/upload.php
+- https://github.com/hcwebdev/plupload/blob/master/examples/server.py
+- https://github.com/Pylons/webob/blob/master/webob/request.py#L102
+- https://hg.gawel.org/gp.fileupload/file/default/gp/fileupload/storage.py#l97
 """
 
 import logging
