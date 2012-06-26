@@ -1,4 +1,5 @@
 # tmux
+######
 
 tmux="$HOME/.local/bin/tmux -S /tmp/tmux-pfeifer"
 
@@ -9,6 +10,7 @@ then
 fi
 
 # history
+#########
 
 histfile=~/.pbh
 if [ -d $(dirname $histfile) -a "$HISTFILE" != $histfile ]
@@ -26,6 +28,7 @@ then
 fi
 
 # other stuff
+#############
 
 set -PC
 
@@ -90,8 +93,21 @@ popd() {
 }
 PROMPT_COMMAND+='; [ ${#DIRSTACK[@]} -gt 1 ] && { echo -e "\033[01;31m --\033[0m"; dirs -v | tail -n+2; }'
 
+# rna-seqlyze
+#############
+
 bt() {
-	bt=/home/pfeifer/data/bt
-	cd $bt
-	. bash-env
+	. ~/data/rna-seqlyze/bash-env
+
+	dirs -c
+	pushd $rnas_datadir/analyses
+	pushd $rnas_datadir/shared_data
+	for ((i=${#rnas_pkgdirs[@]}-1; i>0; i--))
+	do
+		pkg=${rnas_pkgdirs[i]##*-}
+		pushd "${rnas_pkgdirs[i]}/rnaseqlyze/$pkg"
+	done
+	pushd "${rnas_pkgdirs[0]}/rnaseqlyze/core"
+	pushd "${rnas_pkgdirs[0]}/rnaseqlyze"
+	cd "$rnas_topdir"
 }
