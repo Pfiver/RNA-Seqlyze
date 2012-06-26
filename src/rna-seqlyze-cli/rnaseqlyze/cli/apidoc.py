@@ -5,53 +5,73 @@ Usage:
     rnas-apidoc -h|--help
     rnas-apidoc [-s|--source] <path> ...
     
-generates one <package>.rst sphinx apidoc source file,
-in the current directory, for each package found in <path>
+Generates one <package>.rst sphinx apidoc source file,
+in the current directory, for each package found in <path>.
 
 Options:
     -s --source    use `literalinclude` instead of `automodule` 
 """
+import os, sys
+from pkgutil import walk_packages
 
 def main():
-    import os, sys
-    from pkgutil import walk_packages
-
     import docopt
     opts = docopt.docopt(__doc__)
 
-    Package = type('', (), {})
-    packages = {}
+    global pkg_tpl
     global mod_tpl
     if opts['--source']:
-        mod_tpl = mod_src_tpl
-    write = lambda tpl, **vals: \
-            pkg.outfile.write(tpl.format(**vals))
+        pkg_tpl, mod_tpl = pkg_src_tpl, mod_src_tpl
 
+    #: implicit args to write():
+    #:  pkg.outfile, pgkpath, name, filename
+    def write(tpl, **kwargs):
+        pkg.outfile.write(tpl.format(
+            name=name, path=pkgpath + os.sep + filename, **kwargs))
+
+    packages = {}
+    Package = type('', (), {})
+
+    # requirement/assumption:
+    #  parent packages will come before their children
     for loader, name, is_pkg in walk_packages(opts['<path>']):
+
         pkgname = name.rsplit('.', 1)[0]
+        pkgpath = os.path.relpath(loader.path, ".")
+
         if is_pkg:
-            if pkgname == name:
-                modname, pkgname = pkgname, ''
-            else:
-                modname = name[len(pkgname)+1:]
+            # note: 'pkgname' is actually the
+            #       _parent_ package name in this case
+
+            # associate non-root-packages with their parents
+            if '.' in name:
                 packages[pkgname].subpackages.append(name)
-            pkg = packages[name] = Package()
+
+            # create & init a 'Package' object,
+            # open <fully-qualified-package-name>.rst
+            # and set filename to <package-name>/__init__.py
+            pkg = Package()
             pkg.subpackages = []
             print "creating %s.rst" % name
             pkg.outfile = open(name + '.rst', 'w')
-            write(pkg_tpl, name=name, equals="=" * len(name))
-            filename = modname + os.sep + '__init__.py'
+            filename = name.split('.')[-1] + os.sep + '__init__.py'
+
+            # add the package to the list
+            # and write the packages .rst file heading
+            packages[name] = pkg
+            write(pkg_tpl, equals="=" * len(name))
 
         else:
             # skip modules that are not part of any package, like setup.py
             if pkgname not in packages:
                 continue
+
+            # find the containing package and set filename to <module>.py
             pkg = packages[pkgname]
             filename = name[len(pkgname)+1:] + '.py'
 
-        pkgpath = os.path.relpath(loader.path, ".")
-        write(mod_tpl, name=name, dashes="-" * len(name),
-                                  path=pkgpath + os.sep + filename)
+            # append the doc entry for this module to the package .rst file
+            write(mod_tpl, dashes="-" * len(name))
 
     for pkg in packages.values():
         if pkg.subpackages:
@@ -60,6 +80,16 @@ def main():
 pkg_tpl = """\
 :mod:`{name}`
 {equals}=======
+
+.. automodule:: {name}
+
+"""
+
+pkg_src_tpl = """\
+:mod:`{name}`
+{dashes}=======
+
+.. literalinclude:: {path}
 
 """
 

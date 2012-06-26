@@ -1,13 +1,16 @@
-"""
-Galaxy-Upload
+"""\
+RNA-Seqlyze Galaxy-Upload
 
 Usage:
-    galaxy-upload <local_file>
+    rnas-galaxy-upload <local_file>
 """
+import sys, os
+from rnaseqlyze import galaxy
 
-import sys
-import rnaseqlyze
+def main():
 
-def main(argv=sys.argv):
-    print rnaseqlyze.galaxy.upload(
-            oen(argv[1]), os.path.basename(argv[1]))
+    if len(sys.argv) < 2 or sys.argv[1] in ('-h', '--help'):
+        print __doc__
+        return
+
+    print galaxy.upload(open(sys.argv[1]), os.path.basename(sys.argv[1]))

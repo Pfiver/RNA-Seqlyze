@@ -1,8 +1,25 @@
+"""\
+RNA-Seqlyze gb2ptt
+
+Convert a genbank file to ptt (protein table) format
+
+Usage:
+    rnas-gb2ptt <input.gb> <output.ptt>
+
+If <input.gb> is '-', use 'sys.stdin, if <output.ptt> is '-', use 'sys.stdout'.
+"""
 import sys, logging
+from rnaseqlyze.gb2ptt import gb2ptt
 
-def main(argv=sys.argv):
+def main():
 
-    loggin.basicConfig(level=logging.NOTSET)
+    if len(sys.argv) < 2 or sys.argv[1] in ('-h', '--help'):
+        print __doc__
+        return
 
-    from rnaseqlyze.gb2ptt import gb2ptt
-    gb2ptt(open(argv[1]), sys.stdout)
+    inputfile = sys.argv[1] == '-' and sys.stdin or open(sys.argv[1])
+    outputfile = sys.argv[2] == '-' and sys.stdout or open(sys.argv[2], "w")
+
+    loggin.basicConfig(level=logging.NOTSET) # logs to stderr
+
+    gb2ptt(inputfile, outputfile)
