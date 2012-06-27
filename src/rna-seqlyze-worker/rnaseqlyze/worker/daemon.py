@@ -23,6 +23,13 @@ def main():
         mode = "development"
         args = []
 
+    if mode == 'production':
+        import rnaseqlyze
+        args.extend([
+            "--user=" + rnaseqlyze.worker_user,
+            "--group=" + rnaseqlyze.group,
+        ])
+
     here = os.path.dirname(os.path.abspath(__file__))
     conf_file = os.path.join(here, '..', '..', mode + '.ini')
 
