@@ -79,7 +79,7 @@ class Worker(Thread):
             if self.analysis.inputfile_name:
                 sra_name = self.analysis.inputfile_name
             else:
-                sra_name = self.analysis.rnaseq_run.srr + '.sra'
+                sra_name = self.analysis.rnaseq_run.sra_name
             cmd = "fastq-dump", sra_name
             log.info("converting %s" % sra_name)
             from subprocess import Popen, PIPE

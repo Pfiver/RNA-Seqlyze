@@ -48,7 +48,7 @@ class AnalysisMixins(object):
         if self.inputfile_name: # The user uploaded a file
             return self.inputfile_name.rsplit('.', 1)[0] + ".fastq"
         else: # The user specified an SRR id
-            return self.rnaseq_run.sra + ".fastq"
+            return self.rnaseq_run.srr + ".fastq"
 
     @property
     def inputfile_fqpath(self):

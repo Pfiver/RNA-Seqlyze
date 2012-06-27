@@ -107,9 +107,11 @@ def get_analysis(db_session, attributes):
         # an SRR identifier is needed
         if not analysis.rnaseq_run:
             raise Exception("Please upload an input file or specify an SRR id")
-        log.debug("transfering input file from sra")
-        analysis.rnaseq_run.download()
-        log.debug("done")
+        # download if not already in cache
+        if not os.path.exists(analysis.rnaseq_run.sra_path):
+            log.debug("transfering input file from sra")
+            analysis.rnaseq_run.download()
+            log.debug("done")
 
     return analysis
 
