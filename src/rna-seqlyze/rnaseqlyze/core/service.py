@@ -78,16 +78,14 @@ def get_analysis(db_session, attributes):
                 del attributes['rnaseq_run']
                 pass # TODO: decide/document what to do
 
-    # in case the user has uploaded something
     upload_session = db_session.query(UploadSession) \
                             .get(attributes['upload_session'])
+
     del attributes['upload_session']
 
-    if upload_session:
-        # the analysis will already exist
+    # the analysis exist already if the user uploaded something
+    if upload_session.analysis:
         analysis = upload_session.analysis
-        # allow no more uploads to this analysis
-        db_session.delete(upload_session)
         for attr, value in attributes.items():
             setattr(analysis, attr, value)
 
@@ -97,6 +95,9 @@ def get_analysis(db_session, attributes):
         db_session.add(analysis)
         db_session.flush() # sets analysis.id
         analysis.create_data_dir()
+
+    # allow no more uploads to this analysis
+    db_session.delete(upload_session)
 
     # if no input file has been uploaded
     if not analysis.inputfile_name:
