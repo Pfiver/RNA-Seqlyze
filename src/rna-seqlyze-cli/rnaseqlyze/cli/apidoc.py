@@ -9,7 +9,7 @@ Generates one <package>.rst sphinx apidoc source file,
 in the current directory, for each package found in <path>.
 
 Options:
-    -s --source    use `literalinclude` instead of `automodule` 
+    -s --source    use `literalinclude` in addition to `automodule` 
 """
 import os, sys
 from pkgutil import walk_packages
@@ -87,8 +87,9 @@ pkg_tpl = """\
 
 pkg_src_tpl = """\
 :mod:`{name}`
-{dashes}=======
+{equals}=======
 
+.. automodule:: {name}
 .. literalinclude:: {path}
 
 """
@@ -105,6 +106,7 @@ mod_src_tpl = """\
 :mod:`{name}`
 {dashes}-------
 
+.. automodule:: {name}
 .. literalinclude:: {path}
 
 """
