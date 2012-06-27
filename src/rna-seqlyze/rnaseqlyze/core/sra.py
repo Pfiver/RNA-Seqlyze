@@ -22,7 +22,11 @@ class RNASeqRunMixins(object):
 
     @property
     def sra_path(self):
-        return path.join(self.data_dir, self.srr) + ".sra"
+        return path.join(self.data_dir, self.sra_name)
+
+    @property
+    def sra_name(self):
+        return self.srr + ".sra"
 
     def create_directories(self):
         if not os.path.isdir(self.data_dir):

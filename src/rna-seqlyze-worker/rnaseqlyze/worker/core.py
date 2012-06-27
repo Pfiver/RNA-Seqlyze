@@ -49,6 +49,7 @@ class Worker(Thread):
         self.session.commit()
         self.data_dir = self.analysis.data_dir
         self.gb_data_dir = self.analysis.gb_data_dir
+        self.input_data_dir = self.analysis.input_data_dir
 
     def run(self):
         self._thread_init()
@@ -71,12 +72,14 @@ class Worker(Thread):
 
     def _convert_input_file(self):
         from os import path
-        type = self.analysis.inputfile_type
         fq_path = self.analysis.inputfile_fqpath
         if not path.exists(fq_path):
             import os
-            os.chdir(self.data_dir)
-            sra_name = self.analysis.inputfile_name
+            os.chdir(self.input_data_dir)
+            if self.analysis.inputfile_name:
+                sra_name = self.analysis.inputfile_name
+            else:
+                sra_name = self.analysis.rnaseq_run.srr + '.sra'
             cmd = "fastq-dump", sra_name
             log.info("converting %s" % sra_name)
             from subprocess import Popen, PIPE
