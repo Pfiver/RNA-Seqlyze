@@ -109,7 +109,9 @@ $(document).ready(function() {
         });
 
         $('#create_form_submit').click(function() {
-            up.start(); return false;
+            for (nam in uploads)
+                if (uploads[nam].active)
+                    { up.start(); return false; }
         });
 
         for (x in events)
