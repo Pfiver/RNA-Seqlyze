@@ -23,17 +23,17 @@ def main():
         mode = "development"
         args = ["--reload"]
 
+    here = os.path.dirname(os.path.abspath(__file__))
+    conf_file = os.path.join(here, '..', '..', mode + '.ini')
+
     if mode == 'production':
         import rnaseqlyze
         args.extend([
             "--user=" + rnaseqlyze.worker_user,
             "--group=" + rnaseqlyze.group,
-            "--log-file=" + rnaseqlyze.worker_log_file,
-            "--pid-file=" + rnaseqlyze.worker_pid_file,
+            "--log-file=" + here + os.sep + 'daemon.log',
+            "--pid-file=" + here + os.sep + 'daemon.pid',
         ])
-
-    here = os.path.dirname(os.path.abspath(__file__))
-    conf_file = os.path.join(here, '..', '..', mode + '.ini')
 
     args.insert(0, conf_file)
     paste.script.serve.ServeCommand("serve").run(args)
