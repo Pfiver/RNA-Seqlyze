@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-trac_env = '/home/pfeifer/data/bt/src/trac_env'
+trac_env = '/home/pfeifer/data/rna-seqlyze/src/trac_env'
 
 import site
 site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")

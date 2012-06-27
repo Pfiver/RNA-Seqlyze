@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 ini = 'development.ini'
-basedir = '/home/pfeifer/data/bt/src/rna-seqlyze-web'
+basedir = '/home/pfeifer/data/rna-seqlyze/src/rna-seqlyze-web'
 webapp_path = basedir + "/" + ini
 
 import site

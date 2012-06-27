@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 webapps_env = '/home/pfeifer/webapps-virtualenv'
 
 import site
@@ -11,13 +9,13 @@ from paste.script.util import logging_config
 def application(env, start_request):
 
     base_path_len = env['SCRIPT_NAME'].rindex("/") + 1
-    try:
-        script_name_len = env['REQUEST_URI'].index("/", base_path_len)
-    except ValueError:
-        try:
-            script_name_len = env['REQUEST_URI'].index("?", base_path_len)
-        except ValueError:
-            script_name_len = len(env['REQUEST_URI'])
+
+    for c in '/?':
+        script_name_len = env['REQUEST_URI'].find(c, base_path_len)
+        if script_name_len >= 0:
+            break
+    else:
+        script_name_len = len(env['REQUEST_URI'])
 
     env['SCRIPT_NAME'] = env['REQUEST_URI'][:script_name_len]
     appname = env['SCRIPT_NAME'][base_path_len:]
@@ -28,18 +26,21 @@ def application(env, start_request):
     import os
     if not os.path.exists(dev_ini):
         start_request('404 Not Found', [("Content-Type", "text/html")])
-        return [
-"""
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>404 Not Found</title>
-</head><body>
-<h1>Not Found</h1>
-<p>The requested URL %s was not found on this server.</p>
-</body></html>
-"""
-                % env['REQUEST_URI'] ]
+        return [ not_found % env ]
 
     logging_config.fileConfig(dev_ini, {'here': basedir})
 
     return get_app(dev_ini, 'main')(env, start_request)
+
+not_found = """\
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+<head>
+    <title>404 Not Found</title>
+</head>
+<body>
+<h1>Not Found</h1>
+<p>The requested URL %(REQUEST_URI)s was not found on this server.</p>
+</body>
+</html>
+"""
