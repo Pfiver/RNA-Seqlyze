@@ -22,7 +22,8 @@ from pyramid.httpexceptions import (
 import transaction
 from sqlalchemy.exc import DBAPIError
 
-from rnaseqlyze.web import DBSession
+import rnaseqlyze
+from rnaseqlyze.web import DBSession, DBSession_unmanaged
 from rnaseqlyze.core import service
 from rnaseqlyze.core.orm import Analysis
 
@@ -126,28 +127,64 @@ def error(request):
 
     This is a catch-all view that serves up any errors
     that have occured while processing the a request.
+
+    The view just creates and returns a custom error response object.
     """
-    detail = "An Exception was raised in rnaseqlyze.web: %s" % request.context
+    return HTTPRNASeqError(request.exc_info)
 
-    if log.getEffectiveLevel() <= log.DEBUG:
-        if isinstance(request.context, DBAPIError):
-            detail += """
-                This is a database related eror.
+class HTTPRNASeqError(HTTPError):
+    """
+    Custom HTTP Error class.
 
-                If it is not yet initialized or the schema has changed,
-                just run the "rnas-dbinit" script to (re-)initialize it.
+    This is a custom HTTP error class that extends
+    :class:`pyramid.httpexceptions.HTTPError`, which extends
+    :class:`pyramid.httpexceptions.WSGIHTTPException`. Have a look at the
+    `source code <http://git.io/CqrfOg#L157>`_ to see how it works.
 
-                Afterwards, restart the Pyramid application, i.e. send a
-                SIG_INT to the apache mod_wsgi daemon processes, and try again.
+    It's ``code`` is 500, which generaly means "Internal Server Error".  If the
+    application is in debugging mode -- i.e. the log level is DEBUG or less, a
+    stack trace is added to the generated page as well as the log file.
+    Otherwise, an informational message is displayed and only one line,
+    containing the type of the error is logged.
+    """
+    code = 500
+    title = "RNA-Seqlyze Web Application Error"
+    explanation = "An Exception was raised in rnaseqlyze.web"
+    def __init__(self, exc_info):
+        e = exc_info[1]
+        log.error(e)
+        body_template = "${explanation}: %r\n<hr>\n" % e
 
-                """
-        import traceback
-        detail += '\n' + traceback.format_exc(999)
+        if log.getEffectiveLevel() >= logging.DEBUG:    # no debug
+            detail = production_error_msg
+            body_template += "\n${detail}\n"
+        else:                                           # debug
+            detail = ''
+            if isinstance(e, DBAPIError):
+                detail += dberror_msg
+            import traceback
+            detail += 'Stack trace:\n'
+            detail += ''.join(traceback.format_tb(exc_info[2]))
 
-    log.error(detail)
-    return HTTPInternalServerError(detail=detail)
+            log.debug(detail)
+            body_template += "<pre>\n${detail}\n</pre>\n"
 
-# `Patch` HTTPError to get custom error messages (adding the <pre> tags)
-from string import Template
-HTTPError.body_template_obj = Template(
-    "${explanation}${br}${br}\n<pre>${detail}</pre>\n${html_comment}\n\n")
+        HTTPError.__init__(self, detail, body_template=body_template)
+
+dberror_msg = """
+This is a database related eror.
+
+If it is not yet initialized or the schema has changed,
+just run the "rnas-dbinit" script to (re-)initialize it.
+
+Afterwards, restart the Pyramid application, i.e. send a
+SIG_INT to the apache mod_wsgi daemon processes, and try again.
+"""
+
+production_error_msg = """
+If you think that this is a bug, please contact the application administrator,
+""" + rnaseqlyze.admin_email + """, and inform him/her of the time the error
+occurred, and anything you might have done that may have caused the error.
+Thank You!
+"""
+# 'You' is intentionally capitalized! :-) Rule 84: http://goo.gl/BLBwX
