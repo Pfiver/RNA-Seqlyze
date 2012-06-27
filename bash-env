@@ -7,6 +7,8 @@ rnas_pkgs=("" -cli -web -worker)
 rnas_pkgs=("${rnas_pkgs[@]/#/rna-seqlyze}")
 rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
 
+[[ $PATH =~ (^|:)$HOME/.local/bin(:|$) ]] || PATH=$HOME/.local/bin:$PATH
+
 cron-hourly ()
 {
     [ $(date +%k) = 4 ] && ( # around 4 am, backup the wiki database
