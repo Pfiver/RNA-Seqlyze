@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 webapps_env = '/home/pfeifer/webapps-virtualenv'
 
 import site
