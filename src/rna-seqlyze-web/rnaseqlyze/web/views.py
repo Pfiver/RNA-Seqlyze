@@ -152,7 +152,7 @@ class HTTPRNASeqError(HTTPError):
     explanation = "An Exception was raised in rnaseqlyze.web"
     def __init__(self, exc_info):
         e = exc_info[1]
-        log.error(e)
+        log.error(repr(e))
         body_template = "${explanation}: %r\n<hr>\n" % e
 
         if log.getEffectiveLevel() >= logging.DEBUG:    # no debug
@@ -163,7 +163,7 @@ class HTTPRNASeqError(HTTPError):
             if isinstance(e, DBAPIError):
                 detail += dberror_msg
             import traceback
-            detail += 'Stack trace:\n'
+            detail += '%s\nStack trace:\n' % e
             detail += ''.join(traceback.format_tb(exc_info[2]))
 
             log.debug(detail)
