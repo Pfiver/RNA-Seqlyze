@@ -17,18 +17,19 @@ srr_url_template = "http://ftp-private.ncbi.nlm.nih.gov" \
 class RNASeqRunMixins(object):
 
     @property
-    def srr_data_dir(self):
-        if not self.srr:
-            return
+    def data_dir(self):
         return path.join(rnaseqlyze.shared_data_path, self.srr)
 
+    @property
+    def sra_path(self):
+        return path.join(self.data_dir, self.srr) + ".sra"
+
     def create_directories(self):
-        if not os.path.isdir(self.srr_data_dir):
-            os.makedirs(self.srr_data_dir)
+        if not os.path.isdir(self.data_dir):
+            os.makedirs(self.data_dir)
 
     def download(self):
         from urllib import urlretrieve
         log.debug("fetching " + self.srr)
-        urlretrieve(srr_url_template.format(srr=self.srr),
-                    path.join(self.srr_data_dir, self.srr) + ".sra")
+        urlretrieve(srr_url_template.format(srr=self.srr), self.sra_path)
         log.debug("done")

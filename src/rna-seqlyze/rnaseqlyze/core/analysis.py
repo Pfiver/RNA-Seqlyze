@@ -26,7 +26,10 @@ class AnalysisMixins(object):
 
     @property
     def inputfile_path(self):
-        return os.path.join(self.data_dir, self.inputfile_name)
+        if self.inputfile_name: # The user uploaded a file
+            return os.path.join(self.data_dir, self.inputfile_name)
+        else: # The user specified an SRR id
+            return self.rnaseq_run.sra_path
 
     @property
     def inputfile_fqname(self):
