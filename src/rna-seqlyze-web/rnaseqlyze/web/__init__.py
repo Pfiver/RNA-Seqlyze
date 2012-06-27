@@ -4,8 +4,8 @@
 It has initially been created using the ``pcreate`` command
 with the ``-s alchemy`` option to create and sqlalchemy
 scaffold. There is plenty of `very good documentation
-<http://docs.pylonsproject.org/projects/pyramid/en/latest/"""
-"""narr/project.html#scaffolds-included-with-pyramid>`_
+<http://docs.pylonsproject.org/projects/pyramid/en/latest/\
+narr/project.html#scaffolds-included-with-pyramid>`_
 available on how to do it.
 """
 
