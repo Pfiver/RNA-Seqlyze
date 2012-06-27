@@ -65,17 +65,19 @@ def get_analysis(db_session, attributes):
     # srr handling
     if 'rnaseq_run' in attributes:
         rnaseq_run = db_session.query(RNASeqRun).get(attributes['rnaseq_run'])
-        if not rnaseq_run:
+        del attributes['rnaseq_run']
+        if rnaseq_run:
+            attributes['rnaseq_run'] = rnaseq_run
+        else:
             try:
                 rnaseq_run = RNASeqRun(attributes['rnaseq_run'])
+                attributes['rnaseq_run'] = rnaseq_run
                 rnaseq_run.create_directories()
                 db_session.add(rnaseq_run)
-                attributes['rnaseq_run'] = rnaseq_run
             except:
                 # The RNASeqRun constructor checks if the SRAnnnnnn argument
                 # and raises an exception unless it passes the checks
                 # e.g. if field was left blank/at default value
-                del attributes['rnaseq_run']
                 pass # TODO: decide/document what to do
 
     upload_session = db_session.query(UploadSession) \
@@ -91,6 +93,7 @@ def get_analysis(db_session, attributes):
 
     else:
         # create db object
+        log.debug("creating new analysis: %s" % attributes)
         analysis = Analysis(**attributes)
         db_session.add(analysis)
         db_session.flush() # sets analysis.id
