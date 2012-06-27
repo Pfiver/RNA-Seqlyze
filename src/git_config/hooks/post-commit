@@ -1,17 +1,3 @@
 #!/bin/bash
 
-head=$(git rev-parse HEAD)
-branch=$(git symbolic-ref HEAD | sed 's,.*/,,')
-
-IFS=$'\n'
-files=($(git diff HEAD@{1} --name-only))
-
-/home/pfeifer/.local/bin/trac-admin src/trac_env changeset added "(default)" $head
-
-/home/pfeifer/buildbot-virtualenv/bin/buildbot sendchange	\
-	--master localhost:9989					\
-	--branch $branch					\
-	--revision $head					\
-	--who "$(git show -s --format=%cn HEAD)"		\
-	--comments "$(git show -s --format=%s HEAD)"		\
-	"${files[@]}"
+~/.local/bin/trac-admin src/trac_env changeset added "(default)" HEAD
