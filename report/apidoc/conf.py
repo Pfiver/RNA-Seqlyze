@@ -174,7 +174,7 @@ htmlhelp_basename = 'RNA-Seqlyzedoc'
 
 latex_elements = {
 # The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+'papersize': 'a4paper',
 
 # The font size ('10pt', '11pt' or '12pt').
 #'pointsize': '10pt',
@@ -186,13 +186,13 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'RNA-Seqlyze.tex', u'RNA-Seqlyze Documentation',
-   u'Patrick Pfeifer', 'manual'),
+  ('index-pdf', 'RNA-Seqlyze.tex',
+   'RNA-Seqlyze Documentation', 'Patrick Pfeifer', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-#latex_logo = None
+latex_logo = '../../src/rna-seqlyze-web/rnaseqlyze/web/img/RNA-Seqlyze.png'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.

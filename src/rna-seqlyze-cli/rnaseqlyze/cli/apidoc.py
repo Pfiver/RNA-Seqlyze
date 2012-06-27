@@ -9,7 +9,16 @@ Generates one <package>.rst sphinx apidoc source file,
 in the current directory, for each package found in <path>.
 
 Options:
-    -s --source    use `literalinclude` in addition to `automodule` 
+    -s --source    Use `literalinclude` in addition to `automodule`.
+                   When using this option, the generated output will be
+                   optimized for processing with the spinx latexpdf module that
+                   generates a pdf document. Even without this option, when
+                   using the html output module, the modules source code will
+                   still be available in the generated Website, but not on the
+                   same pages as the rest of the modules documentation
+                   (controlled by the "html_show_sourcelink" option in
+                   apidoc/conf.py).
+
 """
 import os, sys
 from pkgutil import walk_packages
@@ -27,7 +36,8 @@ def main():
     #:  pkg.outfile, pgkpath, name, filename
     def write(tpl, **kwargs):
         pkg.outfile.write(tpl.format(
-            name=name, path=pkgpath + os.sep + filename, **kwargs))
+            name=name, path=pkgpath + os.sep + filename,
+            equals="=" * len(name), dashes="-" * len(name), **kwargs))
 
     packages = {}
     Package = type('', (), {})
@@ -59,7 +69,7 @@ def main():
             # add the package to the list
             # and write the packages .rst file heading
             packages[name] = pkg
-            write(pkg_tpl, equals="=" * len(name))
+            write(pkg_tpl)
 
         else:
             # skip modules that are not part of any package, like setup.py
@@ -71,11 +81,12 @@ def main():
             filename = name[len(pkgname)+1:] + '.py'
 
             # append the doc entry for this module to the package .rst file
-            write(mod_tpl, dashes="-" * len(name))
+            write(mod_tpl)
 
-    for pkg in packages.values():
-        if pkg.subpackages:
-            write(sub_pkg_tpl, names="\n\t".join(pkg.subpackages))
+    if not opts['--source']:
+        for pkg in packages.values():
+            if pkg.subpackages:
+                write(sub_pkg_tpl, names="\n\t".join(pkg.subpackages))
 
 pkg_tpl = """\
 :mod:`{name}`
@@ -89,7 +100,13 @@ pkg_src_tpl = """\
 :mod:`{name}`
 {equals}=======
 
+:mod:`{name}`
+{dashes}-------
+
 .. automodule:: {name}
+
+Source Code:
+
 .. literalinclude:: {path}
 
 """
@@ -107,6 +124,9 @@ mod_src_tpl = """\
 {dashes}-------
 
 .. automodule:: {name}
+
+Source Code:
+
 .. literalinclude:: {path}
 
 """
