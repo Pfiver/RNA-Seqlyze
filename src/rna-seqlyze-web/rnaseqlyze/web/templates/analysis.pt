@@ -77,10 +77,9 @@
 
   </tal:block>
 
-<!--!
   <tal:block metal:fill-slot="footer">
-    <script src="${path('js/rnaseqlyze-analysis.js')}"></script>
+    <script src="${path('js/underscore-min.js')}"></script>
+    <script src="${path('js/backbone-min.js')}"></script>
   </tal:block>
-  -->
 
 </tal:block>
