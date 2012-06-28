@@ -16,24 +16,34 @@ cron-hourly ()
         echo cron-hourly on
         date
         echo
+
         [ $(date +%k) = 4 ] && ( # around 4 am, backup the wiki database
             cd $rnas_topdir/src/trac_env
             trac-mysqlbackup && # only if it contains changes
                 git commit -q mysql-db-backup.sql \
                     -m 'automatic nightly wiki backup' 
         )
+
         ( # push home directory repository to 'biocalc-env' branch
             cd ~
             git push -q $rnas_topdir master:biocalc-env
         )
-        ( # push all branches to 'fhnw' remote for backup
-            cd $rnas_topdir
-            git push -q fhnw
-        )
+
+        cd $rnas_topdir
+
+        # push all branches to 'fhnw' remote for backup
+        git push -q fhnw
+
+        # update list of authors
+        git list-authors >| ~/public_html/static/authors.html
+
+        # other things
         re-install
         re-apidoc
         re-cover
+
         buildbot sendchange
+
     ) 2>&1
     ret=$?
     if [ $ret != 0 ]
