@@ -111,7 +111,7 @@
   -->
 
     <script src="${path('js/less-1.3.0.min.js')}"></script>
-
+    <script src="${path('js/jquery.sticky.js')}"></script>
     <script src="${path('js/rnaseqlyze.js')}"></script>
 
     <tal:block metal:define-slot="footer"/>
