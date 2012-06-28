@@ -26,7 +26,7 @@ $(function() {
     // "scrollspy" plugin
     //  -- patched version - see https://github.com/twitter/bootstrap/pull/3829
     $(window).scrollspy({
-            offset: 200,
+//            offset: 200,
             wrap: $('#wrap')[0],
     });
 

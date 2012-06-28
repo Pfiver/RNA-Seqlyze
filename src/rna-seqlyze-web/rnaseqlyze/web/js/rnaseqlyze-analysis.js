@@ -66,7 +66,14 @@ window.ProcessingView = Backbone.View.extend({
 
         // remove the busy indicator when finished
         if (model.get('finished'))
-            $('#spinner').remove(); 
+            $('#spinner').remove();
+
+        // make scrollspy refresh it's coordinates
+        // because the page size has very likely changed
+        // DON'T FIXME: this sadly gets called twice now
+        //              since we have two views...
+        //              no harm in it! :-)
+        $(window).scrollspy('refresh');
     },
     render: function () {
         // toJSON doesn't really do much besides turning
@@ -134,6 +141,7 @@ window.ResultsView = Backbone.View.extend({
     change: function (model, value, options) {
         this.$el.empty();
         this.render();
+        $(window).scrollspy('refresh');
     },
     render: function () {
         var analysis = this.model.toJSON();
