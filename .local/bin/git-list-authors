@@ -107,7 +107,7 @@ def main(argv=sys.argv):
                 font-size: 8pt;
                 font-family: Monospace;
             }
-            .patrick-pfeifer {
+            #patrick-pfeifer {
                 background-color: #CCE;
                 box-shadow: 0 0 4px 2px #55F;
             }
@@ -118,9 +118,9 @@ def main(argv=sys.argv):
     )
     for author in sorted(authors, key=lambda a: a.name):
         aname = author.name.encode("utf-8")
-        a_class = aname.lower().replace(' ', '-')
-        print('<div class="x ' + a_class + '">')
-        print('<h3>' + aname + '</h3>')
+        aid = aname.lower().replace(' ', '-')
+        print('<div class="x">')
+        print('<h3 id="%s">%s</h3>' % (aid, aname))
         print('<div class="x3">')
         for path in sorted(authors[author]):
             path = path.encode("utf-8")
