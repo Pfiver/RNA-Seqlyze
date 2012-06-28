@@ -32,6 +32,11 @@ endfunction
 
 function s:html_settings()
 	set shiftwidth=2
+	set indentkeys-=*<Return>
+endfunction
+
+function s:javascript_settings()
+	set sw=4
 endfunction
 
 " set language specific settings
