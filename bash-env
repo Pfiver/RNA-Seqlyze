@@ -20,7 +20,7 @@ cron-hourly ()
         [ $(date +%k) = 4 ] && ( # around 4 am, backup the wiki database
             cd $rnas_topdir/src/trac_env
             trac-mysqlbackup && # only if it contains changes
-                git commit -q mysql-db-backup.sql \
+                git commit mysql-db-backup.sql \
                     -m 'automatic nightly wiki backup' 
         )
 
@@ -35,7 +35,10 @@ cron-hourly ()
         git push -q fhnw
 
         # update list of authors
-        git list-authors >| ~/public_html/static/authors.html
+        git list-authors >| report/authors.html
+        git diff --quiet HEAD report/authors.html ||
+            git commit report/authors.html \
+                -m 'auto-commit report/authors.html' 
 
         # other things
         re-install
