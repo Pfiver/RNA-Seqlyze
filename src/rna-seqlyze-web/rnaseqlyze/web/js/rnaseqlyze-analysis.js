@@ -128,7 +128,7 @@ window.WorkdirFileView = Backbone.View.extend({
     render: function (model) {
         var file = this.model.toJSON();
         var href = _id + '/files/' + file.path;
-        this.$el.html(el.a({'href': href}, file.path));
+        this.$el.html(el.a({href: href}, file.path));
         return this;
     }
 });
@@ -145,11 +145,12 @@ window.ResultsView = Backbone.View.extend({
     },
     render: function () {
         var analysis = this.model.toJSON();
-        this.$el.append(
-            el.ul(
-                el.li(
-                    el.a({href: analysis.hg_url},
-                         "Link to BAM Track in UCSC Browser"))));
+        if (analysis.hg_url)
+            this.$el.append(
+                el.ul(
+                    el.li(
+                        el.a({href: analysis.hg_url},
+                             "Link to BAM Track in UCSC Browser"))));
         return this;
     },
 });    
