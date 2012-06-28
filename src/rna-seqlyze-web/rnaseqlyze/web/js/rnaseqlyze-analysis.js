@@ -16,8 +16,8 @@ window.Analysis = Backbone.Model.extend({
 
         // "cascade": update files list
         this.bind("change", function (self) {
-            // FIXME: maybe update this less often,
-            //        i.e. every second time, in production
+            // FIXME: maybe update this less often
+            //        in production, e.g. every second time,
             self.files.fetch();
         });
     }
@@ -36,13 +36,30 @@ window.WorkdirListing = Backbone.Collection.extend({
     },
 });
 
-// note:
-//  It might havebeen simpler to work the files list right into the
+// note1:
+//
+//  Concerning the above code:
+//  It might have been simpler to work the files list right into the
 //  analysis model on the server and stick to one model here.
 //  But then again, there is no harm in doing it like this, because
 //  now the files list is more independent and could for
 //  example also be displayed on a page of its own.
 
+
+/* note2:
+ *
+ *  In the code below,
+ *
+ *  "el"           is defined in rnaseqlyze.js as "$.el", which is defined
+ *                 in laconic.js - see  http://joestelmach.github.com/laconic/
+ *
+ *  "this.$el"
+ *  "this.el"      are the view's (jQuery wrapped) DOM element in the
+ *                 backbone.js architecture - see http://backbonejs.org/#View-el
+ *
+ *  "render().el"  is also the view's "el" and works because we always
+ *                 "return this;" from render() - see http://backbonejs.org/#View-render
+ */
 
 // Two Views showing different details about the analysis
 // ------------------------------------------------------
@@ -54,13 +71,13 @@ window.WorkdirListing = Backbone.Collection.extend({
 
 // The "Processing" section
 window.ProcessingView = Backbone.View.extend({
- 
+
     initialize: function () {
         this.model.bind("change", this.change, this);
     },
     change: function (model, value, options) {
 
-        // just re-render the whole thing
+        // just re-render the whole thing for now
         this.$el.empty();
         this.render();
 
@@ -153,7 +170,7 @@ window.ResultsView = Backbone.View.extend({
                              "Link to BAM Track in UCSC Browser"))));
         return this;
     },
-});    
+});
 
 // Initialization
 // --------------
