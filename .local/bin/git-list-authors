@@ -119,8 +119,8 @@ def main(argv=sys.argv):
     for author in sorted(authors, key=lambda a: a.name):
         aname = author.name.encode("utf-8")
         aid = aname.lower().replace(' ', '-')
-        print('<div class="x">')
-        print('<h3 id="%s">%s</h3>' % (aid, aname))
+        print('<div id="%s" class="x">' % aid)
+        print('<h3>%s</h3>' % aname)
         print('<div class="x3">')
         for path in sorted(authors[author]):
             path = path.encode("utf-8")
