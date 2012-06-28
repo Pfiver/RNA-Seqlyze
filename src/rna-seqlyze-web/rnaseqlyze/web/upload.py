@@ -27,6 +27,7 @@ from pyramid.view import view_config
 
 from rnaseqlyze.web import DBSession
 from rnaseqlyze.core import service
+from rnaseqlyze.core.orm import UploadSession
 
 @view_config(route_name='upload', request_method='POST', renderer="json")
 def upload(request):
@@ -46,7 +47,7 @@ class FieldStoragx(cgi.FieldStorage):
         assert len(self.value) < 1000
         if self.name == 'session':
             environ['rnaseqlyse.upload_session'] = \
-                   service.get_upload_session(DBSession, self.value)
+                   DBSession.query(UploadSession).get(int(self.value))
         elif self.name in ('name', 'type'):
             environ['rnaseqlyse.upload_' + self.name] = self.value
         else:

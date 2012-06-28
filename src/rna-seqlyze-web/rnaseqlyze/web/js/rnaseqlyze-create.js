@@ -79,6 +79,7 @@ $(document).ready(function() {
                 // we have two widgets and one name per widget
                 up.splice();
                 self.active = true;
+                log.debug("FilesAdded", up.files, up_files);
                 $('#' + name + '_progress .filestatus').text(
                     up_files[0].name +
                         ' (' + plupload.formatSize(up_files[0].size) + ')');
@@ -89,6 +90,7 @@ $(document).ready(function() {
                     if (uploads[nam].active)
                         if(!uploads[nam].complete)
                             return;
+                log.debug("UploadComplete", "go");
                 $('#create_form').submit();
             },
             'UploadProgress': function(up, up_file) {
@@ -116,6 +118,8 @@ $(document).ready(function() {
 
         for (x in events)
             up.bind(x, events[x]);
+
+        log.debug("debug");
 
         up.init();
     };

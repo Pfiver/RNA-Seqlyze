@@ -8,17 +8,25 @@ import rnaseqlyze
 from rnaseqlyze.core import security
 from rnaseqlyze.core.orm import Analysis, User, RNASeqRun, UploadSession
 
-def get_upload_session(db_session, id=None):
-    if id:
-        sess = db_session.query(UploadSession).get(id)
-    else:
-        sess = UploadSession()
-        db_session.add(sess)
-        db_session.flush()
-        log.info("created upload session %d" % sess.id)
+def get_upload_session(db_session):
+    sess = UploadSession()
+    db_session.add(sess)
+    db_session.flush()
     return sess
 
 def get_uploadfile(db_session, session, name, type):
+    # This doesn't look right, but it works. The database needs to
+    # be locked here to make sure that the first upload request that
+    # comes in creates the analysis and the second uses the same analysis.
+    # We need to lock the whole database and this seemingly useless statement
+    # does just that. With SQLite. I have been asking on irc #sqlalchemy about
+    # how to do it the right way, but I didn't get any useful reply. I have
+    # checked the SQLAlchemy as well as the SQLite docs and tried various things
+    # like DBSession.execute("BEGIN") and such things - nothing seems to work
+    # - this is the only solution I have found.
+    #
+    session.analysis = session.analysis
+    #
     if not session.analysis:
         session.analysis = Analysis()
         db_session.add(session.analysis) # needed ?
