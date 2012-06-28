@@ -42,6 +42,8 @@ def main(global_config, **settings):
     """
     Create and return a Pyramid WSGI application.
     """
+    log.debug("rnaseqlyze.web version %s : main()" % rnaseqlyze.__version__)
+
     # make sure to be able to delete files created by webapp
     # as user/group www-data/www-data from the command line
     # (as user/group johndoe/www-data)
@@ -96,4 +98,5 @@ def before_render(event):
         'path': path,
         'relpath': relpath,
         'version': rnaseqlyze.__version__,
+        'debug': log.getEffectiveLevel() <= logging.DEBUG,
     })

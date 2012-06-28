@@ -118,12 +118,11 @@
 
   <tal:block metal:fill-slot="footer">
       <script type="text/javascript">
-	//<![CDATA[
-	path_js = "${path('js')}";
-	upload_session = "${upload_session}";
-	//]]>
+        //<![CDATA[
+        upload_session = "${upload_session}";
+        //]]>
       </script>
-      
+
       <script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
   
       <script type="text/javascript" src="${path('js/plupload.js')}"></script>

@@ -54,7 +54,7 @@ class HTTPRNASeqError(HTTPError):
         log.error(repr(e))
         body_template = "${explanation}: %r\n<hr>\n" % e
 
-        if log.getEffectiveLevel() >= logging.DEBUG:    # no debug
+        if log.getEffectiveLevel() > logging.DEBUG:     # no debug
             detail = production_error_msg
             body_template += "\n${detail}\n"
         else:                                           # debug

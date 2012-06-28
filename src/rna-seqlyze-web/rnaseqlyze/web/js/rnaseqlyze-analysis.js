@@ -2,115 +2,192 @@
  * RNA-seqlyze 'analysis' view javascript
  */
 
-// Custom Configuration
-_.templateSettings = { interpolate : /\{(.+?)\}/g };
+// backbone.js Models
+// ------------------
+//
+// -> http://backbonejs.org/#Model
 
-// Globals
-_id = _(window.location.pathname.split('/')).last();
-console = {'log': function(){}}
-
-// Models
+// this analysis
 window.Analysis = Backbone.Model.extend({
     urlRoot: "../rest/analyses",
+    initialize: function () {
+        this.files = new WorkdirListing();
+        this.files.analysis = this;
+
+        // "cascade": update files list
+        this.bind("change", function (self) {
+            // FIXME: maybe update this less often,
+            //        i.e. every second time, in production
+            self.files.fetch();
+        });
+    }
 });
-window.File = Backbone.Model.extend({
-    idAttribute: "path",
+// a model for the files
+window.WorkdirFile = Backbone.Model.extend({
+    defaults: {
+        path: null,
+    }
 });
-window.FileList = Backbone.Collection.extend({
-    model: File,
-    url: "../rest/analyses/" + _id + "/files",
+// and for a collection of files
+window.WorkdirListing = Backbone.Collection.extend({
+    model: WorkdirFile,
+    url: function () {
+        return this.analysis.url() + "/files";
+    },
 });
 
-// Views
-window.AnalysisView = Backbone.View.extend({
+// note:
+//  It might havebeen simpler to work the files list right into the
+//  analysis model on the server and stick to one model here.
+//  But then again, there is no harm in doing it like this, because
+//  now the files list is more independent and could for
+//  example also be displayed on a page of its own.
+
+
+// Two Views showing different details about the analysis
+// ------------------------------------------------------
+
+// These render the "Processing" and "Results" section on the
+// analysis page. The Processing view is displayed above the Results view.
+//
+// -> http://backbonejs.org/#View
+
+// The "Processing" section
+window.ProcessingView = Backbone.View.extend({
  
     initialize: function () {
         this.model.bind("change", this.change, this);
-        this.model.bind("reset", this.render, this);
-        this.model.bind("all", function(event) { console.log(event); });
     },
+    change: function (model, value, options) {
 
-    change: function(model, value, options) {
+        // just re-render the whole thing
+        this.$el.empty();
+        this.render();
 
-        if (!this.model.attributes.inputfile_header)
-            this.model.attributes.inputfile_header = '';
-
-        console.log(this.model);
-        console.log(this.model.toJSON());
-        console.log("json:" + this.model.toJSON());
-        console.log("mvo: " + model + ", " + value + ", " + options);
-
-         $(this.el).html(
-             _.template($('#tpl-input-type').html())(this.model.toJSON()));
-
-         $(this.el).html(
-             _.template($('#tpl-results-list-hg-url').html())(this.model.toJSON()));
+        // remove the busy indicator when finished
+        if (model.get('finished'))
+            $('#spinner').remove(); 
     },
     render: function () {
-        console.log(this.model);
-//        $(this.el).html(this.template(this.model.toJSON()))
-        return this;
-    },
-});    
+        // toJSON doesn't really do much besides turning
+        // the model.attributes into a useable object
+        // see http://backbonejs.org/#Model-toJSON
+        var analysis = this.model.toJSON();
 
-window.FileListView = Backbone.View.extend({
- 
-    initialize: function () {
-        this.model.bind("change", this.render, this);
-        this.model.bind("reset", this.render, this);
-        this.model.bind("all", function(event) { console.log(event); });
-    },
- 
-    render: function () {
-        console.log(this.model);
-        _(this.model.models).each(function (file) {
-            $(this.el).append(new FileListItemView({model: file}).render().el);
-        }, this);
-        return this;
-    },
-});    
+        this.$el.append(el.div(
+            el.h3("Input analysis")
+        ,
+            el.p("Type of input: ",
+                 analysis.inputfile_type ?
+                 el.strong(analysis.inputfile_type) :
+                 el.span("not detected"))
+        ,
+            analysis.inputfile_header ?
+            el.pre(analysis.inputfile_header) : null
 
-window.FileListItemView = Backbone.View.extend({
- 
-    template: _.template($('#tpl-logfile-list-item').html()),
+        )).append(el.div(
+            el.h3("Log files")
+        ,
+            el.div(new WorkdirView({model: this.model.files}).render().el)
+        ));
 
-    initialize: function () {
-        this.model.bind("change", this.render, this);
-        this.model.bind("add", this.render, this);
-
-        this.model.bind("all", function(event) { console.log(event); });
-    },
-
-    render: function () {
-        console.log(this.model);
-        $(this.el).html(this.template(this.model.toJSON()));
         return this;
     },
 });
 
+// A View displaying the list of files associated with
+// this analysis available on the server (log files, mostly).
+// This is currently rendered inside the "Processing" section above.
+window.WorkdirView = Backbone.View.extend({
+    initialize: function () {
+        this.model.bind("reset", this.reset, this);
+    },
+    reset: function (model, value, options) {
+        this.$el.empty();
+        this.render();
+    },
+    render: function () {
+        this.$el.append(el.ul.apply(el,
+            _(this.model.models).map(function (model) {
+                return new WorkdirFileView({model: model}).render().el;
+            })
+        ));
+        return this;
+    },
+});
+// An View, that renders one file
+window.WorkdirFileView = Backbone.View.extend({
+    el: "<li>",
+    render: function (model) {
+        var file = this.model.toJSON();
+        var href = _id + '/files/' + file.path;
+        this.$el.html(el.a({'href': href}, file.path));
+        return this;
+    }
+});
+
+// The "Results" section
+window.ResultsView = Backbone.View.extend({
+    initialize: function () {
+        this.model.bind("change", this.change, this);
+    },
+    change: function (model, value, options) {
+        this.$el.empty();
+        this.render();
+    },
+    render: function () {
+        var analysis = this.model.toJSON();
+        this.$el.append(
+            el.ul(
+                el.li(
+                    el.a({href: analysis.hg_url},
+                         "Link to BAM Track in UCSC Browser"))));
+        return this;
+    },
+});    
+
 // Initialization
-$(document).ready(function() {
+// --------------
 
-    analysis = new Analysis({id: _id});
-    file_list = new FileList();
+$(document).ready(function () {
 
-    analysis_view = new AnalysisView({model: analysis});
-    file_list_view = new FileListView({model: file_list});
+    // the id of the displayed analysis
+    _id = _(window.location.pathname.split('/')).last();
 
-    analysis.fetch();
-    file_list.fetch();
+    // create a backbone.js Model
+    // with an associated Collection
+    analysis = new Analysis({
+        id: _id,
+    });
 
-    console.log(analysis);
-    console.log(file_list);
+    // create two backbone.js views for the
+    // analysis, render and insert them into the DOM
+    $('#processing-area').html(
+        new ProcessingView({model: analysis}).render().el
+    );
+    $('#results-area').html(
+        new ResultsView({model: analysis}).render().el
+    );
 
-    $('#input-type').html(analysis_view.render().el);
-    $('#logfile-list').html(file_list_view.render().el);
+    // see what's going on with backbone.js
+    if (rnaseqlyze_debug) {
+        analysis.bind("all", function (event) {
+               log.debug("analysis", event);
+        });
+        analysis.files.bind("all", function (event) {
+                log.debug("analysis.files", event);
+        });
+    }
 
-/*
-    var interval = window.setInterval(function() {
-        fileList.fetch();
-        return true;
-    }, 7000);
- */
-
+    // update the models until the analysis is finished
+    var update = function () {
+        // check at the beginning and not at the end
+        // because the fetch() calls are asynchronous
+        if (analysis.attributes.finished)
+            return;
+        analysis.fetch();
+        log.debug(analysis);
+        window.setTimeout(update, 7000); // re-update in 7 seconds
+    }
+    update();
 });

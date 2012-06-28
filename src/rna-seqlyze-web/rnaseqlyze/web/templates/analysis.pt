@@ -66,47 +66,28 @@
       </div>
     </div>
 
-<!--!
+<!--.
      \_____________________________________________________________________
      /                                                                     \
             This part is dynamically updated using backbone.js              \
             __________________________________________________               -->
 
 
-    <h2 id="processing">Processing</h2>
+            <h2 id="processing">Processing</h2>
+            <div id="processing-area"></div>
+            <img id="spinner" src="${path('img/spinner-black.gif')}"/>
 
-      <h3>Input analysis</h3>
-      <div id="input-type"></div>
-      <script type="text/template" id="tpl-input-type">
-        <ul>Type of input:
-              <strong>{inputfile_type}</strong>
-              <pre>{inputfile_header}</pre>
-        </ul>
-      </script>
+            <h2 id="results">Results</h2>
+            <div id="results-area"></div>
 
-      <h3>Log files</h3>
-      <ul id="logfile-list"></ul>
-      <script type="text/template" id="tpl-logfile-list-item">
-        <li><a href="${relpath('files')}/{path}">{path}</a></li>
-      </script>
-
-    <h2 id="results">Results</h2>
-
-    <ul id="results-list"></ul>
-    <script type="text/template" id="tpl-results-list-hg-url">
-      <li>Link to BAM Track in UCSC Browser
-      <a href="{hg_url}">{hg_url}</a>
-      </li>
-    </script>
-
-
-<!--!.______________________________________________________________________,-->
+<!--._______________________________________________________________________,-->
 
   </tal:block>
 
   <tal:block metal:fill-slot="footer">
     <script src="${path('js/underscore-min.js')}"></script>
     <script src="${path('js/backbone-min.js')}"></script>
+    <script src="${path('js/laconic.js')}"></script>
     <script src="${path('js/rnaseqlyze-analysis.js')}"></script>
   </tal:block>
 
