@@ -1,5 +1,7 @@
 #footer #pythonpowered { border: 0; float: right !important; }
 #footer #pythonpowered:hover { background: transparent; }
+#footer #linuxpowered { border: 0; margin-right: 10px; float: right !important; }
+#footer #linuxpowered:hover { background: transparent; }
 #footer #tracpowered { border: 0; float: right !important; }
 #footer #tracpowered:hover { background: transparent; }
 #footer #fhnw { border: 0; float: left }

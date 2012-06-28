@@ -78,11 +78,21 @@
             src="${path('img/python-powered.png')}" height="30"
             alt="Python Powered"/>
           </a>
+          <a href="http://www.linuxfoundation.org/"><img
+            src="${path('img/linux-powered.png')}" height="30"
+            alt="Linux Powered"/>
+          </a>
         </div>
       </footer>
     </div>
 
     <!-- javascript placed at the end of the document so the pages load faster -->
+    <script type="text/javascript">
+      //<![CDATA[
+      rnaseqlyze_debug = ${debug and 'true' or 'false'};
+      path_js = "${path('js')}"; // used by -create.js (plupload)
+      //]]>
+    </script>
     <script src="${path('js/jquery.js')}"></script>
     <script src="${path('js/bootstrap-scrollspy.js')}"></script>
 <!--!
