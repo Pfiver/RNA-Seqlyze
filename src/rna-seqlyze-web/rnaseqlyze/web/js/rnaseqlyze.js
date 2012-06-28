@@ -13,11 +13,13 @@ $(function() {
 
     // log.info() and log.debug()
     window.log = {
-        'info': console.log,
+        'info': function() {
+            console.log.apply(console, arguments);
+        },
         'debug': function() {}
     }
     if (rnaseqlyze_debug)
-        window.log.debug = console.log;
+        window.log.debug = window.log.info;
 
     // page initializaion
     // ------------------
