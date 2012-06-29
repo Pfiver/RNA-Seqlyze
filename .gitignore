@@ -8,3 +8,4 @@
 /mbox
 /buildbot-virtualenv
 /webapps-virtualenv
+/.s3cfg
