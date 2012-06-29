@@ -245,6 +245,9 @@ class transterm_hp(Part):
         os.chmod(env["BINDIR"] + "/" + prog, 0775)
         shutil.copy(data, env["LIBDIR"])
 
+class s3cmd(Part):
+    install = "python setup.py install --prefix=$PREFIX"
+
 # main routine
 ##############
 
