@@ -32,8 +32,4 @@ $(function() {
             wrap: $('#wrap')[0],
     });
 
-    $('#content .page-header').sticky({
-            topSpacing: 0,
-    });
-
 });
