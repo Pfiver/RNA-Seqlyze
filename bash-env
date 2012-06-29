@@ -10,35 +10,16 @@ rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
 [[ $PATH =~ (^|:)$HOME/.local/bin(:|$) ]] || PATH=$HOME/.local/bin:$PATH
 
 cron-hourly ()
-(
-    (
-        set -e
-        echo cron-hourly on
-        date
-        echo
-
-        [ $(date +%k) = 4 ] && ( # around 4 am, backup the wiki database
-            cd $rnas_topdir/src/trac_env
-            trac-mysqlbackup && # only if it contains changes
-                git commit mysql-db-backup.sql \
-                    -m 'automatic nightly wiki backup' 
-        )
-
-        ( # push home directory repository to 'biocalc-env' branch
-            cd ~
-            git push -q $rnas_topdir master:biocalc-env
-        )
-
-        cd $rnas_topdir
+{
+    _cron-hourly ()
+    {
+        # push home directory repository to 'biocalc-env' branch
+        cd ~
+        git push -q $rnas_topdir master:biocalc-env
 
         # push all branches to 'fhnw' remote for backup
+        cd $rnas_topdir
         git push -q fhnw
-
-        # update list of authors
-        git list-authors >| report/authors.html
-        git diff --quiet HEAD report/authors.html ||
-            git commit report/authors.html \
-                -m 'auto-commit report/authors.html' 
 
         # other things
         re-install
@@ -46,19 +27,54 @@ cron-hourly ()
         re-cover
 
         buildbot sendchange
+    }
 
-    ) 2>&1
-    ret=$?
-    if [ $ret != 0 ]
-    then
-        echo cron-hourly: something went wrong - \
-            check the log file at $rnas_datadir/cron-hourly.log
-    fi 1>&2
-    echo
-    date
-    echo -----------------------------
-    exit $ret
-) >> $rnas_datadir/cron-hourly.log
+    _cron-daily ()
+    {
+        # backup the wiki database
+        cd $rnas_topdir/src/trac_env
+        trac-mysqlbackup && # only if it contains changes
+            git commit mysql-db-backup.sql \
+                -m 'automatic nightly wiki backup'
+
+        # update list of authors
+        cd $rnas_topdir
+        git list-authors >| report/authors.html
+        git diff --quiet HEAD report/authors.html ||
+            git commit report/authors.html \
+                -m 'auto-commit report/authors.html' 
+    }
+
+    _cron ()
+    (
+        ly=$1
+        exec >> $rnas_datadir/cron-$ly.log
+        (
+            set -e
+            echo cron-$ly on
+            date
+            echo
+            _cron-$ly
+        ) 2>&1
+        ret=$?
+        if [ $ret != 0 ]
+        then
+            echo cron-$ly: something went wrong - \
+                check the log file at $rnas_datadir/cron-$ly.log
+        fi 1>&2
+        echo
+        date
+        echo -----------------------------
+        exit $ret
+    )
+
+    declare -i ret=0
+    { _cron hourly; ret+=$?; }
+    [ $(date +%k) = 4 ] &&
+        { _cron daily; ret+=$?; }
+
+    return $ret
+}
 
 buildbot ()
 (
@@ -87,7 +103,7 @@ buildbot ()
     esac
 )
 
-viall()
+viall ()
 {
     cd $rnas_topdir/src
 
@@ -127,7 +143,7 @@ auto-sigint ()
 
 }
 
-re-apidoc()
+re-apidoc ()
 (
     cd $rnas_topdir/report/apidoc
     rm -rf _build/{doctrees,html} rnaseqlyze*.rst
