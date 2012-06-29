@@ -188,3 +188,14 @@ class HgTrack(Entity): # stub
     type        = Column('type', String(50))
 
     __mapper_args__ = {'polymorphic_on': type}
+
+# helpers
+
+class UCSCOrganism(object):
+    """
+    Holds information about the mapping of UCSC browser
+    "db" names to NCBI nucleotide accessions
+    """
+    acc         = Column(String, primary_key=True)
+    db          = Column(String)
+    title       = Column(String)
