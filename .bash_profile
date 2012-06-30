@@ -23,7 +23,8 @@ then
 
         if [ -f "$HISTFILE" ] && [ $(wc -l < $HISTFILE) -ge $HISTSIZE ]
         then
-                echo "warning: HISTFILE ('$HISTFILE') reached size limit of $HISTSIZE lines"
+                echo "warning: HISTFILE ('$HISTFILE') \
+			reached size limit of $HISTSIZE lines"
         fi
 fi
 
@@ -69,6 +70,8 @@ find-py()
 		-o -size +1 -exec sed -n '1{/^__/{q1}}' {} \; \) \) \) -print
 }
 
+# fix pushd
+###########
 pushd() {
 	if [ $# = 0 ]
 	then
@@ -91,7 +94,12 @@ popd() {
 	command popd "$@" > /dev/null
 
 }
-PROMPT_COMMAND+='; [ ${#DIRSTACK[@]} -gt 1 ] && { echo -e "\033[01;31m --\033[0m"; dirs -v | tail -n+2; }'
+RED=$'\033[01;31m'
+BOLD=$'\033[01;1m'
+NORM=$'\033[0m'
+
+PROMPT_COMMAND+='; [ "0${#DIRSTACK[@]}" -gt 1 ] && \
+			{ echo -e " $RED--$NORM"; dirs -v | tail -n+2; }'
 
 # rna-seqlyze
 #############
@@ -110,4 +118,5 @@ bt() {
 	pushd "${rnas_pkgdirs[0]}/rnaseqlyze/core"
 	pushd "${rnas_pkgdirs[0]}/rnaseqlyze"
 	cd "$rnas_topdir"
+	bt=$rnas_topdir
 }
