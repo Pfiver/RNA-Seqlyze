@@ -11,6 +11,7 @@ rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
 
 cron-hourly ()
 {
+    return
     _cron-hourly ()
     {
         # push home directory repository to 'biocalc-env' branch
@@ -68,10 +69,10 @@ cron-hourly ()
         exit $ret
     )
 
-    declare -i ret=0
-    { _cron hourly; ret+=$?; }
+    local -i ret=0
+    { _cron hourly; ret=ret+$?; }
     [ $(date +%k) = 4 ] &&
-        { _cron daily; ret+=$?; }
+        { _cron daily; ret=ret+$?; }
 
     return $ret
 }
