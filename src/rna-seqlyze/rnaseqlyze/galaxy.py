@@ -13,7 +13,9 @@ password = 'brtbhcdg'
 api_key = 'dddb2c53c96c0c4d263e6c74b507d203'
 hostname = 'main.g2.bx.psu.edu'
 
-default_history = '6556fe2755b424cd'
+default_history = 'b8468b3367a258a6'
+default_history_url = 'https://main.g2.bx.psu.edu/u/dcgdftvcdv/h/biocalc'
+
 history_path_template = '/api/histories/%(history)s/contents'
 ucsc_bam_track_template = \
         '/display_application/%(dataset)s/ucsc_bam/archaea/None/param/track'
