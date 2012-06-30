@@ -1,0 +1,40 @@
+[{
+	"data" : "Archaeal Viruses", "attr" : {"rel" : "domain"}, "state" : "open",
+		"children" : [
+			{"data" : "Unclassified (31 genomes)", "attr" : {"rel" : "clade"}, "state" : "open",
+				"children" : [
+					{"attr" : {"rel" : "genome", "id" : "acidBott_VIRUS"}, "data" : { "title" : "Acidianus bottle-shaped virus", "attr" : {"href" : "/cgi-bin/hgGateway?db=acidBott_VIRUS"}}},
+					{"attr" : {"rel" : "genome", "id" : "acidFila_VIRUS_1"}, "data" : { "title" : "Acidianus filamentous virus 1", "attr" : {"href" : "/cgi-bin/hgGateway?db=acidFila_VIRUS_1"}}},
+					{"attr" : {"rel" : "genome", "id" : "acidFila_VIRUS_2"}, "data" : { "title" : "Acidianus filamentous virus 2", "attr" : {"href" : "/cgi-bin/hgGateway?db=acidFila_VIRUS_2"}}},
+					{"attr" : {"rel" : "genome", "id" : "acidFila_VIRUS_3"}, "data" : { "title" : "Acidianus filamentous virus 3", "attr" : {"href" : "/cgi-bin/hgGateway?db=acidFila_VIRUS_3"}}},
+					{"attr" : {"rel" : "genome", "id" : "acidFila_VIRUS_6"}, "data" : { "title" : "Acidianus filamentous virus 6", "attr" : {"href" : "/cgi-bin/hgGateway?db=acidFila_VIRUS_6"}}},
+					{"attr" : {"rel" : "genome", "id" : "acidFila_VIRUS_7"}, "data" : { "title" : "Acidianus filamentous virus 7", "attr" : {"href" : "/cgi-bin/hgGateway?db=acidFila_VIRUS_7"}}},
+					{"attr" : {"rel" : "genome", "id" : "acidFila_VIRUS_8"}, "data" : { "title" : "Acidianus filamentous virus 8", "attr" : {"href" : "/cgi-bin/hgGateway?db=acidFila_VIRUS_8"}}},
+					{"attr" : {"rel" : "genome", "id" : "acidFila_VIRUS_9"}, "data" : { "title" : "Acidianus filamentous virus 9", "attr" : {"href" : "/cgi-bin/hgGateway?db=acidFila_VIRUS_9"}}},
+					{"attr" : {"rel" : "genome", "id" : "acidRods_VIRUS_1"}, "data" : { "title" : "Acidianus rod-shaped virus 1", "attr" : {"href" : "/cgi-bin/hgGateway?db=acidRods_VIRUS_1"}}},
+					{"attr" : {"rel" : "genome", "id" : "acidTwot_VIRUS"}, "data" : { "title" : "Acidianus two-tailed virus", "attr" : {"href" : "/cgi-bin/hgGateway?db=acidTwot_VIRUS"}}},
+					{"attr" : {"rel" : "genome", "id" : "archBJ1_VIRUS"}, "data" : { "title" : "Archaeal BJ1 virus", "attr" : {"href" : "/cgi-bin/hgGateway?db=archBJ1_VIRUS"}}},
+					{"attr" : {"rel" : "genome", "id" : "haloPhag_SH1"}, "data" : { "title" : "Haloarcula phage SH1", "attr" : {"href" : "/cgi-bin/hgGateway?db=haloPhag_SH1"}}},
+					{"attr" : {"rel" : "genome", "id" : "haloPhag_HF2"}, "data" : { "title" : "Halorubrum phage HF2", "attr" : {"href" : "/cgi-bin/hgGateway?db=haloPhag_HF2"}}},
+					{"attr" : {"rel" : "genome", "id" : "haloHF1"}, "data" : { "title" : "Halovirus HF1", "attr" : {"href" : "/cgi-bin/hgGateway?db=haloHF1"}}},
+					{"attr" : {"rel" : "genome", "id" : "his1Viru"}, "data" : { "title" : "His1 virus", "attr" : {"href" : "/cgi-bin/hgGateway?db=his1Viru"}}},
+					{"attr" : {"rel" : "genome", "id" : "his2Viru"}, "data" : { "title" : "His2 virus", "attr" : {"href" : "/cgi-bin/hgGateway?db=his2Viru"}}},
+					{"attr" : {"rel" : "genome", "id" : "methPhag_PSIM2"}, "data" : { "title" : "Methanobacterium phage psiM2", "attr" : {"href" : "/cgi-bin/hgGateway?db=methPhag_PSIM2"}}},
+					{"attr" : {"rel" : "genome", "id" : "methPhag_PSIM100"}, "data" : { "title" : "Methanothermobacter phage psiM100", "attr" : {"href" : "/cgi-bin/hgGateway?db=methPhag_PSIM100"}}},
+					{"attr" : {"rel" : "genome", "id" : "natrPhag_PHICH1"}, "data" : { "title" : "Natrialba phage PhiCh1", "attr" : {"href" : "/cgi-bin/hgGateway?db=natrPhag_PHICH1"}}},
+					{"attr" : {"rel" : "genome", "id" : "pyroSphe_VIRUS"}, "data" : { "title" : "Pyrobaculum spherical virus", "attr" : {"href" : "/cgi-bin/hgGateway?db=pyroSphe_VIRUS"}}},
+					{"attr" : {"rel" : "genome", "id" : "pyroAbys_VIRUS_1"}, "data" : { "title" : "Pyrococcus abyssi virus 1", "attr" : {"href" : "/cgi-bin/hgGateway?db=pyroAbys_VIRUS_1"}}},
+					{"attr" : {"rel" : "genome", "id" : "sulfIsla_FILAMENTOUS"}, "data" : { "title" : "Sulfolobus islandicus filamentous virus", "attr" : {"href" : "/cgi-bin/hgGateway?db=sulfIsla_FILAMENTOUS"}}},
+					{"attr" : {"rel" : "genome", "id" : "sulfIsla_ROD_SHAPED_V"}, "data" : { "title" : "Sulfolobus islandicus rod-shaped virus 1", "attr" : {"href" : "/cgi-bin/hgGateway?db=sulfIsla_ROD_SHAPED_V"}}},
+					{"attr" : {"rel" : "genome", "id" : "sulfIsla_ROD_SHAPED_VIRUS_2"}, "data" : { "title" : "Sulfolobus islandicus rod-shaped virus 2", "attr" : {"href" : "/cgi-bin/hgGateway?db=sulfIsla_ROD_SHAPED_VIRUS_2"}}},
+					{"attr" : {"rel" : "genome", "id" : "sulfSpin_VIRUS_4"}, "data" : { "title" : "Sulfolobus spindle-shaped virus 4", "attr" : {"href" : "/cgi-bin/hgGateway?db=sulfSpin_VIRUS_4"}}},
+					{"attr" : {"rel" : "genome", "id" : "sulfTurr_ICOSAHEDRAL"}, "data" : { "title" : "Sulfolobus turreted icosahedral virus", "attr" : {"href" : "/cgi-bin/hgGateway?db=sulfTurr_ICOSAHEDRAL"}}},
+					{"attr" : {"rel" : "genome", "id" : "sulfViru_1"}, "data" : { "title" : "Sulfolobus virus 1", "attr" : {"href" : "/cgi-bin/hgGateway?db=sulfViru_1"}}},
+					{"attr" : {"rel" : "genome", "id" : "sulfViru_2"}, "data" : { "title" : "Sulfolobus virus 2", "attr" : {"href" : "/cgi-bin/hgGateway?db=sulfViru_2"}}},
+					{"attr" : {"rel" : "genome", "id" : "sulfViru_KAMCHATKA_1"}, "data" : { "title" : "Sulfolobus virus Kamchatka 1", "attr" : {"href" : "/cgi-bin/hgGateway?db=sulfViru_KAMCHATKA_1"}}},
+					{"attr" : {"rel" : "genome", "id" : "sulfViru_RAGGED_HILLS"}, "data" : { "title" : "Sulfolobus virus Ragged Hills", "attr" : {"href" : "/cgi-bin/hgGateway?db=sulfViru_RAGGED_HILLS"}}},
+					{"attr" : {"rel" : "genome", "id" : "sulfViru_STSV1"}, "data" : { "title" : "Sulfolobus virus STSV1", "attr" : {"href" : "/cgi-bin/hgGateway?db=sulfViru_STSV1"}}}
+				]
+			}
+		]
+}]

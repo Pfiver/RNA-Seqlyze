@@ -20,10 +20,13 @@ from rnaseqlyze.core.analysis import AnalysisMixins
 from rnaseqlyze.core.sra import RNASeqRunMixins
 
 class Entity(object):
+
     @declared_attr
     def __tablename__(cls):
         return cls.__name__.lower()
+
     __table_args__ = {'mysql_engine': 'InnoDB'}
+
     def __setattr__(self, name, value):
         # raise an exception when setting
         # attributes that are not db columns
@@ -33,6 +36,22 @@ class Entity(object):
             except AttributeError:
                 raise Exception("'%s' is not a declared attribute" % name)
         object.__setattr__(self, name, value)
+
+    def __init__(self, **kwargs):
+
+        if 'id' in kwargs:
+            raise Exception("bad keyword argument: id; id is auto-generated")
+
+        # set1 <= set2 is the same as set1.issubset(set2)
+        if not set(kwargs.keys()) <= set(self.__class__.__dict__):
+            raise Exception("bad keyword arguments: %s" % list(want - have))
+
+        for attr in kwargs:
+            setattr(self, attr, kwargs[attr])
+
+        if not self.creation_date:
+            import datetime
+            self.creation_date = datetime.datetime.utcnow()
 
 Entity = declarative_base(cls=Entity)
 
@@ -89,23 +108,6 @@ class Analysis(Entity, AnalysisMixins):
             raise Exception("Please make sure your input file has a"
                             " (meaningful) extension, like .fastq or .sra")
         return name
-
-    def __init__(self, **kwargs):
-
-        if 'id' in kwargs:
-            raise Exception("bad keyword argument: id; id is auto-generated")
-
-        want = set(kwargs.keys())
-        have = set(self.__class__.__dict__)
-        if not want.issubset(have):
-            raise Exception("bad keyword arguments: %s" % list(want - have))
-
-        for attr in kwargs:
-            setattr(self, attr, kwargs[attr])
-
-        if not self.creation_date:
-            import datetime
-            self.creation_date = datetime.datetime.utcnow()
 
 class UploadSession(Entity):
     """
@@ -191,7 +193,7 @@ class HgTrack(Entity): # stub
 
 # helpers
 
-class UCSCOrganism(object):
+class UCSCOrganism(Entity):
     """
     Holds information about the mapping of UCSC browser
     "db" names to NCBI nucleotide accessions
