@@ -22,6 +22,8 @@ def configure(_workdir):
         - sets rnaseqlyze.<setting> attributes for all
           settings under [rnaseqlyze] in '<workdir>/rnaseqlyze.ini'.
 
+        - imports Bio.Entrez and sets Bio.Entrez.email to rnaseqlyze.admin_email
+
         - configures the python "logging" module by calling
           logging.config.fileConfig('<workdir>/rnaseqlyze.ini').
     """
@@ -38,6 +40,9 @@ def configure(_workdir):
 
     for name, value in config.items("rnaseqlyze"):
         globals()[name] = value
+
+    import Bio.Entrez
+    Bio.Entrez.email = admin_email
 
     import logging.config.fileConfig
     logging.config.fileConfig(conf_ini)
