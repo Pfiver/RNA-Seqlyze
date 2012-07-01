@@ -50,6 +50,9 @@ Documentation:
 
     If the command creates the <workdir>, it changes it's unix access mode to
     (octal) 0775 and the group membership is also changed to <group>.
+
+    The command changes the unix access mode and group membership of all .log
+    files inside the workdir to (octal) 0664 and <group>.
 """
 
 from __future__ import print_function
@@ -83,17 +86,35 @@ def main():
     # create each config file that does not exist
     for pkg in rnaseqlyze, rnaseqlyze.web, rnaseqlyze.worker:
 
+        # determine the destination file name
         conf_name = pkg.__name__.split('.')[-1] + ".ini"
-        conf_path = os.path.join(wordir, conf_name)
+        conf_path = os.path.join(workdir, conf_name)
         if os.path.exists(conf_path):
             continue
 
-        ini = opts['--development'] and "development.ini" or "production.ini"
-        res = pkg_resources.resource_stream(pkg.project_name, ini)
+        # determine the source file name
+        if pkg.__name__ == "rnaseqlyze":
+            # for the core package there is currently
+            # only one config file template
+            ini = 'rnaseqlyze.ini'
+        else:
+            # for the non-core packages, take the desired version
+            ini = opts['--development'] and "development.ini" or "production.ini"
+        # get the file as a resource stream, which works even
+        # if the distribution if installed as a zipped .egg
+        req = pkg_resources.Requirement.parse(pkg.project_name)
+        res = pkg_resources.resource_stream(req, ini)
         shutil.copyfileobj(res, open(conf_path, "w"))
 
-    # init rnaseqlyze configuration
-    rnaseqlyze.configure(os.path.join(workdir, 'rnaseqlyze.ini'))
+    # init rnaseqlyze configuration -- creates all .log files
+    rnaseqlyze.configure(workdir)
+
+    # set proper permissions on the log files
+    for name in os.listdir(workdir):
+        if name.endswith('.log'):
+            log = os.path.join(workdir, name)
+            os.chmod(log, 0664)
+            os.chown(log, -1, grp.getgrnam(rnaseqlyze.group).gr_gid)
 
     # delayed because 'rnaseqlyze.group' was
     # not known before calling rnaseqlyze.configure() above
@@ -122,4 +143,4 @@ def main():
         # change group membership
         os.chown(db_path, -1, grp.getgrnam(rnaseqlyze.group).gr_gid)
 
-    print "workdir initialized"
+    print("workdir initialized")

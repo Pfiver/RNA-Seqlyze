@@ -24,7 +24,7 @@ custom_track_url = "http://archaea.ucsc.edu/cgi-bin/hgTracks"
 custom_track_params = "?db={org_db}&hgt.customText={track_url}"
 
 org_list_base_url = "http://archaea.ucsc.edu/wp-content/data/"
-org_list_cache_dir = join(rnaseqlyze.data_path, "ucsc-orglist-cache")
+org_list_cache_dir = join(rnaseqlyze.workdir, "ucsc-orglist-cache")
 org_list_default_dir = dirname(__file__)
 json_links_file_name = "ucsc-wp-data.html"
 

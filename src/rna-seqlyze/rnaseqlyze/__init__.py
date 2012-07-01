@@ -31,11 +31,13 @@ def configure(_workdir):
     global workdir
     workdir = _workdir
 
+    here = { 'here': workdir }
+
     import os
     conf_ini = os.path.join(workdir, 'rnaseqlyze.ini')
 
     from ConfigParser import ConfigParser
-    config = ConfigParser()
+    config = ConfigParser(here)
     config.read(conf_ini)
 
     for name, value in config.items("rnaseqlyze"):
@@ -44,5 +46,5 @@ def configure(_workdir):
     import Bio.Entrez
     Bio.Entrez.email = admin_email
 
-    import logging.config.fileConfig
-    logging.config.fileConfig(conf_ini)
+    import logging.config
+    logging.config.fileConfig(conf_ini, here)
