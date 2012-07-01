@@ -2,28 +2,42 @@
 Top level package module
 """
 
-project_name = 'rna-seqlyze'
-config_filename = 'rnaseqlyze.ini'
+#: the project base-name
+#: the -cli, -web and -worker project names
+#: are constructed by appending the part name to this one
+project_name = "rna-seqlyze"
 
-def _init():
-    import os.path
-    import pkg_resources
+import pkg_resources
+#: The __version__ property is set automatically set to the value of
+#: pkg_resources.get_distribution(project_name).version on module import time.
+__version__ = pkg_resources.get_distribution(project_name).version
+del pkg_resources
+
+def configure(_workdir):
+    """
+    Calling this function
+
+        - sets rnaseqlyze.workdir to <workdir>
+        
+        - sets rnaseqlyze.<setting> attributes for all
+          settings under [rnaseqlyze] in '<workdir>/rnaseqlyze.ini'.
+
+        - configures the python "logging" module by calling
+          logging.config.fileConfig('<workdir>/rnaseqlyze.ini').
+    """
+
+    global workdir
+    workdir = _workdir
+
+    import os
+    conf_ini = os.path.join(workdir, 'rnaseqlyze.ini')
+
     from ConfigParser import ConfigParser
-
-    dist = pkg_resources.get_distribution(project_name)
-
-    global __version__
-    __version__ = dist.version
-
-    global install_path
-    install_path = dist.location
-
-    config_path = os.path.join(install_path, config_filename)
-    config = ConfigParser({'here': install_path})
-    config.read(config_path)
+    config = ConfigParser()
+    config.read(conf_ini)
 
     for name, value in config.items("rnaseqlyze"):
         globals()[name] = value
 
-_init()
-del _init
+    import logging.config.fileConfig
+    logging.config.fileConfig(conf_ini)

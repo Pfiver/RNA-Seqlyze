@@ -1,9 +1,12 @@
 from pkgutil import iter_modules
 from setuptools import setup, find_packages
 
+import rnaseqlyze
+import rnaseqlyze.cli
+
 setup(
-    name='rna-seqlyze-cli',
-    version='0.1',
+    name=rnaseqlyze.cli.project_name,
+    version=rnaseqlyze.__version__,
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
     description="RNA-seq analysis | command-line interface",

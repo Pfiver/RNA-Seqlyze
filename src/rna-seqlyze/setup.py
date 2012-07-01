@@ -11,6 +11,8 @@
 
 from setuptools import setup, find_packages
 
+import rnaseqlyze
+
 def get_version():
     cmd = "git describe --tags"
     from subprocess import Popen, PIPE
@@ -21,7 +23,7 @@ def get_version():
     return version.strip()[1:]
 
 setup(
-    name='rna-seqlyze',
+    name=rnaseqlyze.project_name,
     version=get_version(),
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
@@ -29,8 +31,11 @@ setup(
     long_description=
         "RNA-seq analysis & sequence annotation enhancement web-application",
     license="Mixed",
-    packages=find_packages(),
     test_suite='nose.collector',
+    packages=find_packages(),
+    data_files=[('', [
+        'development.ini', 'production.ini'
+    ])],
     entry_points={
         'console_scripts': [
             'rnas-build = rnaseqlyze.build:main',

@@ -24,6 +24,7 @@ from pyramid.config import Configurator
 from zope.sqlalchemy import ZopeTransactionExtension
 
 import rnaseqlyze
+project_name = rnaseqlyze.project_name + "-web"
 
 #: a session managed by
 #: ZopeTransactionExtension
