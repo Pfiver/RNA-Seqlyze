@@ -61,11 +61,14 @@ import os, sys, grp, shutil
 
 import pkg_resources
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 import rnaseqlyze
 import rnaseqlyze.web
 import rnaseqlyze.worker
 from rnaseqlyze.core.orm import Entity
+
+Session = sessionmaker()
 
 def main():
 
@@ -135,12 +138,23 @@ def main():
     # create the database if it doesn't exist
     if not os.path.exists(db_path):
 
+        # create sqlalchemy db engine
+        engine = create_engine(rnaseqlyze.db_url)
+
         # create the file and initialize the schema
-        Entity.metadata.create_all(create_engine(rnaseqlyze.db_url))
+        with engine.begin() as conn:
+            Entity.metadata.create_all(conn)
 
         # change permission bits
         os.chmod(db_path, 0664)
         # change group membership
         os.chown(db_path, -1, grp.getgrnam(rnaseqlyze.group).gr_gid)
+
+        # initialize UCSC Browser list of organisms
+        from rnaseqlyze import org_cache
+        with engine.begin() as conn:
+            session = Session(bind=conn)
+            org_cache.refresh(session)
+            session.commit()
 
     print("workdir initialized")

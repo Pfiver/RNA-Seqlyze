@@ -9,7 +9,7 @@ from urllib2 import urlopen
 from urlparse import urljoin
 from StringIO import StringIO
 from shutil import copyfileobj
-from os import makedirs
+from os import listdir, makedirs
 from os.path import join, dirname, isdir
 
 from lxml.html import parse
@@ -36,13 +36,12 @@ org_list_default_dir = dirname(__file__)
 json_links_file_name = "ucsc-wp-data.html"
 
 
-def refresh_org_cache(db_session):
+def get_org_list():
+
     if not isdir(org_list_cache_dir):
         makedirs(org_list_cache_dir)
 
-    db_session.begin()
-    db_session.add_all(list(get_organisms(get_json_files())))
-    db_session.commit()
+    return list(get_organisms(get_json_files()))
 
 def get_json_files():
 
@@ -51,7 +50,7 @@ def get_json_files():
 
     for get_json_links_file in (get_json_links_file_web,
                                 get_json_links_file_cache,
-                                get_json_links_file_default):
+                                get_json_links_file_default,):
         try:
             log.debug("trying %s" % get_json_links_file.func_name)
             json_links_file = get_json_links_file()
@@ -61,7 +60,7 @@ def get_json_files():
         
         for get_json_files in (get_get_json_files_web(json_links_file),
                                get_json_files_cache,
-                               get_json_files_default):
+                               get_json_files_default,):
 
             try:
                 log.debug("trying %s" % get_json_files.func_name)
@@ -119,12 +118,12 @@ def get_get_json_files_web(json_links_file):
     return get_json_files_web
 
 def get_json_files_cache():
-    for json in os.listdir(org_list_cache_dir):
+    for json in listdir(org_list_cache_dir):
         if json.endswith(".json"):
             yield open(join(org_list_cache_dir, json))
 
 def get_json_files_default():
-    for json in os.listdir(org_list_default_dir):
+    for json in listdir(org_list_default_dir):
         if json.endswith(".json"):
             yield open(join(org_list_default_dir, json))
 
