@@ -75,7 +75,7 @@ def main():
     import docopt
     opts = docopt.docopt(__doc__)
 
-    workdir = opts['<workdir>']
+    workdir = os.path.abspath(opts['<workdir>'])
 
     # create the workdir if it does not exist
     wd_created = False
