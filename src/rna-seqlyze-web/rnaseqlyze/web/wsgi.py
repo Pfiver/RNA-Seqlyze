@@ -20,8 +20,8 @@ def get_app(workdir):
     web_ini = os.path.join(workdir, 'web.ini')
 
     # configure logging
-    import logging.config.fileConfig
-    logging.config.fileConfig(rnaseqlyze.web_ini)
+    import logging.config
+    logging.config.fileConfig(web_ini, dict(here=workdir))
 
     # create the pyramid wsgi app
     import pyramid.paster

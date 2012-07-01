@@ -22,9 +22,9 @@ Documentation:
 
     The 'workdir' holds
 
-        - configuration files           *.ini
+        - configuration files           \*.ini
         - the application database      rnaseqlyze.db
-        - log files                     *.log
+        - log files                     \*.log
         - shared data                   shared_data/
         - individual analysis data      analyses/
 

@@ -23,20 +23,23 @@ cart_reset_url = "http://archaea.ucsc.edu/cgi-bin/cartReset"
 custom_track_url = "http://archaea.ucsc.edu/cgi-bin/hgTracks"
 custom_track_params = "?db={org_db}&hgt.customText={track_url}"
 
-# FIXME: This part need some work:
-# 1) The module presently can only be imported after
-#    rnaseqlyze.configure(workdir) was called.
-# 2) The org_list_default_dir = dirname(__file__)
+# FIXME:
+#    The org_list_default_dir = dirname(__file__)
 #    hack will not work if the distribution is installed
 #    as a zipped .egg. pkg_resources.resource_stream or
 #    pkg_resources.resource_string should be used instead.
 org_list_base_url = "http://archaea.ucsc.edu/wp-content/data/"
-org_list_cache_dir = join(rnaseqlyze.workdir, "ucsc-orglist-cache")
-org_list_default_dir = dirname(__file__)
+org_list_default_dir = join(dirname(__file__), "ucsc-browser-data")
 json_links_file_name = "ucsc-wp-data.html"
 
 
 def get_org_list():
+
+    global org_list_cache_dir
+    if not hasattr(rnaseqlyze, ucsc_org_list_cache_dir):
+        raise Exception("rnaseqlyze.configure(workdir) "
+                        "must be called before calling this function")
+    org_list_cache_dir = rnaseqlyze.ucsc_org_list_cache_dir
 
     if not isdir(org_list_cache_dir):
         makedirs(org_list_cache_dir)
