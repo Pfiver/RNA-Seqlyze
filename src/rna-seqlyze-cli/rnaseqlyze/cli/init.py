@@ -55,7 +55,8 @@ Documentation:
     files inside the workdir to (octal) 0664 and <group>.
 """
 
-from __future__ import print_function
+import logging
+log = logging.getLogger(__name__)
 
 import os, sys, grp, shutil
 
@@ -81,8 +82,9 @@ def main():
     wd_created = False
     if not os.path.isdir(workdir):
         if os.path.exists(workdir):
-            print("not a directory: '%s'" % workdir, file=sys.stderr)
+            log.error("not a directory: '%s'" % workdir)
             sys.exit(1)
+        log.info("creating workdir '%s'" % workdir)
         os.makedirs(workdir)
         wd_created = True
 
@@ -107,6 +109,7 @@ def main():
         # if the distribution if installed as a zipped .egg
         req = pkg_resources.Requirement.parse(pkg.project_name)
         res = pkg_resources.resource_stream(req, ini)
+        log.info("creating config file '%s'" % conf_name)
         shutil.copyfileobj(res, open(conf_path, "w"))
 
     # init rnaseqlyze configuration -- creates all .log files
@@ -115,13 +118,15 @@ def main():
     # set proper permissions on the log files
     for name in os.listdir(workdir):
         if name.endswith('.log'):
-            log = os.path.join(workdir, name)
-            os.chmod(log, 0664)
-            os.chown(log, -1, grp.getgrnam(rnaseqlyze.group).gr_gid)
+            path = os.path.join(workdir, name)
+            log.info("adjusting permissions on '%s'" % name)
+            os.chmod(path, 0664)
+            os.chown(path, -1, grp.getgrnam(rnaseqlyze.group).gr_gid)
 
     # delayed because 'rnaseqlyze.group' was
     # not known before calling rnaseqlyze.configure() above
     if wd_created:
+        log.info("adjusting permissions on '%s'" % workdir)
         # change permission bits
         os.chmod(workdir, 0775)
         # change group membership
@@ -133,10 +138,14 @@ def main():
     # remove the databse file
     # if it exists and --recreatedb is given
     if os.path.exists(db_path) and opts['--recreatedb']:
+        log.info("removing existing database file '%s'" %
+                                                   db_path.split('/')[-1])
         os.unlink(db_path)
 
     # create the database if it doesn't exist
     if not os.path.exists(db_path):
+
+        log.info("recreating database '%s'" % rnaseqlyze.db_url)
 
         # create sqlalchemy db engine
         engine = create_engine(rnaseqlyze.db_url)
@@ -145,10 +154,14 @@ def main():
         with engine.begin() as conn:
             Entity.metadata.create_all(conn)
 
+        log.info("adjusting permissions on database file")
+
         # change permission bits
         os.chmod(db_path, 0664)
         # change group membership
         os.chown(db_path, -1, grp.getgrnam(rnaseqlyze.group).gr_gid)
+
+        log.info("initializing organism cache")
 
         # initialize UCSC Browser list of organisms
         from rnaseqlyze import org_cache
@@ -157,4 +170,4 @@ def main():
             org_cache.refresh(session)
             session.commit()
 
-    print("workdir initialized")
+    log.info("workdir initialized")
