@@ -28,6 +28,25 @@
   -->
 
         <div class="control-group">
+          <label for="input_type_radio" class="control-label">Type of input</label>
+          <div class="controls">
+            <div id="input_type_radio" class="btn-group" data-toggle="buttons-radio">
+              <!-- setting type="button" prevents the form beeing submitted -->
+              <button type="button" class="btn srr">SRR Identifier</button>
+              <button type="button" class="btn sra">Data File</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="srr-controls" class="control-group">
+          <label for="srrInput" class="control-label">SRR Identifier</label>
+          <div class="controls">
+            <input type="text" name="rnaseq_run" id="srrInput" class="input-xlarge" value="SRR"/>
+            <span id="srrStatus" class="help-inline"></span>
+          </div>
+        </div>
+
+        <div id="sra-controls" class="control-group">
           <label for="inputfile_browse" class="control-label">SRA or FASTQ File</label>
           <div class="controls">
             <div id="inputfile_progress" class="progress progress-striped input-prepend input-xlarge">
@@ -37,6 +56,7 @@
             <button class="btn" id="inputfile_browse">Browse...</button>
           </div>
         </div>
+
         <div class="control-group">
           <label for="strandspecificInput" class="control-label">strand-specific</label>
           <div class="controls">
@@ -61,24 +81,29 @@
           </div>
         </div>
 
-        <div class="control-group">
-          <div class="controls">
-            <p>or</p>
-          </div>
-        </div>
-
-        <div id="srrControls" class="control-group">
-          <label for="srrInput" class="control-label">SRR identifier</label>
-          <div class="controls">
-            <input type="text" name="rnaseq_run" id="srrInput" class="input-xlarge" value="SRR"/>
-            <span id="srrStatus" class="help-inline"></span>
-          </div>
-        </div>
-
-
         <h2 id="organism">Organism</h2>
 
         <div class="control-group">
+          <label for="org_type_radio" class="control-label">Type of input</label>
+          <div class="controls">
+            <div id="org_type_radio" class="btn-group" data-toggle="buttons-radio">
+              <!-- setting type="button" prevents the form beeing submitted -->
+              <button type="button" class="btn title">'Genome' Title</button>
+              <button type="button" class="btn file">Genbank File</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="org_title-controls" class="control-group">
+          <label for="organismInput" class="control-label">'Genome' Title</label>
+          <div class="controls">
+            <input type="text" name="org_accession" id="organismInput" class="input-xlarge"/>
+            <span id="organismStatus" class="help-inline"></span>
+            <p class="help-block"><em>recommended!</em></p>
+          </div>
+        </div>
+
+        <div id="genbankfile-controls" class="control-group">
           <label for="genbankfile_browse" class="control-label">Genebank File</label>
           <div class="controls">
             <div id="genbankfile_progress" class="progress progress-striped input-prepend input-xlarge">
@@ -90,24 +115,9 @@
           </div>
         </div>
 
-        <div class="control-group">
-          <div class="controls">
-            <p>or</p>
-          </div>
-        </div>
-
-        <div id="organismControls" class="control-group">
-          <label for="organismInput" class="control-label">Accession Number</label>
-          <div class="controls">
-            <input type="text" name="org_accession" id="organismInput" class="input-xlarge" value="NC_"/>
-            <span id="organismStatus" class="help-inline"></span>
-            <p class="help-block"><em>recommended!</em></p>
-          </div>
-        </div>
-
         <br style="margin: 10px;"/>
 
-	<div class="form-actions">
+        <div class="form-actions">
           <button id="create_form_submit" class="btn btn-primary">Submit</button>
         </div>
 
@@ -133,6 +143,9 @@
       <script type="text/javascript" src="${path('js/plupload.html4.js')}"></script>
       <script type="text/javascript" src="${path('js/plupload.html5.js')}"></script>
 
+      <script type="text/javascript" src="${path('js/bootstrap-button.js')}"></script>
+      <script type="text/javascript" src="${path('js/bootstrap-typeahead.js')}"></script>
+      <script type="text/javascript" src="${path('js/underscore-min.js')}"></script>
       <script type="text/javascript" src="${path('js/rnaseqlyze-create.js')}"></script>
   </tal:block>
 

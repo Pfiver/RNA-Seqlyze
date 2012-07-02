@@ -7,7 +7,25 @@
 $(document).ready(function() {
 
     /*
-     * function library
+     * Toggle input type
+     */
+
+    $('#input_type_radio').click(function(event) {
+        if ($(event.target).hasClass("srr")) {
+            // user chose the "Data File" option
+            $('#sra-controls').hide();
+            $('#srr-controls').show();
+        } else if ($(event.target).hasClass("sra")) {
+            // user chose the "SRR Identifier" option
+            $('#srr-controls').hide();
+            $('#sra-controls').show();
+        } // else
+            // what the...
+    });
+    $('#input_type_radio .srr').click();
+
+    /*
+     * discretionary #pairendlenControls
      */
 
     function maybe_show_pairendlen_controls() {
@@ -17,32 +35,53 @@ $(document).ready(function() {
             $('#pairendlenControls').hide();
     }
 
-    function search_organism() {
-        oc = $('#organismControls');
-        os = $('#organismStatus');
-        oi = $('#organismInput');
-
-        oc.removeClass("success");
-        oc.removeClass("error");
-
-        if (oi.val().match(/^NC/)) {
-            oc.addClass("success");
-            os.text("found");
-        } else {
-            oc.addClass("error");
-            os.text("not found");
-        }
-    }
-
-    /*
-     * page initialization
-     */
-
     maybe_show_pairendlen_controls();
     $('#pairendedInput').change(maybe_show_pairendlen_controls);
 
-    $('#organismInput').blur(search_organism);
 
+    /*
+     * Toggle organism input type
+     */
+
+    $('#org_type_radio').click(function(event) {
+        if ($(event.target).hasClass("title")) {
+            // user chose "Title"
+            $('#genbankfile-controls').hide();
+            $('#org_title-controls').show();
+        } else if ($(event.target).hasClass("file")) {
+            // user chose "Genbank File"
+            $('#org_title-controls').hide();
+            $('#genbankfile-controls').show();
+        } // else
+            // what the ...
+    });
+    $('#org_type_radio .title').click();
+
+    /*
+     * Organism input autocompletion
+     */
+
+    var organisms = new Array();
+
+    $.ajax({
+        url: "rest/organisms",
+        dataType: "json",
+        success: function(data) {
+            // No idea yet what to do with those that have multiple
+            // accessions listed in 'genome' -- filter them out here for now
+            //
+            // see ftp://ftp.ncbi.nih.gov/genomes/GENOME_REPORTS/prokaryotes.txt
+            //
+            _(data).each(function(org) {
+                if (org.acc.indexOf(",") >= 0)
+                    return;
+                organisms.push("{} ({}/{})".format(
+                                org.title, org.db, org.acc)); }); },
+    });
+
+    $('#organismInput').typeahead({
+        source: organisms,
+    });
 
     /*
      * plupload -- from src/plupload/examples/custom.html
