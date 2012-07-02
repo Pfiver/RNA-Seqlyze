@@ -10,6 +10,11 @@
 # Description:       Debian init script for the RNA-Seqlyze worker daemon
 ### END INIT INFO
 
+# Usage:
+#	- configure the two directories below
+#       - copy this file to /etc/init.d/rnaseqlyze.sh
+#	- enable it with `insserv /etc/init.d/rnaseqlyze.sh`
+
 ###
 
 PREFIX=/home/biopython/.local		# the <prefix> passed to `rnas-build`
