@@ -34,11 +34,14 @@ Arguments:
 
 """
 
-def main():
-    import os
-    import docopt
-    import paste.script.serve
+import os
 
+import docopt
+import paste.script.serve
+
+import rnaseqlyze
+
+def main():
     opts = docopt.docopt(__doc__)
 
     for command in "start|stop|restart".split('|'):
@@ -50,8 +53,9 @@ def main():
         mode = "development"
         args = ["--reload"]
 
+    rnaseqlyze.configure(opts['<workdir>'])
+
     if mode == 'production':
-        import rnaseqlyze
         args.extend([
             "--user=" + rnaseqlyze.worker_user,
             "--group=" + rnaseqlyze.group,
