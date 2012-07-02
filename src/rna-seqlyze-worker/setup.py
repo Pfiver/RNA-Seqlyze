@@ -17,7 +17,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     data_files=[('', [
-        'development.ini', 'production.ini'
+        'development.ini',
+        'production.ini',
+        'rnaseqlyze.sh',
     ])],
     setup_requires=[
         "nose >= 1.1.2",

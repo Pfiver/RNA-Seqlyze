@@ -34,10 +34,10 @@ Arguments:
 
 """
 
-import os
+from os.path import abspath, join
 
+from paste.script import serve
 import docopt
-import paste.script.serve
 
 import rnaseqlyze
 
@@ -53,16 +53,17 @@ def main():
         mode = "development"
         args = ["--reload"]
 
-    rnaseqlyze.configure(opts['<workdir>'])
+    workdir = abspath(opts['<workdir>'])
+    rnaseqlyze.configure(workdir)
 
     if mode == 'production':
         args.extend([
-            "--user=" + rnaseqlyze.worker_user,
-            "--group=" + rnaseqlyze.group,
-            "--log-file=" + here + os.sep + 'worker-daemon.log',
-            "--pid-file=" + here + os.sep + 'worker-daemon.pid',
+#            "--user=" + rnaseqlyze.worker_user,
+#            "--group=" + rnaseqlyze.group,
+            "--log-file=" + join(workdir, 'worker-daemon.log'),
+            "--pid-file=" + join(workdir, 'worker-daemon.pid'),
         ])
 
-    conf_file = os.path.join(opts['<workdir>'], 'worker.ini')
-    paste.script.serve.ServeCommand("serve").run([conf_file] + args)
+    conf_file = join(workdir, 'worker.ini')
+    serve.ServeCommand("serve").run([conf_file] + args)
 
