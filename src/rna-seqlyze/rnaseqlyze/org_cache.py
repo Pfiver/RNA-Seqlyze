@@ -13,6 +13,7 @@ from pkg_resources import resource_stream
 from Bio import Entrez
 
 from rnaseqlyze import ucscbrowser
+from rnaseqlyze.core.orm import UCSCOrganism
 
 prokaryotes_tsv = "refseq-data/prokaryotes.txt"
 
@@ -44,35 +45,47 @@ def refresh(db_session):
     """
 
     organisms = ucscbrowser.get_org_list()
-
     accessions = get_accessions()
 
-    for org in organisms:
+    # loop over a copy
+    for org in organisms[:]:
         ot = org.title
         for gt, acc in accessions:
             if ot == gt:
                 org.acc = acc
-                break
-        else:
-            best_ratio = 0
-            best_match = None
-            for gt, acc in accessions:
-                ratio = difflib.SequenceMatcher(None, ot, gt).ratio()
-                if ratio > best_ratio:
-                    best_ratio = ratio
-                    best_match = acc
-                    best_match_t = gt
+                db_session.add(org)
 
-            if best_ratio > 0.8:
-                log.info(("UCSC organism '%s':"
-                          " using NCBI 'genome' organism '%s'"
-                          " (match ratio: %f)") % (ot, best_match_t, best_ratio))
-                org.acc = best_match
+    not_found = set(organisms) - \
+                set(db_session.query(UCSCOrganism).all())
+
+    # try fuzzy-matching the title
+    # of those organisms that were not found
+    for org in not_found:
+        ot = org.title
+        best_ratio = 0
+        best_match = None
+        for gt, acc in accessions:
+            ratio = difflib.SequenceMatcher(None, ot, gt).ratio()
+            if ratio > best_ratio:
+                best_ratio = ratio
+                best_match = acc
+                best_match_t = gt
+
+        if best_ratio > 0.8:
+            if db_session.query(UCSCOrganism).get(best_match):
+                log.debug(("NOT using '{match}' for '{org}'"
+                           " despite match ratio of: {ratio}").format(
+                               match=best_match_t, org=ot, ratio=best_ratio))
             else:
-                log.warn(("UCSC organism '%s'"
-                          "not found in NCBI 'genome' database") % ot)
-
-    db_session.add_all(organisms)
+                log.info(("using '{match}' for '{org}'"
+                          " match ratio: {ratio}").format(
+                               match=best_match_t, org=ot, ratio=best_ratio))
+                org.acc = best_match
+                db_session.add(org)
+        else:
+            log.warn(("'{org}' not found in NCBI 'genome' database"
+                      " (best match ratio only {ratio})").format(
+                          org=ot, ratio=best_ratio))
 
 def get_accessions():
 

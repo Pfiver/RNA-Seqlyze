@@ -43,7 +43,18 @@ def get_org_list():
     if not isdir(org_list_cache_dir):
         makedirs(org_list_cache_dir)
 
-    return list(get_organisms(get_json_files()))
+    orgs = []
+    for org in get_organisms(get_json_files()):
+        for existing in orgs:
+            if existing.title == org.title:
+                log.warn("'%s' already present (db: %s/%s)" % \
+                                    (org.title, org.db, existing.db))
+                break
+        else:
+            orgs.append(org)
+
+    return orgs
+
 
 def get_json_files():
 
