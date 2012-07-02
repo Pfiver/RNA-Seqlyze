@@ -1,5 +1,8 @@
 """
 Top level package module
+
+Importing this package configures the python "logging"
+module in a way that messages of any level go to sys.stderr.
 """
 
 #: the project base-name
@@ -13,6 +16,10 @@ import pkg_resources
 __version__ = pkg_resources.get_distribution(project_name).version
 del pkg_resources
 
+import logging
+logging.basicConfig(level=0, format="%(levelname)-5.5s [%(name)s] %(message)s")
+del logging
+
 def configure(_workdir):
     """
     Calling this function
@@ -23,28 +30,18 @@ def configure(_workdir):
           settings under [rnaseqlyze] in '<workdir>/rnaseqlyze.ini'.
 
         - imports Bio.Entrez and sets Bio.Entrez.email to rnaseqlyze.admin_email
-
-        - configures the python "logging" module by calling
-          logging.config.fileConfig('<workdir>/rnaseqlyze.ini').
     """
 
     global workdir
     workdir = _workdir
 
-    here = { 'here': workdir }
-
-    import os
-    conf_ini = os.path.join(workdir, 'rnaseqlyze.ini')
-
+    from os.path import join
     from ConfigParser import ConfigParser
-    config = ConfigParser(here)
-    config.read(conf_ini)
+    config = ConfigParser(dict(here=workdir))
+    config.read(join(workdir, 'rnaseqlyze.ini'))
 
     for name, value in config.items("rnaseqlyze"):
         globals()[name] = value
 
     import Bio.Entrez
     Bio.Entrez.email = admin_email
-
-    import logging.config
-    logging.config.fileConfig(conf_ini, here)
