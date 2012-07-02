@@ -108,8 +108,6 @@ bt() {
 	. ~/data/rna-seqlyze/bash-env
 
 	dirs -c
-	pushd $rnas_workdir/analyses
-	pushd $rnas_workdir/shared_data
 	for ((i=${#rnas_pkgdirs[@]}-1; i>0; i--))
 	do
 		pkg=${rnas_pkgdirs[i]##*-}
@@ -117,6 +115,9 @@ bt() {
 	done
 	pushd "${rnas_pkgdirs[0]}/rnaseqlyze/core"
 	pushd "${rnas_pkgdirs[0]}/rnaseqlyze"
-	cd "$rnas_topdir"
+
 	bt=$rnas_topdir
+	wd=$rnas_workdir
+
+	cd "$rnas_topdir"
 }
