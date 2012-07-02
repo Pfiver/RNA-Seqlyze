@@ -182,7 +182,7 @@ logtail-developall ()
 
     while true
     do
-        rnas-worker --development
+        rnas-worker $rnas_workdir --development
         sleep 10
     done &
 
