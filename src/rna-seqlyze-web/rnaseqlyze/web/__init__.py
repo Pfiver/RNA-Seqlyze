@@ -24,6 +24,7 @@ from pyramid.config import Configurator
 from zope.sqlalchemy import ZopeTransactionExtension
 
 import rnaseqlyze
+from rnaseqlyze.web.jsonx import jsonx
 project_name = rnaseqlyze.project_name + "-web"
 
 #: a session managed by
@@ -57,6 +58,8 @@ def main(global_config, **settings):
 
     config = Configurator(settings=settings)
 
+    config.add_renderer('jsonx', jsonx)
+
     config.scan()
 
     config.add_route('home', '/')
@@ -67,6 +70,8 @@ def main(global_config, **settings):
 
     config.add_route('analysis_rest', '/rest/analyses/{id}')
     config.add_route('analysis_files_rest', '/rest/analyses/{id}/files')
+
+    config.add_route('organisms_rest', '/rest/organisms')
 
     for path in 'less', 'css', 'img', 'js':
         config.add_static_view(path, path)

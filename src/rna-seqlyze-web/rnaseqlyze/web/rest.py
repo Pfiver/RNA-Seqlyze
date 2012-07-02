@@ -11,25 +11,17 @@ from pyramid.view import view_config
 import rnaseqlyze
 from rnaseqlyze.web import DBSession, DBSession_unmanaged
 from rnaseqlyze.core import service
-from rnaseqlyze.core.orm import Analysis
+from rnaseqlyze.core.orm import Analysis, UCSCOrganism
 
-none_type = type(None)
-def json_filter_attributes(kv):
-    if kv[0][0] != '_' and \
-       type(kv[1]) in (none_type, bool, int, long, float, str, list):
-        return True
-    return False
-
-@view_config(route_name='analysis_rest', renderer='json')
-def display_rest(request):
+@view_config(route_name='analysis_rest', renderer='jsonx')
+def display(request):
     """
     **REST Analysis View**
     """
-    analysis = DBSession.query(Analysis).get(int(request.matchdict["id"]))
-    return dict(filter(json_filter_attributes, analysis.__dict__.iteritems()))
+    return DBSession.query(Analysis).get(int(request.matchdict["id"]))
 
-@view_config(route_name='analysis_files_rest', renderer='json')
-def analysis_files_rest(request):
+@view_config(route_name='analysis_files_rest', renderer='jsonx')
+def analysis_files(request):
     """
     **REST Files View**
 
@@ -44,3 +36,13 @@ def analysis_files_rest(request):
         for fn in filenames:
             files.append({'path': os.path.join(dir, fn)})
     return files
+
+@view_config(route_name='organisms_rest', renderer='jsonx')
+def organisms(request):
+    """
+    ***REST Organisms View***
+
+    Displays the list of organism titles
+    along with their UCSC db and NCBI RefSeq accession identifiers
+    """
+    return DBSession.query(UCSCOrganism).all()
