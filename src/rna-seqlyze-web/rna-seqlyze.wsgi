@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-# the next two lines can be removed
-# if the application is installed under /usr/lib/python2.x
-import site
-site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
+prefix = "/home/pfeifer/.local"
+workdir = "/home/pfeifer/data/rna-seqlyze-workdir"
 
-# when deploying the application, adjust the workdir path here
-from rnaseqlyze.web.wsgi import get_app
-application = get_app(workdir="/home/pfeifer/data/rna-seqlyze-workdir")
+import site, glob
+site.addsitedir(glob.glob(prefix + "/lib/python2*/site-packages")[-1])
+
+from rnaseqlyze.web import wsgi
+application = wsgi.get_app(workdir)

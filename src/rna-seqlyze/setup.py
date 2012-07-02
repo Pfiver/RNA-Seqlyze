@@ -34,11 +34,11 @@ setup(
     test_suite='nose.collector',
     packages=find_packages(),
     data_files=[('', [
-        'development.ini', 'production.ini'
+        'rnaseqlyze.ini'
     ])],
     entry_points={
         'console_scripts': [
-            'rnas-build = rnaseqlyze.build:main',
+            'rnas-install = rnaseqlyze.install:main',
         ],
     },
     setup_requires=[
@@ -48,6 +48,7 @@ setup(
     install_requires=[
         "sphinx",                   # Apidoc
         "pyflakes",                 # Style checker
+        "docopt > 0.4.1",
         "pyramid >= 1.3.2",         # Web framework
         "MarkupSafe >= 0.15",       # Syntax highlighting in Trac
         "MySQL-python >= 1.2.2",    # Trac database backend

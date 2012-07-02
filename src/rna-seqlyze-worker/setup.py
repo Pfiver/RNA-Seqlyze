@@ -23,6 +23,7 @@ setup(
     ])],
     setup_requires=[
         "nose >= 1.1.2",
+        "docopt > 0.4.1",
         "rna-seqlyze >= 0.1",
         "distribute >= 0.6.14",
     ],

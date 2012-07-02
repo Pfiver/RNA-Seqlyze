@@ -4,7 +4,8 @@ RNA-Seqlyze Init
 (Re-)initialize an rnaseqlyze 'workdir'.
 
 Usage:
-    rnas-init [--recreatedb] <workdir>
+    rnas-init <workdir>
+    rnas-init --recreatedb <workdir>
     rnas-init --development <workdir>
     rnas-init -h|--help
 
@@ -18,6 +19,13 @@ Arguments:
                     If the directory already exists, by default, existing
                     files inside that directory are not overwritten.
 
+                 + ---------------------------------------------------------- +
+                 |  The `WORKDIR` variable in the "/etc/init.d/rnaseqlyze.sh" |
+                 |  worker daemon startup script and the `workdir` variable   |
+                 |  in the "/var/www/../rna-seqlyze.wsgi" script must both    |
+                 |  be set to the directory specified here!                   |
+                 + ---------------------------------------------------------- +
+
 Documentation:
 
     The 'workdir' holds
@@ -28,31 +36,23 @@ Documentation:
         - shared data                   shared_data/
         - individual analysis data      analyses/
 
-
     The rnas-init command
 
         - creates the <workdir> if it does not already exist
-
         - copies default configuration files 'rnaseqlyze.ini', 'web.ini'
           and 'worker.ini' into the <workdir> if they do not already exist.
-
         - initializes the database that is configured in the 'rnaseqlyze.ini'
           config file if it doesn't already exist and --recreatedb is not given.
 
-
     The database to be initialized is configured with "db_url =" in the
     "[rnaseqlyze]" section in 'rnaseqlyze.ini'.  It is expected to be an sqlite
-    database.
-
-    If the command creates the sqlite database file, it changes it's unix
-    access mode to (octal) 0664 and the group membership is changed to <group>.
-    <group> can be confgured in 'rnaseqlyze.ini'.
-
-    If the command creates the <workdir>, it changes it's unix access mode to
-    (octal) 0775 and the group membership is also changed to <group>.
-
-    The command changes the unix access mode and group membership of all .log
-    files inside the workdir to (octal) 0664 and <group>.
+    database.  If the command creates the sqlite database file, it changes it's
+    unix access mode to (octal) 0664 and the group membership is changed to
+    <group>.  <group> can be confgured in 'rnaseqlyze.ini'.  If the command
+    creates the <workdir>, it changes it's unix access mode to (octal) 0775 and
+    the group membership is also changed to <group>.  The command changes the
+    unix access mode and group membership of all .log files inside the workdir
+    to (octal) 0664 and <group>.
 """
 
 import logging

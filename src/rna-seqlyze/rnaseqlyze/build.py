@@ -1,7 +1,7 @@
 """
-The rna-seqlyze software consisty of several parts.  The majority of those parts
-have been developped independent of this project and have been released under a
-permissive license that allows them to be used in other (permissive licenced)
+The rna-seqlyze software consisty of several parts. The majority of those parts
+have been developped independently of this project and have been released under
+a permissive license that allows them to be used in other (permissive licenced)
 projects like this one.
 
 This file defines a simple system and stores the commands necessary to build and
@@ -10,7 +10,7 @@ install those third-party components.
 
 from __future__ import print_function
 
-import os, sys, re, shutil
+import os, sys, shutil
 from os import environ as env
 from types import MethodType
 import subprocess, multiprocessing
@@ -248,35 +248,5 @@ class transterm_hp(Part):
 class s3cmd(Part):
     install = "python setup.py install --prefix=$PREFIX"
 
-# main routine
-##############
-
-def buildall(topdir, prefix):
-
-    os.chdir(topdir)
-    env["TOPDIR"] = topdir
-    env["PREFIX"] = prefix
-    env["BINDIR"] = prefix + "/bin"
-    env["LIBDIR"] = prefix + "/lib"
-    env["MACHTYPE"] = os.uname()[4]
-    env["ARCH"] = re.sub('i.86', 'i386', env["MACHTYPE"])
-    env["NCPUS_ONLN"] = str(os.sysconf("SC_NPROCESSORS_ONLN"))
-
-    for part in parts:
-        for phase in phases:
-            part.execute(phase)
-
-# script enty point
-###################
-
-def main():
-    import optparse
-    parser = optparse.OptionParser()
-    parser.add_option("-t", "--topdir",
-                      dest="topdir", default=os.getcwd(),
-                      help="the git source tree - default: current diretory")
-    parser.add_option("-p", "--prefix",
-                      dest="prefix", default=env["HOME"] + "/.local",
-                      help="the installation prefix - default: $HOME/.local")
-    options, args = parser.parse_args()
-    buildall(options.topdir, options.prefix)
+class docopt(Part):
+    install = "python setup.py install --prefix=$PREFIX"
