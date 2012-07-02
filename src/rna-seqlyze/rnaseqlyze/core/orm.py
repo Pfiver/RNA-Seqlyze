@@ -196,17 +196,8 @@ class HgTrack(Entity): # stub
 class UCSCOrganism(Entity):
     """
     Holds information about the mapping of UCSC browser "db" names to
-    "gene id 'title'"s, which are themselves believed to
-    correspond to nucleotide RefSeq Titles.
+    "gene id 'title'"s, and RefSeq Accessions.
     """
-    db          = Column(String, primary_key=True)
-    title       = Column(String)
-
-class NucleotideSummary(Entity):
-    """
-    Holds of a subset of the information by
-    NCBI's esummary.fcgi tool from the "nucleotide" database.
-    """
-    gi          = Column(Integer, primary_key=True)
-    title       = Column(String)
-    caption     = Column(String)
+    acc         = Column(String, primary_key=True)
+    db          = Column(String, unique=True)
+    title       = Column(String, unique=True)

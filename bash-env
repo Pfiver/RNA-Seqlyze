@@ -15,11 +15,11 @@ cron-hourly ()
     {
         # push home directory repository to 'biocalc-env' branch
         cd ~
-        git push -q $rnas_topdir master:biocalc-env
+        git push $rnas_topdir master:biocalc-env
 
         # push all branches to 'fhnw' remote for backup
         cd $rnas_topdir
-        git push -q fhnw
+        git push fhnw
 
         # other things
         re-install

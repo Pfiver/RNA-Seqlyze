@@ -29,14 +29,13 @@ custom_track_params = "?db={org_db}&hgt.customText={track_url}"
 #    as a zipped .egg. pkg_resources.resource_stream or
 #    pkg_resources.resource_string should be used instead.
 org_list_base_url = "http://archaea.ucsc.edu/wp-content/data/"
-org_list_default_dir = join(dirname(__file__), "ucsc-browser-data")
+org_list_default_dir = join(dirname(__file__), "ucscbrowser-data")
 json_links_file_name = "ucsc-wp-data.html"
-
 
 def get_org_list():
 
     global org_list_cache_dir
-    if not hasattr(rnaseqlyze, ucsc_org_list_cache_dir):
+    if not hasattr(rnaseqlyze, 'ucsc_org_list_cache_dir'):
         raise Exception("rnaseqlyze.configure(workdir) "
                         "must be called before calling this function")
     org_list_cache_dir = rnaseqlyze.ucsc_org_list_cache_dir
