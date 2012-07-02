@@ -186,7 +186,7 @@ logtail-developall ()
         sleep 10
     done &
 
-    tail -f /var/log/apache2/{access,error}.log $rnas_workdir/*.log
+    tail -f /var/log/apache2/{access,error}.log $rnas_workdir-dev/*.log
 }
 
 # vim: ft=sh:sw=4:ts=4:et
