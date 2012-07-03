@@ -14,7 +14,24 @@ class AnalysisMixins(object):
     Here the various analysis configurations are handled
     as transparently as possible. The properties should be
     seasy to deal with so the worker.core code doesn't get too hairy.
+
+    .. note::
+
+        Weather the input is an SRR identifier or a sra/fastq file is
+        distinguished by checking "self.inputfile_name == None" in at least
+            - the Worker
+            - the analysis.pt template
+            - in this file
+
+    .. note::
+
+        Weather the organism input is a NCBI RefSeq accession or a genbank file
+        is distinguished by checking "self.genbankfile_name == None" in at least
+            - the Worker
+            - the analysis.pt template
+            - in this file
     """
+
     @property
     def data_dir(self):
         return os.path.join(rnaseqlyze.analyses_path, str(self.id))

@@ -85,6 +85,7 @@ class Analysis(Entity, AnalysisMixins):
     owner_name          = Column(String, ForeignKey('user.name'))
 
     creation_date       = Column(DateTime)
+    error               = Column(String)
     started             = Column(Boolean)
     finished            = Column(Boolean)
 
