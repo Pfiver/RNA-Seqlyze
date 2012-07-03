@@ -71,26 +71,30 @@ def get_analysis(db_session, attributes):
         attributes['owner'] = owner
 
     # srr handling
-    if 'rnaseq_run' in attributes:
+    rnaseq_run = None
+    if 'rnaseq_run' in attributes \
+       and 'inputfile_name' not in attributes:
+        log.debug("rnaseq_run: %s" % attributes['rnaseq_run'])
         rnaseq_run = db_session.query(RNASeqRun).get(attributes['rnaseq_run'])
-        del attributes['rnaseq_run']
         if rnaseq_run:
             attributes['rnaseq_run'] = rnaseq_run
         else:
             try:
+                log.debug("creating new RNASeqRun")
                 rnaseq_run = RNASeqRun(attributes['rnaseq_run'])
                 attributes['rnaseq_run'] = rnaseq_run
                 rnaseq_run.create_directories()
                 db_session.add(rnaseq_run)
-            except:
-                # The RNASeqRun constructor checks if the SRAnnnnnn argument
+            except Exception, e:
+                # The RNASeqRun constructor checks the SRRnnnnnn argument
                 # and raises an exception unless it passes the checks
                 # e.g. if field was left blank/at default value
-                pass # TODO: decide/document what to do
+                # TODO: decide/document what to do
+                log.debug("failed: %r" % e)
+        del attributes['rnaseq_run']
 
     upload_session = db_session.query(UploadSession) \
                             .get(attributes['upload_session'])
-
     del attributes['upload_session']
 
     # the analysis exist already if the user uploaded something
@@ -113,7 +117,9 @@ def get_analysis(db_session, attributes):
     # if no input file has been uploaded
     if not analysis.inputfile_name:
         # an SRR identifier is needed
-        if not analysis.rnaseq_run:
+        if rnaseq_run:
+            analysis.rnaseq_run = rnaseq_run
+        else:
             raise Exception("Please upload an input file or specify an SRR id")
         # download if not already in cache
         if not os.path.exists(analysis.rnaseq_run.sra_path):
