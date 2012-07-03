@@ -1,7 +1,13 @@
 """
 Pyramid JSON renderer that serializes arbitrary objects
-by copying the __dict__ and stripping any unknown attributes
+
+Copies the object's __dict__, looks up all attrs
+in all base classes's __dict__'s on the object
+and then strips any unknown attribute types.
 """
+
+#import logging
+#log = logging.getLogger(__name__)
 
 import json
 
@@ -25,7 +31,14 @@ def render_object(obj):
     """
     "default" function for json.dumps()
     """
-    return dict(filter(filter_attributes, obj.__dict__.iteritems()))
+    attrs = dict((attr, getattr(obj, attr))
+                    for base in obj.__class__.__bases__
+                    for attr in base.__dict__
+                    if attr[0] != '_')
+
+    attrs.update(obj.__dict__)
+#    log.debug(attrs)
+    return dict(filter(filter_attributes, attrs.iteritems()))
 
 none_type = type(None)
 def filter_attributes(kv):
