@@ -25,6 +25,9 @@ def get_uploadfile(db_session, session, name, type):
     # like DBSession.execute("BEGIN") and such things - nothing seems to work
     # - this is the only solution I have found.
     #
+    # EDT: it could be as simple as increasing the sqlalchemy debug level, check
+    #      what sql statements are executed and then DBSession.execute() those
+    #
     session.analysis = session.analysis
     #
     if not session.analysis:
@@ -96,6 +99,9 @@ def get_analysis(db_session, attributes):
     upload_session = db_session.query(UploadSession) \
                             .get(attributes['upload_session'])
     del attributes['upload_session']
+    if not upload_session:
+        raise Exception('this session has expired -'
+                        ' reload the "New Analysis" page to start a new one')
 
     # the analysis exist already if the user uploaded something
     if upload_session.analysis:
@@ -142,8 +148,10 @@ class RNASWorkerSTARTRequest(urllib2.Request):
         return 'START'
 
 class HTTRNASWorkerHandler(urllib2.HTTPHandler):
-    def http_error_500(self, req, fp, code, msg, hdrs):
+    def http_error(self, req, fp, code, msg, hdrs):
         raise WorkerException(fp.read())
+    http_error_400 = http_error
+    http_error_500 = http_error
 
 class WorkerException(Exception):
     def __init__(self, exc_body):

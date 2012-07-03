@@ -39,7 +39,7 @@ setup(
             'rnas-worker = rnaseqlyze.worker.daemon:main',
         ],
         'paste.app_factory': [
-            'main = rnaseqlyze.worker:wsgi_app',
+            'main = rnaseqlyze.worker:main',
         ],
     }
 )

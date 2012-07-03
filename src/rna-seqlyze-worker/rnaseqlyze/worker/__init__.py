@@ -71,10 +71,16 @@ from rnaseqlyze.worker.core import (
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
-def wsgi_app(global_config, **settings):
+def main(global_config, **settings):
     """
     Return a Pyramid(!) WSGI application.
     """
+
+    # make sure to be able to delete files created by webapp
+    # as user/group www-data/www-data from the command line
+    # (as user/group johndoe/www-data)
+    import os
+    os.umask(0002)
 
     engine = create_engine(rnaseqlyze.db_url)
     DBSession.configure(bind=engine)

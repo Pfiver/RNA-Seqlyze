@@ -1,7 +1,7 @@
 # This file should be kept in TOPDIR
 
 : ${rnas_topdir:=$(dirname $(readlink -f $BASH_SOURCE))}
-: ${rnas_workdir:=${rnas_topdir}-workdir}
+: ${rnas_workdir:=${rnas_topdir}-workdir-dev}
 
 rnas_pkgs=("" -cli -web -worker)
 rnas_pkgs=("${rnas_pkgs[@]/#/rna-seqlyze}")
@@ -185,7 +185,7 @@ logtail-developall ()
         sleep 10
     done &
 
-    tail -f /var/log/apache2/{access,error}.log $rnas_workdir-dev/*.log
+    tail -f /var/log/apache2/{access,error}.log $rnas_workdir/*.log
 }
 
 # vim: ft=sh:sw=4:ts=4:et
