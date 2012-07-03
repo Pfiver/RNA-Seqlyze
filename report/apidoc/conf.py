@@ -30,6 +30,8 @@ extensions = [
     'sphinx.ext.viewcode',
 ]
 
+autodoc_member_order = 'bysource'
+
 autodoc_default_flags = [
     'show-inheritance',
     'members', 'undoc-members', 'private-members',
