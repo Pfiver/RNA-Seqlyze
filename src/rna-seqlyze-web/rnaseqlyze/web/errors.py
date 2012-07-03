@@ -52,17 +52,23 @@ class HTTPRNASeqError(HTTPError):
     def __init__(self, exc_info):
         e = exc_info[1]
         log.error(repr(e))
-        body_template = "${explanation}: %r\n<hr>\n" % e
+        body_template = "<b>${explanation}</b>\n<hr/>\n"
+        cls = e.__class__.__name__
+        if not e.args:
+            self.explanation = "%s" % cls
+        else:
+            self.explanation = "%s: %s" % (cls, e.args[0])
 
         if log.getEffectiveLevel() > logging.DEBUG:     # no debug
-            detail = production_error_msg
+            detail = production_error_msg % \
+                        rnaseqlyze.admin_email
             body_template += "\n${detail}\n"
         else:                                           # debug
             detail = ''
             if isinstance(e, DBAPIError):
                 detail += dberror_msg
             import traceback
-            detail += '%s\nStack trace:\n' % e
+            detail += '%s\n\nStack trace:\n' % e
             detail += ''.join(traceback.format_tb(exc_info[2]))
 
             log.debug(detail)
@@ -82,8 +88,8 @@ SIG_INT to the apache mod_wsgi daemon processes, and try again.
 
 production_error_msg = """
 If you think that this is a bug, please contact the application administrator,
-""" + rnaseqlyze.admin_email + """, and inform him/her of the time the error
-occurred, and anything you might have done that may have caused the error.
+%s, and inform him/her of the time the error occurred, and anything you might
+have done that may have caused the error.
 Thank You!
 """
 # 'You' is intentionally capitalized! :-) Rule 84: http://goo.gl/BLBwX

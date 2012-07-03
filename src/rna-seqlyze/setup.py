@@ -11,6 +11,8 @@
 
 from setuptools import setup, find_packages
 
+import rnaseqlyze
+
 def get_version():
     cmd = "git describe --tags"
     from subprocess import Popen, PIPE
@@ -21,19 +23,24 @@ def get_version():
     return version.strip()[1:]
 
 setup(
-    name='rna-seqlyze',
+    name=rnaseqlyze.project_name,
     version=get_version(),
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
+    url="http://biocalc.fhnw.ch/",
+    platforms=["linux2"],
     description="RNA-seq analysis | core features",
     long_description=
         "RNA-seq analysis & sequence annotation enhancement web-application",
     license="Mixed",
-    packages=find_packages(),
     test_suite='nose.collector',
+    packages=find_packages(),
+    data_files=[('', [
+        'rnaseqlyze.ini'
+    ])],
     entry_points={
         'console_scripts': [
-            'rnas-build = rnaseqlyze.build:main',
+            'rnas-install = rnaseqlyze.install:main',
         ],
     },
     setup_requires=[
@@ -43,6 +50,7 @@ setup(
     install_requires=[
         "sphinx",                   # Apidoc
         "pyflakes",                 # Style checker
+        "docopt > 0.4.1",
         "pyramid >= 1.3.2",         # Web framework
         "MarkupSafe >= 0.15",       # Syntax highlighting in Trac
         "MySQL-python >= 1.2.2",    # Trac database backend

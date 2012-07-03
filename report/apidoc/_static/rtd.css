@@ -561,10 +561,6 @@ div.viewcode-block:target {
     border-bottom: 1px solid #ac9;
 }
 
-dl {
-    margin: 1em 0 2.5em 0;
-}
-
 /* Highlight target when you click an internal link */
 dt:target {
     background: #ffe080;
@@ -797,4 +793,8 @@ p {
         margin-left: 0;
     }
 
+}
+
+table.docutils td, table.docutils th {
+    border: 0;
 }

@@ -25,6 +25,9 @@ def get_uploadfile(db_session, session, name, type):
     # like DBSession.execute("BEGIN") and such things - nothing seems to work
     # - this is the only solution I have found.
     #
+    # EDT: it could be as simple as increasing the sqlalchemy debug level, check
+    #      what sql statements are executed and then DBSession.execute() those
+    #
     session.analysis = session.analysis
     #
     if not session.analysis:
@@ -71,27 +74,34 @@ def get_analysis(db_session, attributes):
         attributes['owner'] = owner
 
     # srr handling
-    if 'rnaseq_run' in attributes:
+    rnaseq_run = None
+    if 'rnaseq_run' in attributes \
+       and 'inputfile_name' not in attributes:
+        log.debug("rnaseq_run: %s" % attributes['rnaseq_run'])
         rnaseq_run = db_session.query(RNASeqRun).get(attributes['rnaseq_run'])
-        del attributes['rnaseq_run']
         if rnaseq_run:
             attributes['rnaseq_run'] = rnaseq_run
         else:
             try:
+                log.debug("creating new RNASeqRun")
                 rnaseq_run = RNASeqRun(attributes['rnaseq_run'])
                 attributes['rnaseq_run'] = rnaseq_run
                 rnaseq_run.create_directories()
                 db_session.add(rnaseq_run)
-            except:
-                # The RNASeqRun constructor checks if the SRAnnnnnn argument
+            except Exception, e:
+                # The RNASeqRun constructor checks the SRRnnnnnn argument
                 # and raises an exception unless it passes the checks
                 # e.g. if field was left blank/at default value
-                pass # TODO: decide/document what to do
+                # TODO: decide/document what to do
+                log.debug("failed: %r" % e)
+        del attributes['rnaseq_run']
 
     upload_session = db_session.query(UploadSession) \
                             .get(attributes['upload_session'])
-
     del attributes['upload_session']
+    if not upload_session:
+        raise Exception('this session has expired -'
+                        ' reload the "New Analysis" page to start a new one')
 
     # the analysis exist already if the user uploaded something
     if upload_session.analysis:
@@ -113,7 +123,9 @@ def get_analysis(db_session, attributes):
     # if no input file has been uploaded
     if not analysis.inputfile_name:
         # an SRR identifier is needed
-        if not analysis.rnaseq_run:
+        if rnaseq_run:
+            analysis.rnaseq_run = rnaseq_run
+        else:
             raise Exception("Please upload an input file or specify an SRR id")
         # download if not already in cache
         if not os.path.exists(analysis.rnaseq_run.sra_path):
@@ -125,10 +137,26 @@ def get_analysis(db_session, attributes):
 
 def start_analysis(analysis):
     url = "http://127.0.0.1:6543/analyses/%d"
-    rq = urllib2.Request(url % analysis.id)
-    rq.get_method = lambda: 'START'
-    rsp = urllib2.urlopen(rq)
+    rq = RNASWorkerSTARTRequest(url % analysis.id)
+    opener = urllib2.build_opener(HTTRNASWorkerHandler())
+    rsp = opener.open(rq)
     body = rsp.read()
     rsp.close()
-    if rsp.getcode() != 200:
-        raise Exception("Worker failed to start analysis: " + body)
+
+class RNASWorkerSTARTRequest(urllib2.Request):
+    def get_method(self):
+        return 'START'
+
+class HTTRNASWorkerHandler(urllib2.HTTPHandler):
+    def http_error(self, req, fp, code, msg, hdrs):
+        raise WorkerException(fp.read())
+    http_error_400 = http_error
+    http_error_500 = http_error
+
+class WorkerException(Exception):
+    def __init__(self, exc_body):
+        self.exc_body = exc_body
+    def __repr__(self):
+        return "WorkerException()"
+    def __str__(self):
+        return self.exc_body

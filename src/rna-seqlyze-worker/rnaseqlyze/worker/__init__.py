@@ -1,3 +1,47 @@
+"""
+**pyramid.worker** is a Pyramid Web Framework Application.
+
+The framework is used here to keep things simple. Even thought not many of the
+frameworks features are used, building this "-worker" part of the project as a
+Pyramid Web Framework Application, just like the "-web" part, hopefullly makes
+it easy to understand for anybody already understanding the "-web" part.
+
+The key features from then Pyramid Web Framework used here, are
+
+ 1) The "pserve" command, which makes running the application as a unix daemon
+    process very simple. It's direct use has actually been depreciated during
+    the development and a custom command, "rnas-worker", has been created,
+    which uses the same python functions and modules like "pserve".
+
+ 2) The pyramid.config.Configurator class, that is used to define the
+    applications "routes" and "view callables". These "views" provide the
+    applications interface.  They are served on a tcp port bound to localhost
+    (127.0.0.1) and are therefore only available to processes running on the
+    same host.
+    
+The "-worker" applications interface has "HTTP-like" semantics.
+
+The following commands are accepted:
+
+ - ``GET /analyses/{id}``:      Show the current status.
+ - ``START /analyses/{id}``:    Start processing an analysis.
+
+Only for development purposes, one additional command exists:
+
+ - ``RESTART /analyses/{id}``:  Restart an analysis
+                                that has already been started.
+
+The commands are executed by the "-web" part of the application by subclassing
+HTTPRequest and coverriding the get_method() function. They can also be executed
+from the command line however, using the popular "curl" binary with the "-X"
+option, e.g.
+
+ - ``curl -X GET localhost:/analyses/3``
+ - ``curl -X START localhost:/analyses/3``
+ - ``curl -X RESTART localhost:/analyses/3``
+
+"""
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -16,6 +60,8 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from zope.sqlalchemy import ZopeTransactionExtension
 
 import rnaseqlyze
+project_name = rnaseqlyze.project_name + "-worker"
+
 from rnaseqlyze.core.orm import Analysis
 from rnaseqlyze.worker.core import (
         Manager,
@@ -25,10 +71,16 @@ from rnaseqlyze.worker.core import (
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
-def wsgi_app(global_config, **settings):
+def main(global_config, **settings):
     """
     Return a Pyramid(!) WSGI application.
     """
+
+    # make sure to be able to delete files created by webapp
+    # as user/group www-data/www-data from the command line
+    # (as user/group johndoe/www-data)
+    import os
+    os.umask(0002)
 
     engine = create_engine(rnaseqlyze.db_url)
     DBSession.configure(bind=engine)
@@ -88,12 +140,14 @@ from pyramid.response import Response
 def _WHE_init(self, arg=None):
     Exception.__init__(self, arg)
     if isinstance(arg, Exception):
-        e, t = arg, type(arg)
-        arg = "%s.%s %s" % (t.__module__, t.__name__, e.args)
-        import traceback
-        arg += '\n' + traceback.format_exc(999)
+        if False: # production
+            e, t = arg, type(arg)
+            arg = "%s %s" % (t.__name__, e.args)
+        else: # debug
+            import traceback
+            arg = traceback.format_exc(999)
     Response.__init__(self,
-        'HTTP %s %s: %s\n' % (self.code, self.title, arg),
+        '%s %s\n\n%s' % (self.code, self.title, arg),
         content_type='text/plain', status='%s %s' % (self.code, self.title))
 
 from pyramid.httpexceptions import WSGIHTTPException

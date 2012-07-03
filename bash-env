@@ -1,7 +1,7 @@
 # This file should be kept in TOPDIR
 
 : ${rnas_topdir:=$(dirname $(readlink -f $BASH_SOURCE))}
-: ${rnas_datadir:=${rnas_topdir}-data}
+: ${rnas_workdir:=${rnas_topdir}-workdir-dev}
 
 rnas_pkgs=("" -cli -web -worker)
 rnas_pkgs=("${rnas_pkgs[@]/#/rna-seqlyze}")
@@ -11,16 +11,15 @@ rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
 
 cron-hourly ()
 {
-    return
     _cron-hourly ()
     {
         # push home directory repository to 'biocalc-env' branch
         cd ~
-        git push -q $rnas_topdir master:biocalc-env
+        git push $rnas_topdir master:biocalc-env
 
         # push all branches to 'fhnw' remote for backup
         cd $rnas_topdir
-        git push -q fhnw
+        git push fhnw
 
         # other things
         re-install
@@ -49,10 +48,9 @@ cron-hourly ()
     _cron ()
     (
         ly=$1
-        exec >> $rnas_datadir/cron-$ly.log
+        exec >> $rnas_workdir/cron-$ly.log
         (
             set -e
-            echo cron-$ly on
             date
             echo
             _cron-$ly
@@ -61,7 +59,7 @@ cron-hourly ()
         if [ $ret != 0 ]
         then
             echo cron-$ly: something went wrong - \
-                check the log file at $rnas_datadir/cron-$ly.log
+                check the log file at $rnas_workdir/cron-$ly.log
         fi 1>&2
         echo
         date
@@ -183,12 +181,11 @@ logtail-developall ()
 
     while true
     do
-        rnas-worker --development
+        rnas-worker $rnas_workdir --development
         sleep 10
     done &
 
-    tail -f /var/log/apache2/{access,error}.log \
-        $rnas_topdir/src/rna-seqlyze-{web,worker}/*.log
+    tail -f /var/log/apache2/{access,error}.log $rnas_workdir/*.log
 }
 
 # vim: ft=sh:sw=4:ts=4:et

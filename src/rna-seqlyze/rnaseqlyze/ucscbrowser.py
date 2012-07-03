@@ -9,7 +9,7 @@ from urllib2 import urlopen
 from urlparse import urljoin
 from StringIO import StringIO
 from shutil import copyfileobj
-from os import makedirs
+from os import listdir, makedirs
 from os.path import join, dirname, isdir
 
 from lxml.html import parse
@@ -23,17 +23,38 @@ cart_reset_url = "http://archaea.ucsc.edu/cgi-bin/cartReset"
 custom_track_url = "http://archaea.ucsc.edu/cgi-bin/hgTracks"
 custom_track_params = "?db={org_db}&hgt.customText={track_url}"
 
+# FIXME:
+#    The org_list_default_dir = dirname(__file__)
+#    hack will not work if the distribution is installed
+#    as a zipped .egg. pkg_resources.resource_stream or
+#    pkg_resources.resource_string should be used instead.
 org_list_base_url = "http://archaea.ucsc.edu/wp-content/data/"
-org_list_cache_dir = join(rnaseqlyze.data_path, "ucsc-orglist-cache")
-org_list_default_dir = dirname(__file__)
+org_list_default_dir = join(dirname(__file__), "ucscbrowser-data")
 json_links_file_name = "ucsc-wp-data.html"
 
+def get_org_list():
 
-def refresh_org_cache():
-    from pprint import pprint
+    global org_list_cache_dir
+    if not hasattr(rnaseqlyze, 'ucsc_org_list_cache_dir'):
+        raise Exception("rnaseqlyze.configure(workdir) "
+                        "must be called before calling this function")
+    org_list_cache_dir = rnaseqlyze.ucsc_org_list_cache_dir
+
     if not isdir(org_list_cache_dir):
         makedirs(org_list_cache_dir)
-    pprint(list(get_organisms(list(get_json_files()))))
+
+    orgs = []
+    for org in get_organisms(get_json_files()):
+        for existing in orgs:
+            if existing.title == org.title:
+                log.warn("'%s' already present (db: %s/%s)" % \
+                                    (org.title, org.db, existing.db))
+                break
+        else:
+            orgs.append(org)
+
+    return orgs
+
 
 def get_json_files():
 
@@ -42,7 +63,7 @@ def get_json_files():
 
     for get_json_links_file in (get_json_links_file_web,
                                 get_json_links_file_cache,
-                                get_json_links_file_default):
+                                get_json_links_file_default,):
         try:
             log.debug("trying %s" % get_json_links_file.func_name)
             json_links_file = get_json_links_file()
@@ -52,7 +73,7 @@ def get_json_files():
         
         for get_json_files in (get_get_json_files_web(json_links_file),
                                get_json_files_cache,
-                               get_json_files_default):
+                               get_json_files_default,):
 
             try:
                 log.debug("trying %s" % get_json_files.func_name)
@@ -86,6 +107,10 @@ def get_get_json_files_web(json_links_file):
             link = e.attrib['href']
             if link.endswith(".json"):
                 security.check_valid_filename(link)
+                # FIXME: The json files should also be returned as StringIO
+                #        buffers only and the cache files shouldn't be
+                #        overwritten until it is certain that the newly
+                #        downloaded files contain the expected data
                 json_file = open(join(org_list_cache_dir, link), "w+")
                 copyfileobj(urlopen(urljoin(
                         org_list_base_url, link)), json_file)
@@ -106,12 +131,12 @@ def get_get_json_files_web(json_links_file):
     return get_json_files_web
 
 def get_json_files_cache():
-    for json in os.listdir(org_list_cache_dir):
+    for json in listdir(org_list_cache_dir):
         if json.endswith(".json"):
             yield open(join(org_list_cache_dir, json))
 
 def get_json_files_default():
-    for json in os.listdir(org_list_default_dir):
+    for json in listdir(org_list_default_dir):
         if json.endswith(".json"):
             yield open(join(org_list_default_dir, json))
 

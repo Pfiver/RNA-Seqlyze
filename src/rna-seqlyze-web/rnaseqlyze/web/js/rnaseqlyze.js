@@ -32,4 +32,17 @@ $(function() {
             wrap: $('#wrap')[0],
     });
 
+
+    // Generally useful stuff
+    // ----------------------
+
+    // based on http://stackoverflow.com/a/4673436
+
+    String.prototype.format = function() {
+        var i = 0; args = arguments;
+        return this.replace(/{}/g, function() {
+            return args[i++];
+        });
+    };
+
 });

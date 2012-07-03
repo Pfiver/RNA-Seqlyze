@@ -101,16 +101,22 @@ window.ProcessingView = Backbone.View.extend({
         this.$el.append(el.div(
             el.h3("Input analysis")
         ,
-            el.p("Type of input: ",
-                 analysis.inputfile_type ?
-                 el.strong(analysis.inputfile_type) :
-                 el.span("not detected"))
+            analysis.inputfile_name ?
+                el.p("Type of input: ",
+                     analysis.inputfile_type ?
+                        el.strong(analysis.inputfile_type) :
+                        el.span("not detected"))
+                :
+                null
         ,
             analysis.inputfile_header ?
-            el.pre(analysis.inputfile_header) : null
+                el.p("First lines in input data: ",
+                     el.pre(analysis.inputfile_header))
+                :
+                null
 
         )).append(el.div(
-            el.h3("Log files")
+            el.h3("Working Directory")
         ,
             el.div(new WorkdirView({model: this.model.files}).render().el)
         ));

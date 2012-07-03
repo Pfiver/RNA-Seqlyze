@@ -1,9 +1,12 @@
 import os
 from setuptools import setup, find_packages
 
+import rnaseqlyze
+import rnaseqlyze.web
+
 setup(
-    name='rna-seqlyze-web',
-    version='0.1',
+    name=rnaseqlyze.web.project_name,
+    version=rnaseqlyze.__version__,
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
     description="RNA-seq analysis | web frontend",
@@ -13,11 +16,15 @@ setup(
     test_suite='nose.collector',
     include_package_data=True,
     zip_safe=False,
+    data_files=[('', [
+        'rna-seqlyze.wsgi',
+        'development.ini',
+        'production.ini',
+    ])],
     setup_requires=[
         "nose >= 1.1.2",
         "rna-seqlyze >= 0.1",
         "distribute >= 0.6.14",
-        "setuptools_git >= 0.3",
     ],
     install_requires=[
         'pyramid',

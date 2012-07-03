@@ -1,12 +1,14 @@
 """
 Map Python Objects to Database Tables
+
+A nice tutorial showing how everything works is `here
+    <http://docs.sqlalchemy.org/en/latest/orm/tutorial.html>`_.
 """
 
 from logging import getLogger
 log = getLogger(__name__)
 
-# nice tutorial showing everithing is here:
-#   http://docs.sqlalchemy.org/en/latest/orm/tutorial.html
+import datetime
 
 from sqlalchemy import ForeignKey
 from sqlalchemy import Table, Column
@@ -39,8 +41,12 @@ class Entity(object):
 
     def __init__(self, **kwargs):
 
+        log.debug("Entity.__init__()")
+        log.debug("%s.__init__()" % self.__class__.__name__)
+
         if 'id' in kwargs:
-            raise Exception("bad keyword argument: id; id is auto-generated")
+            # The id attribute is auto-generated
+            raise Exception("bad keyword argument: id")
 
         # set1 <= set2 is the same as set1.issubset(set2)
         if not set(kwargs.keys()) <= set(self.__class__.__dict__):
@@ -49,11 +55,11 @@ class Entity(object):
         for attr in kwargs:
             setattr(self, attr, kwargs[attr])
 
-        if not self.creation_date:
-            import datetime
-            self.creation_date = datetime.datetime.utcnow()
-
-Entity = declarative_base(cls=Entity)
+# constructor=None means:
+#  "don't add a default constructor",
+#  but use the standard one (__init__ declard above)
+#
+Entity = declarative_base(cls=Entity, constructor=None)
 
 class Analysis(Entity, AnalysisMixins):
     """
@@ -108,6 +114,10 @@ class Analysis(Entity, AnalysisMixins):
             raise Exception("Please make sure your input file has a"
                             " (meaningful) extension, like .fastq or .sra")
         return name
+
+    def __init__(self, **kwargs):
+        Entity.__init__(self, **kwargs)
+        self.creation_date = datetime.datetime.utcnow()
 
 class UploadSession(Entity):
     """
@@ -195,9 +205,9 @@ class HgTrack(Entity): # stub
 
 class UCSCOrganism(Entity):
     """
-    Holds information about the mapping of UCSC browser
-    "db" names to NCBI nucleotide accessions
+    Holds information about the mapping of UCSC browser "db" names to
+    "gene id 'title'"s, and RefSeq Accessions.
     """
     acc         = Column(String, primary_key=True)
-    db          = Column(String)
-    title       = Column(String)
+    db          = Column(String, unique=True)
+    title       = Column(String, unique=True)

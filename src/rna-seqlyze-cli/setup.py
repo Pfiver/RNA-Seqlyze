@@ -1,9 +1,12 @@
 from pkgutil import iter_modules
 from setuptools import setup, find_packages
 
+import rnaseqlyze
+import rnaseqlyze.cli
+
 setup(
-    name='rna-seqlyze-cli',
-    version='0.1',
+    name=rnaseqlyze.cli.project_name,
+    version=rnaseqlyze.__version__,
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
     description="RNA-seq analysis | command-line interface",
@@ -13,7 +16,7 @@ setup(
     test_suite='nose.collector',
     setup_requires=[
         "nose >= 1.1.2",
-        "docopt >= 0.4",
+        "docopt > 0.4.1",
         "pyinotify >= 0.9",
         "rna-seqlyze >= 0.1",
         "distribute >= 0.6.14",

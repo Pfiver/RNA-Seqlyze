@@ -22,20 +22,27 @@
     <h2 id="input">Input</h2>
     <div class="form-horizontal">
       <h3 id="shortreads">Short Reads</h3>
-      <div class="control-group">
+      <div class="control-group" tal:condition="not analysis.inputfile_name">
+        <label for="inputfileInput" class="control-label">SRR Indentifier</label>
+        <div class="controls entered-values">
+          <a href="http://www.ncbi.nlm.nih.gov/sra/${analysis.rnaseq_run.srr}"
+            >${analysis.rnaseq_run.srr}</a>
+        </div>
+      </div>
+      <div class="control-group" tal:condition="analysis.inputfile_name">
         <label for="inputfileInput" class="control-label">SRA or FASTQ File</label>
         <div class="controls entered-values">
           <strong>${analysis.inputfile_name}</strong>
         </div>
       </div>
       <div class="control-group">
-        <label for="strandspecificInput" class="control-label">strand-specific</label>
+        <label for="strandspecificInput" class="control-label">strand-specific<br/>(not yet implemented)</label>
         <div class="controls entered-values">
           <strong>${analysis.strandspecific and 'True' or 'False'}</strong>
         </div>
       </div>
       <div class="control-group">
-        <label for="pairendedInput" class="control-label">pair-ended reads</label>
+        <label for="pairendedInput" class="control-label">pair-ended reads<br/>(not yet implemented)</label>
         <div class="controls entered-values">
           <strong>${analysis.pairended and 'True' or 'False'}</strong>
         </div>
@@ -47,22 +54,19 @@
         </div>
       </div>
       <h3>Organism</h3>
-      <div class="control-group">
-      <tal:block tal:switch="analysis.genbankfile_name == None">
-      <tal:block tal:case="True">
+      <div class="control-group" tal:condition="not analysis.genbankfile_name">
         <label class="control-label">Accession Number</label>
         <div class="controls entered-values">
-          <strong>${analysis.org_accession}</strong>
+          <a href="http://www.ncbi.nlm.nih.gov/nuccore/${analysis.org_accession}"
+            >${analysis.org_accession}</a>
         </div>
-      </tal:block>
-      <tal:block tal:case="False">
+      </div>
+      <div class="control-group" tal:condition="analysis.genbankfile_name">
         <label class="control-label">Genebank File</label>
         <div class="controls entered-values">
           <strong>${analysis.genbankfile_name}</strong>
           <p class="help-block">Nucleotide Sequence in Genebank format</p>
         </div>
-      </tal:block>
-      </tal:block>
       </div>
     </div>
 
