@@ -37,6 +37,9 @@ class ManagerBusyException(Exception):
     pass
 
 class Worker(Thread):
+    """
+    The Worker
+    """
 
     # Allways commit the DBSession after making changes!
     # Otherwise the db will stay locked by this thread and
@@ -171,7 +174,7 @@ class Worker(Thread):
         bam_file.close()
         self.session.commit()
 
-    def create_genbank_file(self):
+    def _create_genbank_file(self):
         """
         Greate a genbank file containing
 

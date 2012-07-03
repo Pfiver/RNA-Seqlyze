@@ -25,9 +25,15 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.viewcode',
+]
 
-autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance']
+autodoc_default_flags = [
+    'show-inheritance',
+    'members', 'undoc-members', 'private-members',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -209,3 +215,15 @@ latex_logo = '../../src/rna-seqlyze-web/rnaseqlyze/web/img/RNA-Seqlyze.png'
 
 # If false, no module index is generated.
 #latex_domain_indices = True
+
+#from types import FunctionType as function
+#from types import MethodType as instancemethod
+#def maybe_skip_member(app, what, name, obj, skip, options):
+#    #print app, what, name, obj, skip, options
+#    if type(obj) == instancemethod:
+#        if obj.im_class.__name__ == "Worker":
+#          return False
+#    return skip
+#
+#def setup(app):
+#    app.connect('autodoc-skip-member', maybe_skip_member)
