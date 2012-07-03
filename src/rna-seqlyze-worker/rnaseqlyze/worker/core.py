@@ -30,7 +30,6 @@ class AnalysisAlreadyStartedException(Exception):
 class ManagerBusyException(Exception):
     pass
 
-
 class Worker(Thread):
 
     # Allways commit the DBSession after making changes!
@@ -162,7 +161,6 @@ class Worker(Thread):
         log.info("done.")
         bam_file.close()
         self.session.commit()
-
 
 class UnknownInputfileTypeException(Exception):
     pass

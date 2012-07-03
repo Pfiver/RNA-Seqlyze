@@ -52,7 +52,12 @@ class HTTPRNASeqError(HTTPError):
     def __init__(self, exc_info):
         e = exc_info[1]
         log.error(repr(e))
-        body_template = "${explanation}: %r\n<hr>\n" % e
+        body_template = "<b>${explanation}</b>\n<hr/>\n"
+        cls = e.__class__.__name__
+        if not e.args:
+            self.explanation = "%s" % cls
+        else:
+            self.explanation = "%s: %s" % (cls, e.args[0])
 
         if log.getEffectiveLevel() > logging.DEBUG:     # no debug
             detail = production_error_msg % \
@@ -63,7 +68,7 @@ class HTTPRNASeqError(HTTPError):
             if isinstance(e, DBAPIError):
                 detail += dberror_msg
             import traceback
-            detail += '%s\nStack trace:\n' % e
+            detail += '%s\n\nStack trace:\n' % e
             detail += ''.join(traceback.format_tb(exc_info[2]))
 
             log.debug(detail)

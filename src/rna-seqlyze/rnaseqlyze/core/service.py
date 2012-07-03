@@ -125,10 +125,24 @@ def get_analysis(db_session, attributes):
 
 def start_analysis(analysis):
     url = "http://127.0.0.1:6543/analyses/%d"
-    rq = urllib2.Request(url % analysis.id)
-    rq.get_method = lambda: 'START'
-    rsp = urllib2.urlopen(rq)
+    rq = RNASWorkerSTARTRequest(url % analysis.id)
+    opener = urllib2.build_opener(HTTRNASWorkerHandler())
+    rsp = opener.open(rq)
     body = rsp.read()
     rsp.close()
-    if rsp.getcode() != 200:
-        raise Exception("Worker failed to start analysis: " + body)
+
+class RNASWorkerSTARTRequest(urllib2.Request):
+    def get_method(self):
+        return 'START'
+
+class HTTRNASWorkerHandler(urllib2.HTTPHandler):
+    def http_error_500(self, req, fp, code, msg, hdrs):
+        raise WorkerException(fp.read())
+
+class WorkerException(Exception):
+    def __init__(self, exc_body):
+        self.exc_body = exc_body
+    def __repr__(self):
+        return "WorkerException()"
+    def __str__(self):
+        return self.exc_body

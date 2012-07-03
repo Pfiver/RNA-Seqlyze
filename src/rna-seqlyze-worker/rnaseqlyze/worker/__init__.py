@@ -134,12 +134,14 @@ from pyramid.response import Response
 def _WHE_init(self, arg=None):
     Exception.__init__(self, arg)
     if isinstance(arg, Exception):
-        e, t = arg, type(arg)
-        arg = "%s.%s %s" % (t.__module__, t.__name__, e.args)
-        import traceback
-        arg += '\n' + traceback.format_exc(999)
+        if False: # production
+            e, t = arg, type(arg)
+            arg = "%s %s" % (t.__name__, e.args)
+        else: # debug
+            import traceback
+            arg = traceback.format_exc(999)
     Response.__init__(self,
-        'HTTP %s %s: %s\n' % (self.code, self.title, arg),
+        '%s %s\n\n%s' % (self.code, self.title, arg),
         content_type='text/plain', status='%s %s' % (self.code, self.title))
 
 from pyramid.httpexceptions import WSGIHTTPException
