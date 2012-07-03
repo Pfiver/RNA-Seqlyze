@@ -99,7 +99,8 @@
           <div class="controls">
             <input type="text" name="org_accession" id="organismInput" class="input-xlarge"/>
             <span id="organismStatus" class="help-inline"></span>
-            <p class="help-block"><em>recommended!</em></p>
+            <p class="help-block">The Organisms "Title" in the NCBI
+              <a href="http://www.ncbi.nlm.nih.gov/genome/">Genome Database</a></p>
           </div>
         </div>
 
