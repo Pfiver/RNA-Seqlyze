@@ -13,7 +13,19 @@ project_name = "rna-seqlyze"
 import pkg_resources
 #: The __version__ property is set automatically set to the value of
 #: pkg_resources.get_distribution(project_name).version on module import time.
-__version__ = pkg_resources.get_distribution(project_name).version
+try:
+    __version__ = pkg_resources.get_distribution(project_name).version
+except:
+    # When the packe is initially installed, this module is imported by setup.py
+    # and the the `project_name` attribute defined above is used to set the
+    # project name, in order to make that information non-redundant.
+    #
+    # The version, however, is determined at install/build time by running
+    # `git --describe` - in setup.py. So it doesn't matter if it is not set at
+    # that time.  Later on, because `python setup.py install/develop` writes it
+    # to rna-seqlyze.egg-info/PKG-INFO, where pkg_resources picks it up,
+    # it will be available whenever the package is imported.
+    pass
 del pkg_resources
 
 import logging

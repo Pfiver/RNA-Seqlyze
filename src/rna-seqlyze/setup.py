@@ -27,6 +27,8 @@ setup(
     version=get_version(),
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
+    url="http://biocalc.fhnw.ch/",
+    platforms=["linux2"],
     description="RNA-seq analysis | core features",
     long_description=
         "RNA-seq analysis & sequence annotation enhancement web-application",

@@ -51,7 +51,6 @@ cron-hourly ()
         exec >> $rnas_workdir/cron-$ly.log
         (
             set -e
-            echo cron-$ly on
             date
             echo
             _cron-$ly
