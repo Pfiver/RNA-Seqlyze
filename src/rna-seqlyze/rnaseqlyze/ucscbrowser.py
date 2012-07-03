@@ -17,11 +17,16 @@ from lxml.etree import dump
 
 import rnaseqlyze
 from rnaseqlyze.core import security
-from rnaseqlyze.core.orm import UCSCOrganism
+# delay import because of a
+# circular import dependency ...
+#from rnaseqlyze.core.orm import UCSCOrganism
 
 cart_reset_url = "http://archaea.ucsc.edu/cgi-bin/cartReset"
 custom_track_url = "http://archaea.ucsc.edu/cgi-bin/hgTracks"
 custom_track_params = "?db={org_db}&hgt.customText={track_url}"
+ 
+bam_track_line_template = 'track type="bam"' \
+                          ' name="{track_name}" bigDataUrl="{big_data_url}"'
 
 # FIXME:
 #    The org_list_default_dir = dirname(__file__)
@@ -33,6 +38,8 @@ org_list_default_dir = join(dirname(__file__), "ucscbrowser-data")
 json_links_file_name = "ucsc-wp-data.html"
 
 def get_org_list():
+    global UCSCOrganism
+    from rnaseqlyze.core.orm import UCSCOrganism
 
     global org_list_cache_dir
     if not hasattr(rnaseqlyze, 'ucsc_org_list_cache_dir'):
@@ -52,9 +59,7 @@ def get_org_list():
                 break
         else:
             orgs.append(org)
-
     return orgs
-
 
 def get_json_files():
 

@@ -6,8 +6,11 @@ import logging
 log = logging.getLogger(__name__)
 
 import os
+from urllib import quote
 
 import rnaseqlyze
+from rnaseqlyze import galaxy
+from rnaseqlyze import ucscbrowser
 
 class AnalysisMixins(object):
     """
@@ -91,14 +94,17 @@ class AnalysisMixins(object):
 
     @property
     def hg_url(self):
-        from rnaseqlyze import galaxy
-        track_url = "http://" + galaxy.hostname + \
-                        galaxy.ucsc_bam_track_template % \
-                                    dict(dataset=self.galaxy_bam_id)
-        from urllib import quote
-        from rnaseqlyze import ucscbrowser
-        hg_url = ucscbrowser.custom_track_url % \
-                        dict(db="sulSol1", track_url=quote(track_url))
+#        track_url = "http://" + galaxy.hostname \
+#                    + galaxy.ucsc_bam_track_template \
+#                        .format(dataset=self.galaxy_bam_id)
+
+        track_url = "https://" + galaxy.hostname \
+                    + galaxy.dataset_display_url_template \
+                        .format(dataset=self.galaxy_ucsc_bam_track_id)
+
+        hg_url = ucscbrowser.custom_track_url + \
+                    ucscbrowser.custom_track_params.format(
+                        org_db="sulSol1", track_url=quote(track_url))
         return hg_url
 
     def create_data_dir(self):

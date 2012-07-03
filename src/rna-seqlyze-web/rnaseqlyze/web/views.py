@@ -5,6 +5,8 @@ Pyramid Application User Views
 import logging
 log = logging.getLogger(__name__)
 
+from os.path import join
+
 from pyramid.view import view_config
 from pyramid.response import FileResponse
 from pyramid.httpexceptions import HTTPFound
@@ -65,10 +67,19 @@ def analysis_files(request):
     This view serves up the files associated with
     an analysis on 'http://<rnaseqlyze>/analysis/{id}/files'.
     """
-    import os
-    return FileResponse(
-            os.path.join(rnaseqlyze.analyses_path,
+    return FileResponse(join(rnaseqlyze.analyses_path,
                 request.matchdict['id'], *request.subpath))
+
+import mimetypes
+#mimetypes.add_type("text/plain", ".")
+#mimetypes.add_type("text/plain", ".")
+#mimetypes.add_type("text/plain", ".")
+#mimetypes.add_type("text/plain", ".")
+mimetypes.add_type("text/plain", ".gb")
+mimetypes.add_type("text/plain", ".log")
+mimetypes.add_type("text/plain", ".log0")
+mimetypes.add_type("text/plain", ".info")
+# FileResponse automatically sets the Content-Type header based on this
 
 @view_config(route_name='analyses', request_method='POST')
 def post(request):

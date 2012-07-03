@@ -90,6 +90,8 @@ class Analysis(Entity, AnalysisMixins):
     finished            = Column(Boolean)
 
     galaxy_bam_id       = Column(String)
+    galaxy_ucsc_bam_track_id \
+                        = Column(String)
 
     rnaseq_run          = relationship("RNASeqRun", backref=backref("analyses"))
     rnaseq_run_srr      = Column(String, ForeignKey('rnaseqrun.srr'))
