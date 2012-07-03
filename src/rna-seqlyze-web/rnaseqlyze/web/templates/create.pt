@@ -58,7 +58,7 @@
         </div>
 
         <div class="control-group">
-          <label for="strandspecificInput" class="control-label">strand-specific</label>
+          <label for="strandspecificInput" class="control-label">strand-specific<br/>(not yet implemented)</label>
           <div class="controls">
             <label class="checkbox">
               <input type="checkbox" name="strandspecific" id="strandspecificInput">
@@ -66,7 +66,7 @@
           </div>
         </div>
         <div class="control-group">
-          <label for="pairendedInput" class="control-label">pair-ended reads</label>
+          <label for="pairendedInput" class="control-label">pair-ended reads<br/>(not yet implemented)</label>
           <div class="controls">
             <label class="checkbox">
               <input type="checkbox" name="pairended" id="pairendedInput">

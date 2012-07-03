@@ -33,8 +33,11 @@ class AnalysisMixins(object):
 
     @property
     def genbankfile_path(self):
-        gb_name = self.genbankfile_name
-        return os.path.join(self.data_dir, gb_name)
+        if self.genbankfile_name:
+            gb_name = self.genbankfile_name
+            return os.path.join(self.data_dir, gb_name)
+        else:
+            return os.path.join(self.gb_data_dir, self.org_accession + ".gb")
 
     @property
     def inputfile_path(self):

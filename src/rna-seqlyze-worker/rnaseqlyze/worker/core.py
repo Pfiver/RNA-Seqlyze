@@ -1,3 +1,9 @@
+"""
+RNA-Seqlyze Worker Daemon Core
+
+    -- this is where things are actually getting done! :-)
+"""
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -41,7 +47,9 @@ class Worker(Thread):
         self.analysis_id = analysis.id
 
     def _thread_init(self):
-        log.info("starting work on analysis #%d" % self.analysis_id)
+        self.log = logging.getLogger("%s.Worker(Analysis #%d)" % (
+                                      __name__,           self.analysis_id))
+        self.log.info("starting work on analysis #%d" % self.analysis_id)
         self.session = DBSession(bind=create_engine(rnaseqlyze.db_url))
         self.analysis = self.session.query(Analysis).get(self.analysis_id)
         self.analysis.started = True
@@ -59,6 +67,7 @@ class Worker(Thread):
         self._bowtie_build()
         self._tophat()
         self._galaxy_upload()
+        self._create_genbank_file()
 
     def _determine_inputfile_type(self):
         def getit(header):
@@ -80,7 +89,7 @@ class Worker(Thread):
             else:
                 sra_name = self.analysis.rnaseq_run.sra_name
             cmd = "fastq-dump", sra_name
-            log.info("converting %s" % sra_name)
+            self.log.info("converting %s" % sra_name)
             from subprocess import Popen, PIPE
             proc = Popen(cmd)#, stdout=PIPE, stderr=PIPE)
             out, err = proc.communicate()
@@ -93,11 +102,11 @@ class Worker(Thread):
         self.analysis.create_gb_data_dir()
         out_path = path.join(self.gb_data_dir, acc + ".gb")
         if not path.exists(out_path):
-            log.info("Fetching '%s' from entrez..." % acc)
+            self.log.info("Fetching '%s' from entrez..." % acc)
             # TODO: do this earlier
             gb_id = efetch.get_nc_id(acc)
             efetch.fetch_nc_gb(gb_id, open(out_path, "w"))
-            log.info("...done")
+            self.log.info("...done")
 
     def _gb2fasta(self):
         from os import path
@@ -105,7 +114,7 @@ class Worker(Thread):
         gb_path = path.join(self.gb_data_dir, acc + ".gb")
         fa_path = path.join(self.gb_data_dir, acc + ".fa")
         if not path.exists(fa_path):
-            log.info("Converting '%s' to fasta format..." % acc)
+            self.log.info("Converting '%s' to fasta format..." % acc)
             import Bio.SeqIO
             record = Bio.SeqIO.parse(open(gb_path), "genbank").next()
             record.id = "chr" # required (!) for ucsc browser
@@ -119,7 +128,7 @@ class Worker(Thread):
             import os
             os.chdir(self.gb_data_dir)
             cmd = "bowtie2-build", acc + ".fa", acc
-            log.info("bowtie2-build %s" % acc)
+            self.log.info("bowtie2-build %s" % acc)
             from subprocess import Popen, PIPE
             proc = Popen(cmd)#, stdout=PIPE, stderr=PIPE)
             out, err = proc.communicate()
@@ -155,12 +164,42 @@ class Worker(Thread):
         # is "%s_%s" % (srr_name, self.analysis.org_accession) good enough ?
         galaxy_bam_name = "%s_%s" % (srr_name, self.analysis.org_accession)
         bam_file = open(bam_path)
-        log.info("uploading %s to galaxy server %s ..." % (
+        self.log.info("uploading %s to galaxy server %s ..." % (
                             bam_path,           galaxy.hostname))
         self.analysis.galaxy_bam_id = galaxy.upload(bam_file, galaxy_bam_name)
-        log.info("done.")
+        self.log.info("done.")
         bam_file.close()
         self.session.commit()
+
+    def create_genbank_file(self):
+        """
+        Greate a genbank file containing
+
+        For more documentation on how to create new features, visit
+
+         - http://biopython.org/DIST/docs/api/Bio.SeqRecord.SeqRecord-class.html#__getitem__
+         - http://biopython.org/DIST/docs/api/Bio.SeqFeature.SeqFeature-class.html
+        """
+
+        from os import path
+        acc = self.analysis.org_accession
+        gb_path = path.join(self.gb_data_dir, acc + ".gb")
+
+        from Bio import SeqIO
+        record = SeqIO.parse(open(gb_path), "genbank").next()
+
+        from Bio.SeqFeature import SeqFeature, FeatureLocation
+        operons = dict(beg=0, end=100, strand=1),
+        for oper in operons:
+
+
+            location = FeatureLocation(ExactPosition(oper.beg),
+                                       ExactPosition(oper.end))
+            record.features.append(
+                SeqFeature(location, type='mRNA', strand=oper.strand))
+
+        record.features.sort(key=lambda f: f.location.start.position)
+        Bio.SeqIO.write(record, open(xgb_path, "w"), "genbank")
 
 class UnknownInputfileTypeException(Exception):
     pass

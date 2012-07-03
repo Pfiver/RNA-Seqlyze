@@ -36,13 +36,13 @@
         </div>
       </div>
       <div class="control-group">
-        <label for="strandspecificInput" class="control-label">strand-specific</label>
+        <label for="strandspecificInput" class="control-label">strand-specific<br/>(not yet implemented)</label>
         <div class="controls entered-values">
           <strong>${analysis.strandspecific and 'True' or 'False'}</strong>
         </div>
       </div>
       <div class="control-group">
-        <label for="pairendedInput" class="control-label">pair-ended reads</label>
+        <label for="pairendedInput" class="control-label">pair-ended reads<br/>(not yet implemented)</label>
         <div class="controls entered-values">
           <strong>${analysis.pairended and 'True' or 'False'}</strong>
         </div>
