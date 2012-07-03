@@ -13,19 +13,19 @@ Note:
     The command has must run from the top level RNA-Seqlyze source directory.
 
 Options:
-    --prefix <dir>  The option is passed on to the ./configure and install
+    --prefix <dir>
+                    The option is passed on to the ./configure and install
                     scripts of the various prorgams that this command installs.
                     The effect is, that all produced executables will be
                     installed under the that directory.
 
-                 + ---------------------------------------------------------- +
-                 |  The `PREFIX` variable in the "/etc/init.d/rnaseqlyze.sh"  |
-                 |  worker daemon startup script and the `prefix` variable    |
-                 |  in the "/var/www/../rna-seqlyze.wsgi" script must both    |
-                 |  be set to the directory specified here!                   |
-                 + ---------------------------------------------------------- +
+                    If not specified, defaults to ``$HOME/.local``
 
-                    If not specified, defaults to `$HOME/.local`
+.. important::
+                    The `PREFIX` variable in the "/etc/init.d/rnaseqlyze.sh"
+                    worker daemon startup script and the `prefix` variable
+                    in the "/var/www/../rna-seqlyze.wsgi" script must both
+                    be set to the directory specified here!
 """
 
 import os, re

@@ -10,31 +10,33 @@ Usage:
     rnas-init -h|--help
 
 Options:
-    --recreatedb    Remove and re-initialize the database if it exists.
+    --recreatedb
+                    Remove and re-initialize the database if it exists.
 
-    --development   Use the development versions of the config file templates.
+    --development
+                    Use the development versions of the config file templates.
 
 Arguments:
-    <workdir>       The filesystem path to the directory to be initialized.
+    <workdir>
+                    The filesystem path to the directory to be initialized.
                     If the directory already exists, by default, existing
                     files inside that directory are not overwritten.
 
-                 + ---------------------------------------------------------- +
-                 |  The `WORKDIR` variable in the "/etc/init.d/rnaseqlyze.sh" |
-                 |  worker daemon startup script and the `workdir` variable   |
-                 |  in the "/var/www/../rna-seqlyze.wsgi" script must both    |
-                 |  be set to the directory specified here!                   |
-                 + ---------------------------------------------------------- +
+.. important::
+                    The `WORKDIR` variable in the "/etc/init.d/rnaseqlyze.sh"
+                    worker daemon startup script and the `workdir` variable
+                    in the "/var/www/../rna-seqlyze.wsgi" script must both
+                    be set to the directory specified here!
 
 Documentation:
 
     The 'workdir' holds
 
-        - configuration files           \*.ini
-        - the application database      rnaseqlyze.db
-        - log files                     \*.log
-        - shared data                   shared_data/
-        - individual analysis data      analyses/
+        - configuration files        (`*.ini`)
+        - the application database   (`rnaseqlyze.db`)
+        - log files                  (`*.log`)
+        - shared data                (`shared_data/`)
+        - individual analysis data   (`analyses/`)
 
     The rnas-init command
 
