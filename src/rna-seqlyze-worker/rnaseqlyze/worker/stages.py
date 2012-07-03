@@ -1,6 +1,9 @@
 from os.path import join, exists, isdir
 
-from .utils import OrderedClass
+_stages = []
+def stage(method):
+    _stages.append(method)
+    return method
 
 class WorkerStages(object):
 
@@ -20,8 +23,7 @@ class WorkerStages(object):
 
     """
 
-    __metaclass__ = OrderedClass
-
+    @stage
     def determine_inputfile_type(self):
         def getit(header):
             if header[0] == '@': return 'fastq'
@@ -31,6 +33,7 @@ class WorkerStages(object):
                 getit(open(self.analysis.inputfile_path).read(8))
         self.session.commit()
 
+    @stage
     def convert_input_file(self):
         fq_path = self.analysis.inputfile_fqpath
         if not exists(fq_path):
@@ -48,6 +51,7 @@ class WorkerStages(object):
             if proc.returncode != 0:
                 raise Exception("%s failed" % (cmd,))
 
+    @stage
     def fetch_gb(self):
         from os import path
         acc = self.analysis.org_accession
@@ -60,6 +64,7 @@ class WorkerStages(object):
             efetch.fetch_nc_gb(gb_id, open(out_path, "w"))
             self.log.info("...done")
 
+    @stage
     def gb2fasta(self):
         from os import path
         acc = self.analysis.org_accession
@@ -72,6 +77,7 @@ class WorkerStages(object):
             record.id = "chr" # required (!) for ucsc browser
             Bio.SeqIO.write(record, open(fa_path, "w"), "fasta")
 
+    @stage
     def bowtie_build(self):
         from os import path
         acc = self.analysis.org_accession
@@ -87,6 +93,7 @@ class WorkerStages(object):
             if proc.returncode != 0:
                 raise Exception("%s failed" % (cmd,))
 
+    @stage
     def tophat(self):
         from os import path
         acc = self.analysis.org_accession
@@ -104,6 +111,7 @@ class WorkerStages(object):
             if proc.returncode != 0:
                 raise Exception("%s failed" % (cmd,))
 
+    @stage
     def galaxy_upload(self):
         if self.analysis.galaxy_bam_id:
             return
@@ -126,6 +134,7 @@ class WorkerStages(object):
         bam_file.close()
         self.session.commit()
 
+    @stage
     def create_genbank_file(self):
         """
         Greate a genbank file containing
@@ -141,27 +150,38 @@ class WorkerStages(object):
                  embl/Documentation/FT_definitions/feature_table.html
         """
 
-        operons = dict(beg=0, end=100, strand=1),
-
-        from os import path
-        acc = self.analysis.org_accession
-        gb_path = join(self.gb_data_dir, acc + ".gb")
+        class Operon(object):
+            def __init__(self, **kwargs):
+                self.__dict__.update(kwargs)
+        
+        operons = Operon(beg=0, end=100, strand=1),
 
         from Bio import SeqIO
         from Bio.SeqFeature import \
-                SeqFeature, FeatureLocation
+                SeqFeature, FeatureLocation, ExactPosition
 
-        record = SeqIO.parse(open(gb_path), "genbank").next()
+        record = SeqIO.parse(open(
+            self.analysis.genbankfile_path), "genbank").next()
 
-        for oper in operons:
+        for i, oper in enumerate(operons):
             location = FeatureLocation(ExactPosition(oper.beg),
                                        ExactPosition(oper.end))
             record.features.append(
-                SeqFeature(location, type='mRNA', strand=oper.strand))
+                SeqFeature(location,
+                    type='mRNA',
+                    strand=oper.strand,
+                    qualifiers=dict(
+                        note='putative',
+                        operon='operon%d' % i)))
 
         record.features.sort(key=lambda f: f.location.start.position)
-        SeqIO.write(record, open(xgb_path, "w"), "genbank")
 
+        xgb_file = open(self.analysis.xgenbankfile_path, "w")
+
+        SeqIO.write(record, xgb_file, "genbank")
+
+WorkerStages.members = _stages
+del stage, _stages
 
 class UnknownInputfileTypeException(Exception):
     pass

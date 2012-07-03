@@ -57,17 +57,25 @@ class AnalysisMixins(object):
             return os.path.join(self.gb_data_dir, self.org_accession + ".gb")
 
     @property
+    def xgenbankfile_path(self):
+        if self.genbankfile_name:       # User uploaded his own file
+            basename = self.genbankfile_name.rsplit('.')[0]
+        else:                           # User supplied accession
+            basename = self.org_accession
+        return os.path.join(self.data_dir, basename + ".augmented.gb")
+
+    @property
     def inputfile_path(self):
-        if self.inputfile_name: # The user uploaded a file
+        if self.inputfile_name:         # The user uploaded a file
             return os.path.join(self.data_dir, self.inputfile_name)
-        else: # The user specified an SRR id
+        else:                           # The user specified an SRR id
             return self.rnaseq_run.sra_path
 
     @property
     def inputfile_fqname(self):
-        if self.inputfile_name: # The user uploaded a file
+        if self.inputfile_name:         # The user uploaded a file
             return self.inputfile_name.rsplit('.', 1)[0] + ".fastq"
-        else: # The user specified an SRR id
+        else:                           # The user specified an SRR id
             return self.rnaseq_run.srr + ".fastq"
 
     @property

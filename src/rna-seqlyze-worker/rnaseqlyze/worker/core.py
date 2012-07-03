@@ -75,10 +75,10 @@ class Worker(Thread, WorkerStages):
     def run(self):
         self._thread_init()
         try:
+            log.debug(WorkerStages.members)
             for stage in WorkerStages.members:
-                self.log.info("=== %s ===" % stage)
-                method = getattr(self, stage)
-                method()
+                self.log.info("=== %s ===" % stage.func_name)
+                stage(self)
         except Exception, e:
             self.analysis.error = str(e)
             raise
