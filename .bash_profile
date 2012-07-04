@@ -70,6 +70,31 @@ find-py()
 		-o -size +1 -exec sed -n '1{/^__/{q1}}' {} \; \) \) \) -print
 }
 
+# viall
+#######
+# edit all python, javascript, page-templte and lessccss files
+# in the RNA-Seqlyze source tree
+viall ()
+{
+    cd $rnas_topdir/src
+
+    not_starts_with__="-exec sed -n 1{/^__/{q1}} {} ;"
+
+    vi $(find rna-seqlyze* \(                           \
+            -name junk -o -name setup.py                \
+        \) -prune -o \(                                 \
+            -name "rnaseqlyze*.js"                      \
+            -o -name "rnaseqlyze*.less"                 \
+            -o -name "*.pt"                             \
+            -o -name "*.py" \(                          \
+                -not -name __init__.py                  \
+                -o -size +1 $not_starts_with__ \)       \
+        \) -print |
+                        tr '/-' '[]' | sort | tr '[]' '/-'
+    ) 
+}
+
+
 # fix pushd
 ###########
 pushd() {
