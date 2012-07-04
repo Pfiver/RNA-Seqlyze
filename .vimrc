@@ -1,5 +1,10 @@
 " ~/.vimrc - read after /etc/vim/vimrc.local
 
+" let the "sh" syntax plugin know we're using bash
+""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:is_bash = 1
+
+
 " highlight over-long lines
 """""""""""""""""""""""""""
 highlight OverLength ctermbg=red ctermfg=white
