@@ -1,3 +1,19 @@
+"""
+RNA-Seqlyze Galaxy Module
+
+Shamelessly piggy-back onto Penn-State University's "Galaxy" Project.
+
+RNA-Seqlyze needs a some publicly available Web-Space, which PSU provides
+plenty of for bioinformatics reseach data (250.0 Gb per user as of 4 Jul 2012).
+
+Thanks go to Penn-State Universitie!
+
+http://www.psu.edu/
+
+"""
+
+# FIXME: the whole code here needs heavy refactoring
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -110,14 +126,18 @@ def ftpupload(fileobj, filename):
     ftp.quit()
 
 def upload(fileobj, filename):
+
+    # can't initialize this at module import time
+    # because rnaseqlyze.xxx properties not initialized
     global rq_headers
     rq_headers = {
-        'X-Complaints-To': rnaseqlyze.admin_email,
-        'User-Agent': "%s (rv:%s)" % (
-            rnaseqlyze.project_name, rnaseqlyze.__version__),
+        'User-Agent': "%s (version:%s / admin:%s)" % (
+            rnaseqlyze.project_name,
+            rnaseqlyze.__version__, rnaseqlyze.admin_email),
     #    'User-Agent': "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:13.0)" \
     #                  " Gecko/20100101 Firefox/13.0.1",
     }
+
     ftpupload(fileobj, filename)
     import_uploads(login())
     histories = json.loads(api_call(
