@@ -250,3 +250,7 @@ class s3cmd(Part):
 
 class docopt(Part):
     install = "python setup.py install --prefix=$PREFIX"
+
+class ncurses(Part):
+    build = "./configure --prefix $HOME/.local && make"
+    install = "make install
