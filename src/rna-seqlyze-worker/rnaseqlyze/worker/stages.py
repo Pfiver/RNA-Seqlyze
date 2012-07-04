@@ -8,6 +8,7 @@ from Bio import SeqIO
 from Bio.SeqFeature import \
         SeqFeature, FeatureLocation, ExactPosition
 
+from rnaseqlyze import efetch
 from rnaseqlyze import galaxy
 from rnaseqlyze import ucscbrowser
 
@@ -34,6 +35,9 @@ class WorkerStages(object):
 
     """
 
+    ######################################################################
+    # Utility Methods & Properties
+
     def log_cmd(self, *cmd):
         proc = Popen(cmd, stdout=self.logfile, stderr=self.logfile)
         proc.wait()
@@ -51,6 +55,10 @@ class WorkerStages(object):
     def bam_name(self):
         return "%s_%s" % (self.srr_name, self.analysis.org_accession)
 
+
+    ##################################################################
+    # Stages
+
     @stage
     def determine_inputfile_type(self):
         def getit(header):
@@ -60,6 +68,14 @@ class WorkerStages(object):
         self.analysis.inputfile_type = \
                 getit(open(self.analysis.inputfile_path).read(8))
         self.session.commit()
+
+    @stage
+    def fetch_srr(self):
+        # download if not already in cache
+        if not os.path.exists(self.analysis.rnaseq_run.sra_path):
+            log.debug("transfering input file from sra")
+            self.analysis.rnaseq_run.download()
+            log.debug("done")
 
     @stage
     def convert_input_file(self):
@@ -135,7 +151,22 @@ class WorkerStages(object):
         self.session.commit()
 
     @stage
-    def create_and_upload_galaxy_ucsc_bam_track(self):
+    def create_and_upload_htg_custom_text(self):
+        """
+        ``hgt.customText`` is a paremeter of the UCSC
+        "hgTracks" genome browser application that makes it
+        possible to share "cutom tracks" via a url.
+
+        The value of the ``hgt.customText`` parameter is itself
+        an URL. The shareable "custom tracks url" is therefore an
+        URL that containes another URL. The other url must be "escaped"
+        for this to work. That actually happens in
+        :meth:`~rnaseqlyze.core.analysis.AnalysisMixins.hg_url`.
+        
+        The details are explained here:
+        http://genome.ucsc.edu/goldenPath/help/customTrack.html#SHARE
+        """
+
         if self.analysis.galaxy_ucsc_bam_track_id:
             return
         bam_url = "https://" + galaxy.hostname \
