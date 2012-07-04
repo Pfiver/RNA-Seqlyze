@@ -2,10 +2,17 @@
 Multipart form-data handling
 based on http://code.activestate.com/recipes/146306/
 """
+import uuid, urllib2, mimetypes
 
-def urlopen(url, data):
-    import urllib2
-    rq = urllib2.Request(url, data)
+def urlopen(url, data=None):
+    if isinstance(url, basestring):
+        rq = urllib2.Request(url, data)
+    elif isinstance(url, urllib2.Request):
+        rq = url
+        data = rq.data
+    else:
+        raise Exception("'url' parameter must be a string or urllib2.Request")
+
     try:
         boundary = data[2:data.index("\r")]
     except ValueError, e:
@@ -25,7 +32,6 @@ def urlencode(fields, files=None):
     :returns:
       ``str`` of **multipart/form-data** encoded fields + files
     """
-    import uuid
     boundary = str(uuid.uuid4())
     data = []
     for (key, value) in fields:
@@ -47,5 +53,4 @@ def urlencode(fields, files=None):
     return '\r\n'.join(data)
 
 def get_content_type(filename):
-    import mimetypes
     return mimetypes.guess_type(filename)[0] or 'application/octet-stream'

@@ -30,6 +30,8 @@ extensions = [
     'sphinx.ext.viewcode',
 ]
 
+autodoc_member_order = 'bysource'
+
 autodoc_default_flags = [
     'show-inheritance',
     'members', 'undoc-members', 'private-members',
@@ -225,5 +227,23 @@ latex_logo = '../../src/rna-seqlyze-web/rnaseqlyze/web/img/RNA-Seqlyze.png'
 #          return False
 #    return skip
 #
-#def setup(app):
+
+def setup(app):
 #    app.connect('autodoc-skip-member', maybe_skip_member)
+    app.connect('autodoc-process-docstring', join_long_urls)
+
+def join_long_urls(app, what, name, obj, options, lines):
+    url = None
+    rmlines = []
+    for i in range(len(lines)):
+        line = lines[i]
+        if line.endswith('\\'):
+            if line.find("http://"):
+                url = line[:-1]
+                rmlines.append(i)
+                continue
+        if url:
+            lines[i] = url + line.lstrip()
+            url = None
+    for i in reversed(rmlines):
+        lines.pop(i)

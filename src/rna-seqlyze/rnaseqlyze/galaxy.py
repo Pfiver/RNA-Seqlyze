@@ -2,11 +2,14 @@ import logging
 log = logging.getLogger(__name__)
 
 import os
+import json
 import urllib
 import urllib2
 import lxml.html
 import cookielib
 import multipart
+
+import rnaseqlyze
 
 email = 'ucgxccgr@mailinator.com'
 password = 'brtbhcdg'
@@ -16,9 +19,17 @@ hostname = 'main.g2.bx.psu.edu'
 default_history = 'b8468b3367a258a6'
 default_history_url = 'https://main.g2.bx.psu.edu/u/dcgdftvcdv/h/biocalc'
 
-history_path_template = '/api/histories/%(history)s/contents'
+history_path_template = '/api/histories/{history}/contents'
 ucsc_bam_track_template = \
-        '/display_application/%(dataset)s/ucsc_bam/archaea/None/param/track'
+        '/display_application/{dataset}/ucsc_bam/archaea/None/param/track'
+
+ucsc_bam_path_template = \
+        '/display_application/{dataset}/' \
+        'ucsc_bam/archaea/None/data/galaxy_{dataset}.bam'
+
+dataset_display_url_template = "/datasets/{dataset}/display"
+
+rq_headers = {}
 
 def api_call(path):
     url = "https://" + hostname + path
@@ -33,7 +44,9 @@ def login(cookie_file=None):
                                     urllib2.HTTPCookieProcessor(cookie_jar)))
     log.info("Loggin in to galaxy server %s ..." % hostname)
     login = "https://" + hostname + "/user/login"
-    request = urllib2.urlopen(login)
+    rq = urllib2.Request(login, headers=rq_headers)
+    request = urllib2.urlopen(rq)
+#    request = urllib2.urlopen(login)
     doc = lxml.html.parse(request).getroot()
     form = doc.forms[0]
     form.fields["email"] = email
@@ -41,7 +54,9 @@ def login(cookie_file=None):
     submit = "login_button", form.fields["login_button"]
     data = urllib.urlencode(form.form_values() + [submit])
     log.debug("posting login form: %s" % form.action)
-    request = urllib2.urlopen(form.action, data)
+    rq = urllib2.Request(form.action, headers=rq_headers)
+    request = urllib2.urlopen(rq, data)
+#    request = urllib2.urlopen(form.action, data)
     doc = lxml.html.parse(request).getroot()
     log.info("Success!")
     if cookie_file:
@@ -58,7 +73,9 @@ def import_uploads(cookie_jar=None, cookie_file="cookies.txt"):
                                     urllib2.HTTPCookieProcessor(cookie_jar)))
     log.info("Importing ftp files...")
     tool = "https://" + hostname + "/tool_runner?tool_id=upload1"
-    request = urllib2.urlopen(tool)
+    rq = urllib2.Request(tool, headers=rq_headers)
+    request = urllib2.urlopen(rq)
+#    request = urllib2.urlopen(tool)
     doc = lxml.html.parse(request).getroot()
     form = doc.forms[0]
     inp = form.inputs["files_0|ftp_files"]
@@ -72,7 +89,9 @@ def import_uploads(cookie_jar=None, cookie_file="cookies.txt"):
     submit = "runtool_btn", form.fields["runtool_btn"]
     data = multipart.urlencode(form.form_values() + [submit])
     log.debug("posting upload form: %s" % form.action)
-    request = multipart.urlopen(form.action, data)
+    rq = urllib2.Request(form.action, data, headers=rq_headers)
+    request = multipart.urlopen(rq)
+#    request = multipart.urlopen(form.action, data)
     doc = lxml.html.parse(request).getroot()
     log.info("Success!")
     if cookie_file:
@@ -91,11 +110,18 @@ def ftpupload(fileobj, filename):
     ftp.quit()
 
 def upload(fileobj, filename):
-    import json
+    global rq_headers
+    rq_headers = {
+        'X-Complaints-To': rnaseqlyze.admin_email,
+        'User-Agent': "%s (rv:%s)" % (
+            rnaseqlyze.project_name, rnaseqlyze.__version__),
+    #    'User-Agent': "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:13.0)" \
+    #                  " Gecko/20100101 Firefox/13.0.1",
+    }
     ftpupload(fileobj, filename)
     import_uploads(login())
     histories = json.loads(api_call(
-        history_path_template % dict(history=default_history)))
+        history_path_template.format(history=default_history)))
     # assume objects are ordered chronologically...
     for history in reversed(histories):
         if history['name'] == filename:

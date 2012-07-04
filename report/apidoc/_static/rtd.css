@@ -143,18 +143,6 @@ div.toctree-wrapper a:hover,
     border-bottom: 1px solid #111;
 }
 
-/* Footer links */
-div.footer a {
-    color: #86989B;
-    text-decoration: none;
-    border: none;
-}
-div.footer a:hover {
-    color: #a6b8bb;
-    text-decoration: underline;
-    border: none;
-}
-
 /* Permalink anchor (subtle grey with a red hover) */
 div.body a.headerlink {
     color: #ccc;
@@ -574,15 +562,6 @@ span.highlight {
     background: #ffe080;
 }
 
-div.footer {
-    background-color: #465158;
-    color: #eeeeee;
-    padding: 0 2em 2em 2em;
-    clear: both;
-    font-size: 0.8em;
-    text-align: center;
-}
-
 p {
     margin: 0.8em 0 0.5em 0;
 }
@@ -746,21 +725,6 @@ p {
 
     .related:not(:first-child) li.right {
         display: block;
-    }
-
-    div.footer {
-        padding: 1em;
-    }
-
-    .rtd_doc_footer .badge {
-        float: none;
-        margin: 1em auto;
-        position: static;
-    }
-
-    .rtd_doc_footer .badge.revsys-inline {
-        margin-right: auto;
-        margin-bottom: 2em;
     }
 
     table.indextable {

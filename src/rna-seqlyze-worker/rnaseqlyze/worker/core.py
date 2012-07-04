@@ -8,12 +8,15 @@ import logging
 log = logging.getLogger(__name__)
 
 from threading import Thread
+from logging import Formatter
+from logging import StreamHandler
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 import rnaseqlyze
 from rnaseqlyze import efetch
+from .stages import WorkerStages
 from rnaseqlyze.core.orm import Analysis
 
 DBSession = sessionmaker()
@@ -36,7 +39,7 @@ class AnalysisAlreadyStartedException(Exception):
 class ManagerBusyException(Exception):
     pass
 
-class Worker(Thread):
+class Worker(Thread, WorkerStages):
     """
     The Worker
     """
@@ -50,159 +53,35 @@ class Worker(Thread):
         self.analysis_id = analysis.id
 
     def _thread_init(self):
-        self.log = logging.getLogger("%s.Worker(Analysis #%d)" % (
-                                      __name__,           self.analysis_id))
-        self.log.info("starting work on analysis #%d" % self.analysis_id)
+        from os import path
         self.session = DBSession(bind=create_engine(rnaseqlyze.db_url))
         self.analysis = self.session.query(Analysis).get(self.analysis_id)
+
+        self.logfile = open(path.join(
+                self.analysis.data_dir, "rna-seqlyze-worker.log"), "w")
+        self.log = logging.getLogger("%s.Worker(Analysis #%d)" % (
+                                      __name__,           self.analysis_id))
+        h = StreamHandler(self.logfile)
+        h.setFormatter(Formatter("%(levelname)-5.5s [%(name)s] %(message)s"))
+        self.log.addHandler(h)
+        self.log.info("starting work on analysis #%d" % self.analysis_id)
         self.analysis.started = True
         self.session.commit()
+
         self.data_dir = self.analysis.data_dir
         self.gb_data_dir = self.analysis.gb_data_dir
         self.input_data_dir = self.analysis.input_data_dir
 
     def run(self):
         self._thread_init()
-        self._determine_inputfile_type()
-        self._convert_input_file()
-        self._fetch_gb()
-        self._gb2fasta()
-        self._bowtie_build()
-        self._tophat()
-        self._galaxy_upload()
-        self._create_genbank_file()
-
-    def _determine_inputfile_type(self):
-        def getit(header):
-            if header[0] == '@': return 'fastq'
-            elif header[:8] == 'NCBI.sra': return 'sra'
-            else: raise UnknownInputfileTypeException()
-        self.analysis.inputfile_type = \
-                getit(open(self.analysis.inputfile_path).read(8))
-        self.session.commit()
-
-    def _convert_input_file(self):
-        from os import path
-        fq_path = self.analysis.inputfile_fqpath
-        if not path.exists(fq_path):
-            import os
-            os.chdir(self.input_data_dir)
-            if self.analysis.inputfile_name:
-                sra_name = self.analysis.inputfile_name
-            else:
-                sra_name = self.analysis.rnaseq_run.sra_name
-            cmd = "fastq-dump", sra_name
-            self.log.info("converting %s" % sra_name)
-            from subprocess import Popen, PIPE
-            proc = Popen(cmd)#, stdout=PIPE, stderr=PIPE)
-            out, err = proc.communicate()
-            if proc.returncode != 0:
-                raise Exception("%s failed" % (cmd,))
-
-    def _fetch_gb(self):
-        from os import path
-        acc = self.analysis.org_accession
-        self.analysis.create_gb_data_dir()
-        out_path = path.join(self.gb_data_dir, acc + ".gb")
-        if not path.exists(out_path):
-            self.log.info("Fetching '%s' from entrez..." % acc)
-            # TODO: do this earlier
-            gb_id = efetch.get_nc_id(acc)
-            efetch.fetch_nc_gb(gb_id, open(out_path, "w"))
-            self.log.info("...done")
-
-    def _gb2fasta(self):
-        from os import path
-        acc = self.analysis.org_accession
-        gb_path = path.join(self.gb_data_dir, acc + ".gb")
-        fa_path = path.join(self.gb_data_dir, acc + ".fa")
-        if not path.exists(fa_path):
-            self.log.info("Converting '%s' to fasta format..." % acc)
-            import Bio.SeqIO
-            record = Bio.SeqIO.parse(open(gb_path), "genbank").next()
-            record.id = "chr" # required (!) for ucsc browser
-            Bio.SeqIO.write(record, open(fa_path, "w"), "fasta")
-
-    def _bowtie_build(self):
-        from os import path
-        acc = self.analysis.org_accession
-        bt2_path = path.join(self.gb_data_dir, acc + ".1.bt2")
-        if not path.exists(bt2_path):
-            import os
-            os.chdir(self.gb_data_dir)
-            cmd = "bowtie2-build", acc + ".fa", acc
-            self.log.info("bowtie2-build %s" % acc)
-            from subprocess import Popen, PIPE
-            proc = Popen(cmd)#, stdout=PIPE, stderr=PIPE)
-            out, err = proc.communicate()
-            if proc.returncode != 0:
-                raise Exception("%s failed" % (cmd,))
-
-    def _tophat(self):
-        from os import path
-        acc = self.analysis.org_accession
-        if not path.isdir(path.join(self.data_dir, "tophat-output")):
-            import os
-            os.chdir(self.data_dir)
-            n_cpus = os.sysconf("SC_NPROCESSORS_ONLN")
-            acc_path = path.join(self.gb_data_dir, acc)
-            fq_name = self.analysis.inputfile_fqname
-            cmd = "tophat", "-p", str(n_cpus), \
-                    "-o", "tophat-output", acc_path, fq_name
-            from subprocess import Popen, PIPE
-            proc = Popen(cmd)#, stdout=PIPE, stderr=PIPE)
-            out, err = proc.communicate()
-            if proc.returncode != 0:
-                raise Exception("%s failed" % (cmd,))
-
-    def _galaxy_upload(self):
-        if self.analysis.galaxy_bam_id:
-            return
-        from os import path
-        from rnaseqlyze import galaxy
-        bam_path = path.join(self.data_dir, 
-                             "tophat-output", "accepted_hits.bam")
-        srr_name = self.analysis.inputfile_name.rsplit(".", 1)[0]
-        # FIXME: names are not unique on galaxy:
-        # is "%s_%s" % (srr_name, self.analysis.org_accession) good enough ?
-        galaxy_bam_name = "%s_%s" % (srr_name, self.analysis.org_accession)
-        bam_file = open(bam_path)
-        self.log.info("uploading %s to galaxy server %s ..." % (
-                            bam_path,           galaxy.hostname))
-        self.analysis.galaxy_bam_id = galaxy.upload(bam_file, galaxy_bam_name)
-        self.log.info("done.")
-        bam_file.close()
-        self.session.commit()
-
-    def _create_genbank_file(self):
-        """
-        Greate a genbank file containing
-
-        For more documentation on how to create new features, visit
-
-         - http://biopython.org/DIST/docs/api/Bio.SeqRecord.SeqRecord-class.html#__getitem__
-         - http://biopython.org/DIST/docs/api/Bio.SeqFeature.SeqFeature-class.html
-        """
-
-        from os import path
-        acc = self.analysis.org_accession
-        gb_path = path.join(self.gb_data_dir, acc + ".gb")
-
-        from Bio import SeqIO
-        record = SeqIO.parse(open(gb_path), "genbank").next()
-
-        from Bio.SeqFeature import SeqFeature, FeatureLocation
-        operons = dict(beg=0, end=100, strand=1),
-        for oper in operons:
-
-
-            location = FeatureLocation(ExactPosition(oper.beg),
-                                       ExactPosition(oper.end))
-            record.features.append(
-                SeqFeature(location, type='mRNA', strand=oper.strand))
-
-        record.features.sort(key=lambda f: f.location.start.position)
-        Bio.SeqIO.write(record, open(xgb_path, "w"), "genbank")
-
-class UnknownInputfileTypeException(Exception):
-    pass
+        try:
+            for stage in WorkerStages.members:
+                self.log.info("=== %s ===" % stage.func_name)
+                stage(self)
+        except Exception, e:
+            self.analysis.error = str(e)
+            raise
+        finally:
+            self.log.info("work on analysis #%d completed" % self.analysis_id)
+            self.analysis.finished = True
+            self.session.commit()
