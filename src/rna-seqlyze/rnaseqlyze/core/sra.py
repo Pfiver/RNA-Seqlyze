@@ -35,9 +35,20 @@ class RNASeqRunMixins(object):
             os.makedirs(self.data_dir)
 
     def download(self):
-        log.debug("fetching " + self.srr)
-        srr_url = srr_url_template.format(srr=self.srr)
-        remote = urlopen(srr_url, timeout=60)
-        local = open(self.sra_path, "w")
-        copyfileobj(remote, local)
+        try:
+            log.debug("fetching " + self.srr)
+            srr_url = srr_url_template.format(srr=self.srr)
+            remote = urlopen(srr_url, timeout=60)
+            local = open(self.sra_path, "w")
+            copyfileobj(remote, local)
+        except Exception, e:
+            log.error("Error fetching SRR: %r" % e)
+            os.unlink(self.sra_path)
+            raise
+        finally:
+            # note:
+            #  in case of an error, unlinking wil precede closing
+            #   -- no problem on unix
+            if local:
+                local.close()
         log.debug("done")
