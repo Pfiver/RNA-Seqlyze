@@ -1,8 +1,5 @@
 .. RNA-Seqlyze PDF documentation master file
 
-Packages
-========
-
 .. toctree::
 	:titlesonly:
 

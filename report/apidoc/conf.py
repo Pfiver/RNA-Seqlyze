@@ -245,5 +245,5 @@ def join_long_urls(app, what, name, obj, options, lines):
         if url:
             lines[i] = url + line.lstrip()
             url = None
-    for i in rmlines:
+    for i in reversed(rmlines):
         lines.pop(i)
