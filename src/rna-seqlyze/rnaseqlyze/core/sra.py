@@ -7,6 +7,8 @@ log = logging.getLogger(__name__)
 
 import os
 from os import path
+from urllib2 import urlopen
+from shutil import copyfileobj
 
 import rnaseqlyze
 
@@ -33,7 +35,9 @@ class RNASeqRunMixins(object):
             os.makedirs(self.data_dir)
 
     def download(self):
-        from urllib import urlretrieve
         log.debug("fetching " + self.srr)
-        urlretrieve(srr_url_template.format(srr=self.srr), self.sra_path)
+        srr_url = srr_url_template.format(srr=self.srr)
+        remote = urlopen(srr_url, timeout=60)
+        local = open(self.sra_path, "w")
+        copyfileobj(remote, local)
         log.debug("done")
