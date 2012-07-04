@@ -128,19 +128,17 @@ class bowtie2(Part):
             shutil.copy(f, env["BINDIR"])
             os.chmod(env["BINDIR"] + "/" + f, 0775)
 
+class ncurses(Part):
+    build = "./configure --prefix $HOME/.local && make"
+    install = "make install"
+
 class samtools(Part):
-    # the samtools 'build' command
-    # is somewhat long so ncurses-dev is not required
+    depends = ncurses
     build = (
-        "make -j$NCPUS_ONLN -C bcftools",
-        "make -j$NCPUS_ONLN -C misc",
-"""\
-make -j$NCPUS_ONLN SUBDIRS=. LIBCURSES=                                   \\
-    DFLAGS="-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_USE_KNETFILE"  \\
-    AOBJS="bam_plcmd.o sam_view.o bam_rmdup.o bam_rmdupse.o                 \\
-           bam_mate.o bam_stat.o bam_color.o bamtk.o kaln.o bam2bcf.o        \\
-           bam2bcf_indel.o errmod.o sample.o cut_target.o phase.o bam2depth.o" \
-""",
+        'make -j$NCPUS_ONLN -C bcftools',
+        'make -j2 SUBDIRS=.'
+            ' LIBPATH=-L$PREFIX/lib LIBCURSES=-lncurses'
+            ' CFLAGS="$(echo -I$PREFIX/include{,/ncurses})"'
     )
     install = "cp samtools $PREFIX/bin"
 
@@ -250,7 +248,3 @@ class s3cmd(Part):
 
 class docopt(Part):
     install = "python setup.py install --prefix=$PREFIX"
-
-class ncurses(Part):
-    build = "./configure --prefix $HOME/.local && make"
-    install = "make install
