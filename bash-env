@@ -102,26 +102,6 @@ buildbot ()
     esac
 )
 
-viall ()
-{
-    cd $rnas_topdir/src
-
-    not_starts_with__="-exec sed -n 1{/^__/{q1}} {} ;"
-
-    vi $(find rna-seqlyze* \(                           \
-            -name junk -o -name setup.py                \
-        \) -prune -o \(                                 \
-            -name "rnaseqlyze*.js"                      \
-            -o -name "rnaseqlyze*.less"                 \
-            -o -name "*.pt"                             \
-            -o -name "*.py" \(                          \
-                -not -name __init__.py                  \
-                -o -size +1 $not_starts_with__ \)       \
-        \) -print |
-                        tr '/-' '[]' | sort | tr '[]' '/-'
-    ) 
-}
-
 sigint ()
 {
     curl localhost/biopython/debug?{sig_int,sig_int}
