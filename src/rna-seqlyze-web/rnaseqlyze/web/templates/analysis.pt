@@ -77,12 +77,12 @@
             __________________________________________________               -->
 
 
-            <h2 id="processing">Processing</h2>
-            <div id="processing-area"></div>
+            <div id="processing"></div>
+
             <img id="spinner" src="${path('img/spinner-black.gif')}"/>
 
-            <h2 id="results">Results</h2>
-            <div id="results-area"></div>
+            <div id="results"></div>
+
 
 <!--._______________________________________________________________________,-->
 

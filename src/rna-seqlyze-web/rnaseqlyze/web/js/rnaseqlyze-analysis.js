@@ -98,6 +98,10 @@ window.ProcessingView = Backbone.View.extend({
         // see http://backbonejs.org/#Model-toJSON
         var analysis = this.model.toJSON();
 
+        this.$el.append(
+            el.h2("Processing")
+        );
+
         this.$el.append(el.div(
             el.h3("Input analysis")
         ,
@@ -115,11 +119,20 @@ window.ProcessingView = Backbone.View.extend({
                 :
                 null
 
-        )).append(el.div(
+        ));
+
+        this.$el.append(el.div(
             el.h3("Working Directory")
         ,
             el.div(new WorkdirView({model: this.model.files}).render().el)
         ));
+
+        if (analysis.error)
+            this.$el.append(
+                el.div({class: "alert alert-error"},
+                       el.h4({class: "alert-heading"},
+                             "...there was a problem"),
+                       analysis.error));
 
         return this;
     },
@@ -168,12 +181,20 @@ window.ResultsView = Backbone.View.extend({
     },
     render: function () {
         var analysis = this.model.toJSON();
-        if (analysis.hg_url)
+
+        if (analysis.hg_url) {
+
+            this.$el.append(
+                el.h2("Results")
+            );
+
             this.$el.append(
                 el.ul(
                     el.li(
                         el.a({href: analysis.hg_url},
                              "Link to BAM Track in UCSC Browser"))));
+        }
+
         return this;
     },
 });
@@ -194,10 +215,10 @@ $(document).ready(function () {
 
     // create two backbone.js views for the
     // analysis, render and insert them into the DOM
-    $('#processing-area').html(
+    $('#processing').html(
         new ProcessingView({model: analysis}).render().el
     );
-    $('#results-area').html(
+    $('#results').html(
         new ResultsView({model: analysis}).render().el
     );
 
