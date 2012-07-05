@@ -19,6 +19,7 @@ from sqlalchemy.ext.declarative import declared_attr, declarative_base
 import rnaseqlyze
 from rnaseqlyze import galaxy
 from rnaseqlyze import ucscbrowser
+from rnaseqlyze.core import security
 from rnaseqlyze.core.orm import Entity
 
 class AnalysisMethods(object):
@@ -84,79 +85,136 @@ class AnalysisMethods(object):
                 return ds
 
 
+from os.path import join
+from rnaseqlyze import (
+        analyses_path,
+        shared_data_path,
+)
+
 class AnalysisProperties(object):
+
+    """
+    .. note::
+
+        - `input` means `short reads data`
+        - `genbank` means `"genome" database nucleotide sequence`
+    """
+
+# data uploaded or id specified ?
+# -------------------------------
+
+    @property
+    def input_uploaded(self):
+        return self.inputfile_name and True
+
+    @property
+    def genbank_uploaded(self)
+        return self.genbankfile_name and True
+
+# directories
+# -----------
 
     @property
     def data_dir(self):
-        return os.path.join(rnaseqlyze.analyses_path, str(self.id))
-
-    @property
-    def gb_data_dir(self):
-        acc = self.org_accession
-        return os.path.join(rnaseqlyze.shared_data_path, acc)
+        return join(analyses_path, str(self.id))
 
     @property
     def input_data_dir(self):
-        if self.inputfile_name:
+        if self.input_uploaded:
             return self.data_dir
         else:
             return self.rnaseq_run.data_dir
 
     @property
-    def genbankfile_path(self):
-        if self.genbankfile_name:
-            return os.path.join(self.data_dir, self.genbankfile_name)
+    def genbank_data_dir(self):
+        if self.genbank_uploaded:
+            return self.data_dir
         else:
-            return os.path.join(self.gb_data_dir, self.org_accession + ".gb")
+            return join(shared_data_path, self.org_accession)
+
+# short reads files
+# -----------------
 
     @property
-    def fa_path(self):
-        return self.genbankfile_path.rsplit('.', 1)[0] + ".fa"
-
-    @property
-    def xgenbankfile_path(self):
-        if self.genbankfile_name:       # User uploaded his own file
-            basename = self.genbankfile_name.rsplit('.')[0]
-        else:                           # User supplied accession
-            basename = self.org_accession
-        return os.path.join(self.data_dir, basename + ".augmented.gb")
+    def inputfile_name(self):
+        if self.input_uploaded:
+            return self.inputfile_name
+        else:
+            return self.rnaseq_run.srr + ".sra"
 
     @property
     def inputfile_path(self):
-        if self.inputfile_name:         # The user uploaded a file
-            return os.path.join(self.data_dir, self.inputfile_name)
-        else:                           # The user specified an SRR id
-            return self.rnaseq_run.sra_path
+        return join(self.input_data_dir, self.inputfile_name)
+
+    @property
+    def inputfile_base_name(self):
+        return self.inputfile_name.rsplit(".", 1)[0]
 
     @property
     def inputfile_fqname(self):
-        if self.inputfile_name:         # The user uploaded a file
-            return self.inputfile_name.rsplit('.', 1)[0] + ".fastq"
-        else:                           # The user specified an SRR id
-            return self.rnaseq_run.srr + ".fastq"
+        return self.inputfile_base_name + ".fastq"
 
     @property
     def inputfile_fqpath(self):
-        return os.path.join(self.input_data_dir, self.inputfile_fqname)
+        return self.input_data_dir + self.inputfile_fqname
 
     @property
     def inputfile_header(self):
         fq_file = open(self.inputfile_fqpath)
         lines = [fq_file.readline() for i in range(4)]
         log.info("Header: %s" % lines[0])
+        fq_file.close()
         return "".join(lines)
+
+# organism files
+# --------------
+
+    @property
+    def genbankfile_name(self):
+        if self.gb_uploaded:
+            return self.genbankfile_name
+        else:
+            return self.org_accession + ".gb"
+
+    @property
+    def genbankfile_path(self):
+        return join(self.org_data_dir, self.ganbankfile_name)
+
+    @property
+    def genbankfile_base_name(self):
+        return self.genbankfile_name.rsplit(".", 1)[0]
+
+    @property
+    def genbankfile_fa_name(self):
+        return self.genbankfile_base_name + ".fa"
+
+    @property
+    def genbankfile_fa_path(self):
+        return join(self.genbank_data_dir, self.genbankfile_fa_name)
+
+    @property
+    def xgenbankfile_name(self):
+        return self.genbankfile_base_name + ".augmented.gb"
+
+    @property
+    def xgenbankfile_path(self):
+        return join(self.data_dir, self.xgenbankfile_name)
+
+# magic galaxy_xxx attributes
+# ---------------------------
 
     galaxy_stuff = "hgtext bam coverage hpterms".split()
 
-    # declare an assignable 'galaxy_xxx' attribute for all the galaxy_stuff
-    for x in galaxy_stuff:
-        join = "and_(GalaxyDataset.type == '%s', \
-                     Analysis.id == GalaxyDataset.analysis_id)" % x
-        rel = 'lambda cls: relationship(\
-                    "GalaxyDataset", uselist=False, primaryjoin="%s")' % join
-        locals()["galaxy_" + x] = declared_attr(eval(rel))
+    for x in galaxy_stuff: exec \
+    """
+        @declared_attr
+        def galaxy_%s(self):
+            return relationship("GalaxyDataset",
+                                 uselist=False, primaryjoin="%s")
+    """ % (x,
+                "and_(GalaxyDataset.type == '%s',"
+                     "Analysis.id == GalaxyDataset.analysis_id)" % x)
 
-    # validator that sets the right type when assigning
     @validates(*("galaxy_" + x for x in galaxy_stuff))
     def set_bam(self, attr, dataset):
         dataset.type=attr[7:]
