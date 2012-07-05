@@ -11,14 +11,21 @@ from pyramid.view import view_config
 import rnaseqlyze
 from rnaseqlyze.web import DBSession, DBSession_unmanaged
 from rnaseqlyze.core import service
-from rnaseqlyze.core.orm import Analysis, UCSCOrganism
+from rnaseqlyze.core.entities import Analysis, UCSCOrganism
 
 @view_config(route_name='analysis_rest', renderer='jsonx')
 def display(request):
     """
     **REST Analysis View**
     """
-    return DBSession.query(Analysis).get(int(request.matchdict["id"]))
+    analysis = DBSession.query(Analysis).get(int(request.matchdict["id"]))
+    org_db = DBSession.query(UCSCOrganism) \
+                .filter(UCSCOrganism.acc.like(
+                    analysis.org_accession + '%')).first().db
+    analysis.__dict__.update({
+        'org_db': org_db,
+        'hg_url': analysis.get_hg_url(org_db)})
+    return analysis
 
 @view_config(route_name='analysis_files_rest', renderer='jsonx')
 def analysis_files(request):
