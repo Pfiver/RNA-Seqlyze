@@ -14,8 +14,6 @@ from sqlalchemy import Boolean, Integer, String, Text, DateTime
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlalchemy.ext.declarative import declared_attr, declarative_base
 
-from rnaseqlyze.core import security
-
 class Entity(object):
 
     @declared_attr

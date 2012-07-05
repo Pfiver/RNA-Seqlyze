@@ -12,7 +12,7 @@ def setup():
     from rnaseqlyze.core.entities import Entity, Analysis
     Entity.metadata.create_all(engine)
     with transaction.manager:
-        analysis = Analysis()
+        analysis = Analysis(org_accession="NC_1234")
         DBSession.add(analysis)
 
 def teardown():
@@ -26,3 +26,4 @@ def most_basic_test():
     request.matchdict['id'] = "1"
     info = display(request)
     assert_equal(info['analysis'].id, 1)
+    assert_equal(info['analysis'].fa_name, "NC_1234.fa")

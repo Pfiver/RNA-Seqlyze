@@ -1,8 +1,6 @@
 """
 Database Entities
 
-Excluding Analysis, which is in it's own :mod:`module<~analysis>`.
-
 All Entities that don't have an explicit constructor use the default
 one defined in :mod:`orm`, which assumes that the first non-keyword
 argument is the `id`. This feature is used for example in
@@ -117,30 +115,6 @@ class RNASeqRun(RNASeqRunMethods,
     srr         = Column(String, primary_key=True)
     srx_srx     = Column(Integer, ForeignKey('rnaseqexperiment.srx'))
     srx         = relationship(RNASeqExperiment, backref=backref("runs"))
-
-# predictions
-
-class FeaturePredictions(Entity): # stub
-    """
-    Holds a reference to the output of a FeaturePredictor
-    """
-    id          = Column(Integer, primary_key=True)
-    type        = Column('type', String(50))
-
-    __mapper_args__ = {'polymorphic_on': type}
-
-# tracks
-
-class HgTrack(Entity): # stub
-    """
-    Holds the type and filename for a UCSC Genome Browser Track
-    """
-    id          = Column(Integer, primary_key=True)
-    type        = Column('type', String(50))
-
-    __mapper_args__ = {'polymorphic_on': type}
-
-# helpers
 
 class UCSCOrganism(Entity):
     """
