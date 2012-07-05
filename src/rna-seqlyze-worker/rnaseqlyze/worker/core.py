@@ -1,7 +1,8 @@
 """
 RNA-Seqlyze Worker Daemon Core
 
-    -- this is where things are actually getting done! :-)
+Worker parent class with basic infrastructure to run the
+various analysis steps defined in :class:`~.WorkerStages`.
 """
 
 import logging

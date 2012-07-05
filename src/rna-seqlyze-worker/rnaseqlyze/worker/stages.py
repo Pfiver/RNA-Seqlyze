@@ -1,3 +1,9 @@
+"""
+RNA-Seqlyze Worker Stages
+
+    -- **this** is where things are actually getting done! :-)
+"""
+
 import os
 from os.path import join, exists, isdir
 from subprocess import Popen, PIPE
@@ -11,9 +17,18 @@ from Bio.SeqFeature import \
 from rnaseqlyze import efetch
 from rnaseqlyze import galaxy
 from rnaseqlyze import ucscbrowser
+from rnaseqlyze import transterm, gb2ptt
+from rnaseqlyze.ucscbrowser import BAMTrack, BigWigTrack, BigBedTrack
+from rnaseqlyze.core.entities import GalaxyDataset
 
 _stages = []
 def stage(method):
+    """
+    Just a small helper to collect the stages in the order defined.
+
+    To add a new stage, simply add a method to :class:`~WorkerStages`.
+    It will be automatically executed for all new analyses.
+    """
     _stages.append(method)
     return method
 
@@ -55,6 +70,13 @@ class WorkerStages(object):
     def bam_name(self):
         return "%s_%s" % (self.srr_name, self.analysis.org_accession)
 
+    @property
+    def coverage_name(self):
+        return self.bam_name + "-coverage"
+
+    @property
+    def hpterms_name(self):
+        return self.analysis.org_accession + "-hairpin-terminators"
 
     ##################################################################
     # Stages
@@ -73,9 +95,9 @@ class WorkerStages(object):
     def fetch_srr(self):
         # download if not already in cache
         if not os.path.exists(self.analysis.rnaseq_run.sra_path):
-            log.debug("transfering input file from sra")
+            self.log.debug("transfering input file from sra")
             self.analysis.rnaseq_run.download()
-            log.debug("done")
+            self.log.debug("done")
 
     @stage
     def convert_input_file(self):
@@ -167,19 +189,38 @@ class WorkerStages(object):
         http://genome.ucsc.edu/goldenPath/help/customTrack.html#SHARE
         """
 
-        if self.analysis.galaxy_ucsc_bam_track_id:
+        if self.analysis.galaxy_hgtext:
             return
+
+        tracks = []
+
+        # bam track (mapping)
         bam_url = "https://" + galaxy.hostname \
                     + galaxy.ucsc_bam_path_template \
-                        .format(dataset=self.analysis.galaxy_bam_id)
-        track_line = ucscbrowser.bam_track_line_template \
-                        .format(track_name="RNA-Seqlyze | %s" %
-                                self.bam_name, big_data_url=bam_url)
+                        .format(dataset=self.analysis.galaxy_bam.id)
+        tracks.append(BAMTrack(url=bam_url,
+                               name="RNA-Seqlyze | %s" % self.bam_name))
+
+        # bigwig track (coverage)
+        coverage_url = "https://" + galaxy.hostname \
+                        + galaxy.dataset_display_url_template \
+                            .format(dataset=self.analysis.galaxy_coverage.id)
+        tracks.append(BigWigTrack(url=coverage_url,
+                                  name="RNA-Seqlyze | %s" % self.coverage_name))
+
+        # bigbed track (terminators)
+        hpterms_url = "https://" + galaxy.hostname \
+                        + galaxy.dataset_display_url_template \
+                            .format(dataset=self.analysis.galaxy_hpterms.id)
+        tracks.append(BigBedTrack(url=hpterms_url,
+                                  name="RNA-Seqlyze | %s" % self.hpterms_name))
+
         track_file = StringIO()
-        track_file.write(track_line)
+        track_file.write('\n'.join(tracks))
         track_file.seek(0)
-        self.analysis.galaxy_ucsc_bam_track_id = \
+        self.analysis.galaxy_hg_custom_id = \
                     galaxy.upload(track_file, self.bam_name + ".txt")
+        self.session.commit()
 
     @stage
     def create_genbank_file(self):
@@ -224,7 +265,7 @@ class WorkerStages(object):
         SeqIO.write(record, xgb_file, "genbank")
 
 WorkerStages.members = _stages
-del stage, _stages
+del _stages
 
 class UnknownInputfileTypeException(Exception):
     pass

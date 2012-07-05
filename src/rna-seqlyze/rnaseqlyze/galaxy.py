@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 
 import os
 import json
+import ftplib
 import urllib
 import urllib2
 import lxml.html
@@ -118,7 +119,6 @@ def ftpupload(fileobj, filename):
     upload a file object to galaxy
     based on http://love-python.blogspot.com/2008/02/ftp-file-upload.html
     """
-    import os.path, ftplib
     log.debug("uploading file to ftp server")
     ftp = ftplib.FTP(hostname, email, password)
     ftp.storbinary('STOR ' + filename, fileobj)
@@ -130,10 +130,14 @@ def upload(fileobj, filename):
     # can't initialize this at module import time
     # because rnaseqlyze.xxx properties not initialized
     global rq_headers
+    try:
+        mail = rnaseqlyze.admin_email
+    except:
+        # rnaseqlyze not .configure()d
+        mail = os.getenv("USER") + "@" + os.uname()[1]
     rq_headers = {
         'User-Agent': "%s (version:%s / admin:%s)" % (
-            rnaseqlyze.project_name,
-            rnaseqlyze.__version__, rnaseqlyze.admin_email),
+            rnaseqlyze.project_name, rnaseqlyze.__version__, mail),
     #    'User-Agent': "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:13.0)" \
     #                  " Gecko/20100101 Firefox/13.0.1",
     }

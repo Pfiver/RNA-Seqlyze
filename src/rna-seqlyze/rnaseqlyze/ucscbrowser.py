@@ -19,15 +19,30 @@ import rnaseqlyze
 from rnaseqlyze.core import security
 # delay import because of a
 # circular import dependency ...
-#from rnaseqlyze.core.orm import UCSCOrganism
+#from rnaseqlyze.core.entities import UCSCOrganism
 
 cart_reset_url = "http://archaea.ucsc.edu/cgi-bin/cartReset"
 custom_track_url = "http://archaea.ucsc.edu/cgi-bin/hgTracks"
 custom_track_params = "?db={org_db}&hgt.customText={track_url}"
- 
-bam_track_line_template = 'track type="bam"' \
-                          ' name="{track_name}" bigDataUrl="{big_data_url}"'
 
+class BigDataTrack(str):
+    """
+    A UCSC "Big Data Track"
+
+    You should pass a 'name' and a 'url'
+    keyword argument to the constructor.
+    """
+    template = 'track type="{type} name="{name}" bigDataUrl="{url}"'
+    def __new__(self, **kwargs):
+        return str.__new__(self, template.format(type=self.type, **kwargs))
+
+class BAMTrack(BigDataTrack): type = "bam"
+class BigWigTrack(BigDataTrack): type = "bigwig"
+class BigBedTrack(BigDataTrack): type = "bigBed"
+
+bigdata_track_type = type('BigDataTrack', (),
+                          dict(bam='bam', bigwig='bigwig', bigbed='bigBed'))
+ 
 # FIXME:
 #    The org_list_default_dir = dirname(__file__)
 #    hack will not work if the distribution is installed
