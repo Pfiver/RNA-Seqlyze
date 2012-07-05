@@ -157,7 +157,7 @@ class kent(Part):
         a small subset of the included ulities and the easiest way to build
         those is to run "make" with custom arguments for each one of them
         """
-        for util in "bigWigToWig wigToBigWig".split(" "):
+        for util in "wigToBigWig bedToBigBed".split(" "):
             if subprocess.call("make -C src/utils/" + util, shell=True) != 0:
                 raise Exception("kent.install(): couldn't install '%s'" % util)
 
