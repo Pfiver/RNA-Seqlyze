@@ -156,21 +156,89 @@ class WorkerStages(object):
                     acc_path, self.analysis.inputfile_fqpath)
 
     @stage
+    def bam_to_wiggle_to_bigwig(self):
+        if exists(join(self.data_dir, "tophat-output", "accepted_hits.bam")) \
+           and not exists(join(self.data_dir, "coverage.bigwig")):
+            os.chdir(self.data_dir)
+            self.log_cmd("bam_to_wiggle.py", "-o", "coverage.bigwig",
+                                        "tophat-output/accepted_hits.bam")
+
+    @stage
+    def transterm_hp(self):
+
+        acc = self.analysis.org_accession
+        ptt_path = join(self.gb_data_dir, acc + ".ptt")
+        dummy_ptt_path = join(self.gb_data_dir, "chr.ptt")
+
+        if not exists(dummy_ptt_path):
+            os.symlink(acc + ".ptt", dummy_ptt_path)
+
+        if not exists(join(self.data_dir, ptt_path)):
+            self.log.debug("converting %s to ptt" % 
+                      self.analysis.genbankfile_path.split('/')[-1])
+            ptt_file = open(ptt_path, "w")
+            gb_file = open(self.analysis.genbankfile_path)
+            gb2ptt.gb2ptt(gb_file, ptt_file)
+            ptt_file.close()
+            gb_file.close()
+
+        if not exists(join(self.data_dir, "hpterminators.bed")):
+            os.chdir(self.data_dir)
+            self.log.debug("running transterm")
+
+            tt_out = open("transterm_hp.out", "w+")
+            transterm.run((self.analysis.fa_path,
+                           dummy_ptt_path), out=tt_out, err=self.logfile)
+            tt_out.seek(0)
+            bed_file = open("hpterminators.bed", "w")
+            transterm.fa2bed(tt_out, bed_file)
+            bed_file.close()
+            tt_out.close()
+
+            record = SeqIO.parse(open(self.analysis.fa_path),"fasta").next()
+            self.log.debug("'chromosome' length: %d", len(record.seq))
+
+            self.log.debug("running bedToBigBed")
+
+            chrs = open("chrom.sizes", "w")
+            chrs.write("chr %d" % len(record.seq))
+            chrs.close()
+            self.log_cmd("bedToBigBed",
+                    "hpterminators.bed", "chrom.sizes", "hpterminators.bigbed")
+
+
+    @stage
     def galaxy_upload(self):
-        if self.analysis.galaxy_bam_id:
-            return
-        bam_path = join(self.data_dir, 
-                         "tophat-output", "accepted_hits.bam")
+
         # FIXME: names are not unique on galaxy:
         # is "%s_%s" % (srr_name, self.analysis.org_accession) good enough ?
-        bam_file = open(bam_path)
-        self.log.info("uploading %s to galaxy server %s ..." % (
-                                 bam_path,           galaxy.hostname))
-        self.analysis.galaxy_bam_id = \
-                galaxy.upload(bam_file, self.bam_name)
-        self.log.info("done.")
-        bam_file.close()
-        self.session.commit()
+
+        if not self.analysis.galaxy_bam:
+            bam_path = join(self.data_dir, 
+                             "tophat-output", "accepted_hits.bam")
+            self.log.info("uploading accepted_hits.bam to galaxy")
+            self.analysis.galaxy_bam = GalaxyDataset(
+                    galaxy.upload(open(bam_path), self.bam_name))
+            self.log.info("...done - id: %s" % self.analysis.galaxy_bam.id)
+            self.session.commit()
+            return
+
+        if not self.analysis.galaxy_coverage:
+            coverage_path = join(self.data_dir, "coverage.bigwig")
+            self.log.info("uploading coverage.bigwig to galaxy")
+            self.analysis.galaxy_coverage = GalaxyDataset(
+                    galaxy.upload(open(coverage_path), self.coverage_name))
+            self.log.info("...done - id: %s" % self.analysis.galaxy_coverage.id)
+            self.session.commit()
+
+        if not self.analysis.galaxy_hpterms:
+            hpterms_path = join(self.data_dir, "hpterminators.bigbed")
+            self.log.info("uploading hpterminators.bigbed galaxy")
+            self.analysis.galaxy_hpterms = GalaxyDataset(
+                    galaxy.upload(open(hpterms_path), self.hpterms_name))
+            self.log.info("...done - id: %s" % self.analysis.galaxy_hpterms.id)
+            self.session.commit()
+
 
     @stage
     def create_and_upload_htg_custom_text(self):
