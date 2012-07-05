@@ -10,4 +10,5 @@
 	LIBEVENT_CFLAGS= LIBEVENT_LIBS=-levent \
 	PKG_CONFIG=true LDFLAGS=-L$HOME/.local/lib \
 	CFLAGS=$(echo -I$HOME/.local/include{,/ncurses}) \
-	./configure --prefix=$HOME/.local && make all install)
+	./configure --prefix=$HOME/.local &&
+		LD_RUN_PATH=$HOME/.local/lib make all install)
