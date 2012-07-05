@@ -62,7 +62,7 @@ from zope.sqlalchemy import ZopeTransactionExtension
 import rnaseqlyze
 project_name = rnaseqlyze.project_name + "-worker"
 
-from rnaseqlyze.core.orm import Analysis
+from rnaseqlyze.core.entities import Analysis
 from rnaseqlyze.worker.core import (
         Manager,
         ManagerBusyException,

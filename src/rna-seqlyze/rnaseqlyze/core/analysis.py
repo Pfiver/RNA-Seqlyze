@@ -6,13 +6,22 @@ import logging
 log = logging.getLogger(__name__)
 
 import os
+import datetime
 from urllib import quote
+
+from sqlalchemy import ForeignKey
+from sqlalchemy import Table, Column
+from sqlalchemy import Boolean, Integer, String, Text, DateTime
+from sqlalchemy.orm import relationship, backref, validates
+from sqlalchemy.orm.properties import RelationshipProperty
+from sqlalchemy.ext.declarative import declared_attr, declarative_base
 
 import rnaseqlyze
 from rnaseqlyze import galaxy
 from rnaseqlyze import ucscbrowser
+from rnaseqlyze.core.orm import Entity
 
-class AnalysisMixins(object):
+class AnalysisMethods(object):
     """
     Here the various analysis configurations are handled
     as transparently as possible. The properties should be
@@ -35,6 +44,48 @@ class AnalysisMixins(object):
             - in this file
     """
 
+    def __init__(self, **kwargs):
+        Entity.__init__(self, **kwargs)
+        self.creation_date = datetime.datetime.utcnow()
+
+        if not self.org_accession:
+            acc = os.path.basename(self.inputfile_name).rsplit(".")[0]
+            log.debug("setting org_accession to %s" % acc)
+            self.org_accession = acc
+                    
+
+    def create_data_dir(self):
+        if not os.path.isdir(self.data_dir):
+            os.makedirs(self.data_dir)
+
+    def create_gb_data_dir(self):
+        if self.gb_data_dir and not os.path.isdir(self.gb_data_dir):
+            os.makedirs(self.gb_data_dir)
+
+    # org_db and hg_url (which depends upon org_db) are not set
+    # as a db attribute, so old analyses where the organism was not
+    # known at creation time automatically get the right url set if the
+    # organism later on becomes available in the UCSC Browser
+
+    def get_hg_url(self, org_db):
+        if not self.galaxy_hgtext:
+            return
+        track_url = "https://" + galaxy.hostname \
+                    + galaxy.dataset_display_url_template \
+                        .format(dataset=self.galaxy_hgtext.id)
+        hg_url = ucscbrowser.custom_track_url + \
+                    ucscbrowser.custom_track_params.format(
+                        org_db=org_db, track_url=quote(track_url))
+        return hg_url
+
+    def get_galaxy_id(self, name):
+        for ds in self.galaxy_datasets:
+            if ds.name == name:
+                return ds
+
+
+class AnalysisProperties(object):
+
     @property
     def data_dir(self):
         return os.path.join(rnaseqlyze.analyses_path, str(self.id))
@@ -54,10 +105,13 @@ class AnalysisMixins(object):
     @property
     def genbankfile_path(self):
         if self.genbankfile_name:
-            gb_name = self.genbankfile_name
-            return os.path.join(self.data_dir, gb_name)
+            return os.path.join(self.data_dir, self.genbankfile_name)
         else:
             return os.path.join(self.gb_data_dir, self.org_accession + ".gb")
+
+    @property
+    def fa_path(self):
+        return self.genbankfile_path.rsplit('.', 1)[0] + ".fa"
 
     @property
     def xgenbankfile_path(self):
@@ -92,25 +146,38 @@ class AnalysisMixins(object):
         log.info("Header: %s" % lines[0])
         return "".join(lines)
 
-    @property
-    def hg_url(self):
-#        track_url = "http://" + galaxy.hostname \
-#                    + galaxy.ucsc_bam_track_template \
-#                        .format(dataset=self.galaxy_bam_id)
+    galaxy_stuff = "hgtext bam coverage hpterms".split()
 
-        track_url = "https://" + galaxy.hostname \
-                    + galaxy.dataset_display_url_template \
-                        .format(dataset=self.galaxy_ucsc_bam_track_id)
+    # declare an assignable 'galaxy_xxx' attribute for all the galaxy_stuff
+    for x in galaxy_stuff:
+        join = "and_(GalaxyDataset.type == '%s', \
+                     Analysis.id == GalaxyDataset.analysis_id)" % x
+        rel = 'lambda cls: relationship(\
+                    "GalaxyDataset", uselist=False, primaryjoin="%s")' % join
+        locals()["galaxy_" + x] = declared_attr(eval(rel))
 
-        hg_url = ucscbrowser.custom_track_url + \
-                    ucscbrowser.custom_track_params.format(
-                        org_db="sulSol1", track_url=quote(track_url))
-        return hg_url
+    # validator that sets the right type when assigning
+    @validates(*("galaxy_" + x for x in galaxy_stuff))
+    def set_bam(self, attr, dataset):
+        dataset.type=attr[7:]
+        return dataset
 
-    def create_data_dir(self):
-        if not os.path.isdir(self.data_dir):
-            os.makedirs(self.data_dir)
+class AnalysisValidators(object):
+    @validates('org_accession')
+    def validate_org_accession(self, attr, acc):
+        security.check_valid_filename(acc)
+        return acc.upper()
 
-    def create_gb_data_dir(self):
-        if self.gb_data_dir and not os.path.isdir(self.gb_data_dir):
-            os.makedirs(self.gb_data_dir)
+    @validates('strandspecific', 'pairended')
+    def validate_boolean(self, attr, val):
+        return val and True or False
+
+    @validates('inputfile_name', 'genbankfile_name')
+    def validate_x_file_name(self, attr, name):
+        if '\\' in name:
+            name = name.rsplit('\\', 1)[1]
+        security.check_valid_filename(name)
+        if name.find('.') < 0:
+            raise Exception("Please make sure your input file has a"
+                            " (meaningful) extension, like .fastq or .sra")
+        return name

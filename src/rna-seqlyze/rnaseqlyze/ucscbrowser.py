@@ -39,7 +39,7 @@ json_links_file_name = "ucsc-wp-data.html"
 
 def get_org_list():
     global UCSCOrganism
-    from rnaseqlyze.core.orm import UCSCOrganism
+    from rnaseqlyze.core.entities import UCSCOrganism
 
     global org_list_cache_dir
     if not hasattr(rnaseqlyze, 'ucsc_org_list_cache_dir'):

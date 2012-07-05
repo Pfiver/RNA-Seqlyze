@@ -6,8 +6,7 @@ import urllib2
 
 import rnaseqlyze
 from rnaseqlyze.core import security
-from rnaseqlyze.core.orm import Analysis, User, RNASeqRun, UploadSession
-
+from rnaseqlyze.core.entities import Analysis, User, RNASeqRun, UploadSession
 def get_upload_session(db_session):
     sess = UploadSession()
     db_session.add(sess)

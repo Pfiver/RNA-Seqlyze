@@ -10,30 +10,17 @@ from os import path
 from urllib2 import urlopen
 from shutil import copyfileobj
 
+from sqlalchemy.orm import validates
+
 import rnaseqlyze
 
 srr_url_template = "http://ftp-private.ncbi.nlm.nih.gov" \
         "/sra/sra-instant/reads/ByRun/sra/SRR/{srr:.6}/{srr}/{srr}.sra"
 # e.g.  "/sra/sra-instant/reads/ByRun/sra/SRR/SRR000/SRR000001/SRR000001.sra"
 
-class RNASeqRunMixins(object):
-
-    @property
-    def data_dir(self):
-        return path.join(rnaseqlyze.shared_data_path, self.srr)
-
-    @property
-    def sra_path(self):
-        return path.join(self.data_dir, self.sra_name)
-
-    @property
-    def sra_name(self):
-        return self.srr + ".sra"
-
-    def create_directories(self):
-        if not os.path.isdir(self.data_dir):
-            os.makedirs(self.data_dir)
-
+class RNASeqRunMethods(object):
+    def __init__(self, srr):
+        self.srr = srr
     def download(self):
         try:
             log.debug("fetching " + self.srr)
@@ -52,3 +39,33 @@ class RNASeqRunMixins(object):
             if local:
                 local.close()
         log.debug("done")
+
+class RNASeqRunProperties(object):
+    @property
+    def data_dir(self):
+        return path.join(rnaseqlyze.shared_data_path, self.srr)
+
+    @property
+    def sra_path(self):
+        return path.join(self.data_dir, self.sra_name)
+
+    @property
+    def sra_name(self):
+        return self.srr + ".sra"
+
+    def create_directories(self):
+        if not os.path.isdir(self.data_dir):
+            os.makedirs(self.data_dir)
+
+class RNASeqRunValidators(object):
+    @validates('srr')
+    def check_srr(self, key, srr):
+        import string
+        assert len(srr) == 9
+        assert srr[:3] == 'SRR'
+        assert set(srr[3:]) < set(string.digits)
+        # ... what a powerful language python is! :-)
+        # http://docs.python.org/library/stdtypes.html#set
+        # http://docs.python.org/library/string.html#string-constants
+        return srr.upper()
+

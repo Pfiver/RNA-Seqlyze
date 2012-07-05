@@ -69,7 +69,7 @@ from sqlalchemy.orm import sessionmaker
 import rnaseqlyze
 import rnaseqlyze.web
 import rnaseqlyze.worker
-from rnaseqlyze.core.orm import Entity
+from rnaseqlyze.core.entities import Entity
 
 Session = sessionmaker()
 

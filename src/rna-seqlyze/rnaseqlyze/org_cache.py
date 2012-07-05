@@ -13,7 +13,7 @@ from pkg_resources import resource_stream
 from Bio import Entrez
 
 from rnaseqlyze import ucscbrowser
-from rnaseqlyze.core.orm import UCSCOrganism
+from rnaseqlyze.core.entities import UCSCOrganism
 
 prokaryotes_tsv = "refseq-data/prokaryotes.txt"
 

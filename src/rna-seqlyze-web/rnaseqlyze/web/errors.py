@@ -17,7 +17,7 @@ from sqlalchemy.exc import DBAPIError
 import rnaseqlyze
 from rnaseqlyze.web import DBSession, DBSession_unmanaged
 from rnaseqlyze.core import service
-from rnaseqlyze.core.orm import Analysis
+from rnaseqlyze.core.entities import Analysis
 
 @view_config(context=Exception)
 def error(request):

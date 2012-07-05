@@ -27,7 +27,7 @@ from pyramid.view import view_config
 
 from rnaseqlyze.web import DBSession
 from rnaseqlyze.core import service
-from rnaseqlyze.core.orm import UploadSession
+from rnaseqlyze.core.entities import UploadSession
 
 @view_config(route_name='upload', request_method='POST', renderer="json")
 def upload(request):

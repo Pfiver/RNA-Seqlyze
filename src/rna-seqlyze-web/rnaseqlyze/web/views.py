@@ -17,7 +17,7 @@ from sqlalchemy.exc import DBAPIError
 import rnaseqlyze
 from rnaseqlyze.web import DBSession, DBSession_unmanaged
 from rnaseqlyze.core import service
-from rnaseqlyze.core.orm import Analysis
+from rnaseqlyze.core.entities import Analysis, UCSCOrganism
 
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):

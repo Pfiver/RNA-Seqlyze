@@ -17,8 +17,7 @@ from sqlalchemy.orm import sessionmaker
 import rnaseqlyze
 from rnaseqlyze import efetch
 from .stages import WorkerStages
-from rnaseqlyze.core.orm import Analysis
-
+from rnaseqlyze.core.entities import Analysis
 DBSession = sessionmaker()
 
 class Manager(object):
