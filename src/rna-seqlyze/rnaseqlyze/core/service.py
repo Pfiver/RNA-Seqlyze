@@ -42,8 +42,8 @@ def get_uploadfile(db_session, session, name, type):
     # inputfile_name -> Short Reads in SRA or FASTQ format
     # genabnkfile_name -> Organism genbank file
     #=if session.analysis.inputfile_name:
-    if getattr(session.analysis, typename):
-        # we land here if a user uploads
+    if getattr(session.analysis, type + '_uploaded'):
+        # you land here if a user uploads
         # more than one file per type
         # this is not intended, BUT
         # these are the interwebs!
@@ -83,7 +83,7 @@ def get_analysis(db_session, attributes):
         else:
             try:
                 log.debug("creating new RNASeqRun")
-                rnaseq_run = RNASeqRun(attributes['rnaseq_run'])
+                rnaseq_run = RNASeqRun(srr=attributes['rnaseq_run'])
                 attributes['rnaseq_run'] = rnaseq_run
                 rnaseq_run.create_directories()
                 db_session.add(rnaseq_run)

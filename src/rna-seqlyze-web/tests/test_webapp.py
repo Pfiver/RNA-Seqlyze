@@ -26,4 +26,4 @@ def most_basic_test():
     request.matchdict['id'] = "1"
     info = display(request)
     assert_equal(info['analysis'].id, 1)
-    assert_equal(info['analysis'].fa_name, "NC_1234.fa")
+    assert_equal(info['analysis'].genbankfile_fa_name, "NC_1234.fa")

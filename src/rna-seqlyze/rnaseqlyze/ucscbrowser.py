@@ -32,17 +32,15 @@ class BigDataTrack(str):
     You should pass a 'name' and a 'url'
     keyword argument to the constructor.
     """
+
     template = 'track type="{type} name="{name}" bigDataUrl="{url}"'
-    def __new__(self, **kwargs):
-        return str.__new__(self, template.format(type=self.type, **kwargs))
+
+    __new__ = lambda self, **kwargs: template.format(type=self.type, **kwargs)
 
 class BAMTrack(BigDataTrack): type = "bam"
 class BigWigTrack(BigDataTrack): type = "bigwig"
 class BigBedTrack(BigDataTrack): type = "bigBed"
 
-bigdata_track_type = type('BigDataTrack', (),
-                          dict(bam='bam', bigwig='bigwig', bigbed='bigBed'))
- 
 # FIXME:
 #    The org_list_default_dir = dirname(__file__)
 #    hack will not work if the distribution is installed

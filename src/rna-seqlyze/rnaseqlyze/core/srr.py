@@ -18,9 +18,7 @@ srr_url_template = "http://ftp-private.ncbi.nlm.nih.gov" \
         "/sra/sra-instant/reads/ByRun/sra/SRR/{srr:.6}/{srr}/{srr}.sra"
 # e.g.  "/sra/sra-instant/reads/ByRun/sra/SRR/SRR000/SRR000001/SRR000001.sra"
 
-class RNASeqRunMethods(object):
-    def __init__(self, srr):
-        self.srr = srr
+class Methods(object):
     def download(self):
         try:
             log.debug("fetching " + self.srr)
@@ -40,7 +38,7 @@ class RNASeqRunMethods(object):
                 local.close()
         log.debug("done")
 
-class RNASeqRunProperties(object):
+class Properties(object):
     @property
     def data_dir(self):
         return path.join(rnaseqlyze.shared_data_path, self.srr)
@@ -57,7 +55,7 @@ class RNASeqRunProperties(object):
         if not os.path.isdir(self.data_dir):
             os.makedirs(self.data_dir)
 
-class RNASeqRunValidators(object):
+class Validators(object):
     @validates('srr')
     def check_srr(self, key, srr):
         import string
@@ -69,3 +67,5 @@ class RNASeqRunValidators(object):
         # http://docs.python.org/library/string.html#string-constants
         return srr.upper()
 
+class Mixins(Methods, Properties, Validators):
+    pass

@@ -1,39 +1,16 @@
 """
-Database Entities
+SQLAlchemy Database Entities
 
-All Entities that don't have an explicit constructor use the default
-one defined in :mod:`orm`, which assumes that the first non-keyword
-argument is the `id`. This feature is used for example in
-:meth:`.stages.AnalysisStages.galaxy_upload` to create
-:class:`GalaxyDataset`s.
+A nice tutorial showing how everything works is `here
+    <http://docs.sqlalchemy.org/en/latest/orm/tutorial.html>`_.
 """
 
-from rnaseqlyze.core.orm import Entity
-from rnaseqlyze.core.analysis import (
-        AnalysisMethods,
-        AnalysisProperties,
-        AnalysisValidators,
-)
-from rnaseqlyze.core.sra import (
-        RNASeqRunMethods,
-        RNASeqRunProperties,
-        RNASeqRunValidators,
-)
+from rnaseqlyze.core.orm import *
 
-from sqlalchemy import (
-        ForeignKey,
-        Table, Column,
-        Boolean, Integer,
-        String, Text, DateTime
-)
-from sqlalchemy.orm import relationship, backref
+class Analysis(AnalysisMixins, Entity):
 
-class Analysis(AnalysisMethods,
-               AnalysisProperties,
-               AnalysisValidators, Entity):
-
-    # The order of superclasses might matter ...
-    # AnalysisMethods.__init__ calls Entity.__init__ ...
+    # The order of superclasses matters!
+    # AnalysisMethods.__init__ calls Entity.__init__
 
     """
     The central entity.
@@ -46,9 +23,9 @@ class Analysis(AnalysisMethods,
     org_gid             = Column(Integer)  # Organisms Genebank/Entrez gid
     org_accession       = Column(String)   # Organisms Genebank accession number
 
-    inputfile_name      = Column(String)
+    _inputfile_name     = Column("inputfile_name", String)
     inputfile_type      = Column(String)
-    genbankfile_name    = Column(String)
+    _genbankfile_name   = Column("genbankfile_name", String)
 
     strandspecific      = Column(Boolean)
     pairended           = Column(Boolean)
@@ -106,9 +83,7 @@ class RNASeqExperiment(Entity): # stub
     srp         = relationship(RNASeqStudy, backref=backref("experiments"))
     # runs      = `backref` from RNASeqRun
 
-class RNASeqRun(RNASeqRunMethods,
-                RNASeqRunProperties,
-                RNASeqRunValidators, Entity):
+class RNASeqRun(RNASeqRunMixins, Entity):
     """
     Constitutes an SRA "SRR" == SRA Run
     """

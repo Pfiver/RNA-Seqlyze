@@ -6,6 +6,7 @@ import logging
 log = logging.getLogger(__name__)
 
 import os
+from os.path import join
 import datetime
 from urllib import quote
 
@@ -20,9 +21,8 @@ import rnaseqlyze
 from rnaseqlyze import galaxy
 from rnaseqlyze import ucscbrowser
 from rnaseqlyze.core import security
-from rnaseqlyze.core.orm import Entity
 
-class AnalysisMethods(object):
+class Methods(object):
     """
     Here the various analysis configurations are handled
     as transparently as possible. The properties should be
@@ -45,15 +45,9 @@ class AnalysisMethods(object):
             - in this file
     """
 
-    def __init__(self, **kwargs):
-        Entity.__init__(self, **kwargs)
+    def __xinit__(self, **kwargs):
+        super(Methods, self).__init__(**kwargs)
         self.creation_date = datetime.datetime.utcnow()
-
-        if not self.org_accession:
-            acc = os.path.basename(self.inputfile_name).rsplit(".")[0]
-            log.debug("setting org_accession to %s" % acc)
-            self.org_accession = acc
-                    
 
     def create_data_dir(self):
         if not os.path.isdir(self.data_dir):
@@ -84,14 +78,7 @@ class AnalysisMethods(object):
             if ds.name == name:
                 return ds
 
-
-from os.path import join
-from rnaseqlyze import (
-        analyses_path,
-        shared_data_path,
-)
-
-class AnalysisProperties(object):
+class Properties(object):
 
     """
     .. note::
@@ -104,43 +91,45 @@ class AnalysisProperties(object):
 # -------------------------------
 
     @property
-    def input_uploaded(self):
-        return self.inputfile_name and True
+    def inputfile_uploaded(self):
+        return self._inputfile_name and True
 
     @property
-    def genbank_uploaded(self)
-        return self.genbankfile_name and True
+    def genbankfile_uploaded(self):
+        return self._genbankfile_name and True
 
 # directories
 # -----------
 
     @property
     def data_dir(self):
-        return join(analyses_path, str(self.id))
+        return join(rnaseqlyze.analyses_path, str(self.id))
 
     @property
     def input_data_dir(self):
-        if self.input_uploaded:
+        if self.inputfile_uploaded:
             return self.data_dir
         else:
             return self.rnaseq_run.data_dir
 
     @property
     def genbank_data_dir(self):
-        if self.genbank_uploaded:
+        if self.genbankfile_uploaded:
             return self.data_dir
         else:
-            return join(shared_data_path, self.org_accession)
+            return join(rnaseqlyze.shared_data_path, self.org_accession)
 
 # short reads files
 # -----------------
 
     @property
     def inputfile_name(self):
-        if self.input_uploaded:
-            return self.inputfile_name
-        else:
-            return self.rnaseq_run.srr + ".sra"
+        return self._inputfile_name \
+                or self.rnaseq_run and self.rnaseq_run.srr + ".sra"
+
+    @inputfile_name.setter
+    def inputfile_name(self, value):
+        self._inputfile_name = value
 
     @property
     def inputfile_path(self):
@@ -171,10 +160,12 @@ class AnalysisProperties(object):
 
     @property
     def genbankfile_name(self):
-        if self.gb_uploaded:
-            return self.genbankfile_name
-        else:
-            return self.org_accession + ".gb"
+        return self._genbankfile_name \
+                or self.org_accession and self.org_accession + ".gb"
+
+    @genbankfile_name.setter
+    def genbankfile_name(self, value):
+        self._genbankfile_name = value
 
     @property
     def genbankfile_path(self):
@@ -205,14 +196,14 @@ class AnalysisProperties(object):
 
     galaxy_stuff = "hgtext bam coverage hpterms".split()
 
-    for x in galaxy_stuff: exec \
-    """
+    for x in galaxy_stuff: exec """if True: # just to enable indentedation ...
+
         @declared_attr
         def galaxy_%s(self):
             return relationship("GalaxyDataset",
-                                 uselist=False, primaryjoin="%s")
-    """ % (x,
-                "and_(GalaxyDataset.type == '%s',"
+                                 uselist=False, primaryjoin="%s")""" % (x,
+
+                "and_(GalaxyDataset.type == '%s', "
                      "Analysis.id == GalaxyDataset.analysis_id)" % x)
 
     @validates(*("galaxy_" + x for x in galaxy_stuff))
@@ -220,7 +211,7 @@ class AnalysisProperties(object):
         dataset.type=attr[7:]
         return dataset
 
-class AnalysisValidators(object):
+class Validators(object):
     @validates('org_accession')
     def validate_org_accession(self, attr, acc):
         security.check_valid_filename(acc)
@@ -239,3 +230,6 @@ class AnalysisValidators(object):
             raise Exception("Please make sure your input file has a"
                             " (meaningful) extension, like .fastq or .sra")
         return name
+
+class Mixins(Methods, Properties, Validators):
+    pass
