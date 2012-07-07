@@ -5,10 +5,12 @@ RNA-Seqlyze Worker Stages
 """
 
 import os
-from os.path import join, exists, isdir
+from os.path import join, exists, isdir, relpath
 from subprocess import Popen, PIPE
 from StringIO import StringIO
 from urllib import quote
+
+import pysam
 
 from Bio import SeqIO
 from Bio.SeqFeature import \
@@ -20,6 +22,11 @@ from rnaseqlyze import ucscbrowser
 from rnaseqlyze import transterm, gb2ptt
 from rnaseqlyze.ucscbrowser import BAMTrack, BigWigTrack, BigBedTrack
 from rnaseqlyze.core.entities import GalaxyDataset
+
+
+class Operon(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
 
 _stages = []
 def stage(method):
@@ -33,14 +40,10 @@ def stage(method):
     return method
 
 class WorkerStages(object):
-
     """
     Available attributes:
 
         - self.analysis
-        - self.data_dir = self.analysis.data_dir
-        - self.gb_data_dir = self.analysis.gb_data_dir
-        - self.input_data_dir = self.analysis.input_data_dir
         - self.session = DBSession(bind=create_engine(rnaseqlyze.db_url))
 
     .. note::
@@ -50,7 +53,7 @@ class WorkerStages(object):
 
     """
 
-    ######################################################################
+    ############################################################################
     # Utility Methods & Properties
 
     def log_cmd(self, *cmd):
@@ -61,24 +64,26 @@ class WorkerStages(object):
 
     @property
     def srr_name(self):
-        if self.analysis.inputfile_name: # uploaded input file
-            return self.analysis.inputfile_name.rsplit(".", 1)[0]
-        else: # input is an SRR Indentifier
-            return self.analysis.rnaseq_run.srr
+        return self.analysis.inputfile_base_name
 
     @property
     def bam_name(self):
-        return "%s_%s" % (self.srr_name, self.analysis.org_accession)
+        return "%s %s Mapping" % (self.genbank_record.id, self.srr_name)
 
     @property
     def coverage_name(self):
-        return self.bam_name + "-coverage"
+        return "%s %s Coverage" % (self.genbank_record.id, self.srr_name)
 
     @property
-    def hpterms_name(self):
-        return self.analysis.org_accession + "-hairpin-terminators"
+    def hp_terms_name(self):
+        return "%s Hairpin Terminators" % (self.genbank_record.id,)
 
-    ##################################################################
+    @property
+    def pr_operons_name(self):
+        return "%s Predicted Operons" % (self.genbank_record.id,)
+
+    #
+    ############################################################################
     # Stages
 
     @stage
@@ -101,147 +106,234 @@ class WorkerStages(object):
 
     @stage
     def convert_input_file(self):
-        fq_path = self.analysis.inputfile_fqpath
-        if not exists(fq_path):
-            os.chdir(self.input_data_dir)
-            if self.analysis.inputfile_name:
-                sra_name = self.analysis.inputfile_name
-            else:
-                sra_name = self.analysis.rnaseq_run.sra_name
-            self.log.info("converting %s" % sra_name)
-            self.log_cmd("fastq-dump", sra_name)
+        if not exists(self.analysis.inputfile_fq_path):
+            self.log.debug("creating %s" % self.analysis.inputfile_fq_path)
+            os.chdir(self.analysis.input_data_dir)
+            self.log_cmd("fastq-dump", self.analysis.inputfile_name)
 
     @stage
-    def fetch_gb(self):
-        acc = self.analysis.org_accession
-        self.analysis.create_gb_data_dir()
-        out_path = join(self.gb_data_dir, acc + ".gb")
-        if not exists(out_path):
-            self.log.info("Fetching '%s' from entrez..." % acc)
-            # TODO: do this earlier
-            gb_id = efetch.get_nc_id(acc)
-            efetch.fetch_nc_gb(gb_id, open(out_path, "w"))
+    def fetch_genbank_file(self):
+        if not exists(self.analysis.genbankfile_path):
+            if not exists(self.analysis.genbank_data_dir):
+                os.makedirs(self.analysis.genbank_data_dir)
+            self.log.info("Fetching '%s' from entrez..." %
+                                     self.analysis.org_accession)
+            gb_id = efetch.get_nc_id(self.analysis.org_accession)
+            efetch.fetch_nc_gb(gb_id, open(self.analysis.genbankfile_path, "w"))
             self.log.info("...done")
 
     @stage
+    def read_genbank_file(self):
+        self.genbank_record = SeqIO.parse(open(self.analysis \
+                                    .genbankfile_path), "genbank").next()
+        ngenes = sum(1 for f in self.genbank_record.features
+                       if f.type == 'gene')
+        self.log.info("genbank file lists %d genes" % ngenes)
+
+    @stage
     def gb2fasta(self):
-        acc = self.analysis.org_accession
-        gb_path = join(self.gb_data_dir, acc + ".gb")
-        fa_path = join(self.gb_data_dir, acc + ".fa")
-        if not exists(fa_path):
-            self.log.info("Converting '%s' to fasta format..." % acc)
-            record = SeqIO.parse(open(gb_path), "genbank").next()
+        if not exists(self.analysis.genbankfile_fa_path):
+            self.log.info("Converting '%s' to fasta format..." %
+                    self.analysis.genbankfile_path)
+            saved_id = record.id
             record.id = "chr" # required (!) for ucsc browser
-            SeqIO.write(record, open(fa_path, "w"), "fasta")
+            SeqIO.write(record, open(
+                self.analysis.genbankfile_fa_path, "w"), "fasta")
+            record.id = saved_id
 
     @stage
     def bowtie_build(self):
-        acc = self.analysis.org_accession
-        bt2_path = join(self.gb_data_dir, acc + ".1.bt2")
-        if not exists(bt2_path):
-            os.chdir(self.gb_data_dir)
-            self.log.info("bowtie2-build %s" % acc)
-            self.log_cmd("bowtie2-build", acc + ".fa", acc)
+        if not exists(join(self.analysis.genbank_data_dir,
+                           self.analysis.genbankfile_base_name + ".1.bt2")):
+            os.chdir(self.analysis.genbank_data_dir)
+            self.log_cmd("bowtie2-build",
+                            self.analysis.genbankfile_fa_name,
+                            self.analysis.genbankfile_base_name)
 
     @stage
     def tophat(self):
-        acc = self.analysis.org_accession
-        if not exists(join(self.data_dir,
-                "tophat-output", "accepted_hits.bam")):
-            os.chdir(self.data_dir)
+        if not exists(join(self.analysis.data_dir,
+                           "tophat-output", "accepted_hits.bam")):
+            os.chdir(self.analysis.data_dir)
             n_cpus = os.sysconf("SC_NPROCESSORS_ONLN")
-            acc_path = join(self.gb_data_dir, acc)
             self.log_cmd("tophat", "-p", str(n_cpus),
                     "-o", "tophat-output",
-                    acc_path, self.analysis.inputfile_fqpath)
+                    relpath(join(self.analysis.genbank_data_dir,
+                                 self.analysis.genbankfile_base_name)),
+                    relpath(self.analysis.inputfile_fq_path))
 
     @stage
-    def bam_to_wiggle_to_bigwig(self):
-        if exists(join(self.data_dir, "tophat-output", "accepted_hits.bam")) \
-           and not exists(join(self.data_dir, "coverage.bigwig")):
-            os.chdir(self.data_dir)
+    def bam_to_bigwig(self):
+        if exists(join(self.analysis.data_dir,
+                       "tophat-output", "accepted_hits.bam")) \
+           and not exists(join(self.analysis.data_dir, "coverage.bigwig")):
+            os.chdir(self.analysis.data_dir)
+            # the script automatically converts it's
+            # output to bigwig if it finds kent's wigToBigWig
             self.log_cmd("bam_to_wiggle.py", "-o", "coverage.bigwig",
                                         "tophat-output/accepted_hits.bam")
 
     @stage
     def transterm_hp(self):
-
-        acc = self.analysis.org_accession
-        ptt_path = join(self.gb_data_dir, acc + ".ptt")
-        dummy_ptt_path = join(self.gb_data_dir, "chr.ptt")
+        ptt_name = self.genbank_record.id + ".ptt"
+        ptt_path = join(self.analysis.genbank_data_dir, ptt_name)
+        dummy_ptt_path = join(self.analysis.genbank_data_dir, "chr.ptt")
 
         if not exists(dummy_ptt_path):
-            os.symlink(acc + ".ptt", dummy_ptt_path)
+            os.symlink(ptt_name, dummy_ptt_path)
 
-        if not exists(join(self.data_dir, ptt_path)):
+        if not exists(join(self.analysis.data_dir, ptt_path)):
             self.log.debug("converting %s to ptt" % 
-                      self.analysis.genbankfile_path.split('/')[-1])
+                                       self.analysis.genbankfile_name)
             ptt_file = open(ptt_path, "w")
             gb_file = open(self.analysis.genbankfile_path)
             gb2ptt.gb2ptt(gb_file, ptt_file)
             ptt_file.close()
             gb_file.close()
 
-        if not exists(join(self.data_dir, "hpterminators.bed")):
-            os.chdir(self.data_dir)
+        if not exists(join(self.analysis.data_dir, "hp_terminators.bigbed")):
+            os.chdir(self.analysis.data_dir)
             self.log.debug("running transterm")
 
             tt_out = open("transterm_hp.out", "w+")
-            transterm.run((self.analysis.fa_path,
-                           dummy_ptt_path), out=tt_out, err=self.logfile)
+            # --min-conf=n n is the cut-off confidence value,
+            #              between 0 and 100, the default is 76
+            tt_args = ("--min-conf=47",
+                       self.analysis.genbankfile_fa_path, dummy_ptt_path)
+            transterm.run(tt_args, out=tt_out, err=self.logfile)
             tt_out.seek(0)
-            bed_file = open("hpterminators.bed", "w")
-            transterm.fa2bed(tt_out, bed_file)
+
+            self.hp_terminators = list(transterm.iterator(tt_out))
+            tt_out.seek(0)
+            self.log.info("found {0} possible hairpin terminators"
+                                     .format(len(self.hp_terminators)))
+
+            bed_file = open("hp_terminators.bed", "w")
+            transterm.tt2bed(tt_out, bed_file)
             bed_file.close()
             tt_out.close()
-
-            record = SeqIO.parse(open(self.analysis.fa_path),"fasta").next()
-            self.log.debug("'chromosome' length: %d", len(record.seq))
 
             self.log.debug("running bedToBigBed")
 
             chrs = open("chrom.sizes", "w")
-            chrs.write("chr %d" % len(record.seq))
+            chrs.write("chr %d" % len(self.genbank_record.seq))
             chrs.close()
-            self.log_cmd("bedToBigBed",
-                    "hpterminators.bed", "chrom.sizes", "hpterminators.bigbed")
-
+            self.log_cmd("bedToBigBed", "hp_terminators.bed",
+                             "chrom.sizes", "hp_terminators.bigbed")
 
     @stage
-    def galaxy_upload(self):
+    def predict_operons(self):
+        bam_path = join(join(self.analysis.data_dir,
+                        "tophat-output", "accepted_hits.bam"))
+        if not exists(bam_path + ".bai"):
+            pysam.index(bam_file)
+
+        self.max = 0
+        self.covered = 0
+        self.coverage = [0] * len(self.genbank_record.seq)
+
+        sam_reader = pysam.Samfile(bam_path, "rb")
+        chrom, length = sam_reader.references[0], sam_reader.lengths[0]
+
+        assert chrom == "chr" and length == len(self.genbank_record.seq), (
+                "Something went badly wrong"
+                " -- the bam track or genbank file cold be corrupted...")
+
+        for base in sam_reader.pileup(chrom, 0, length):
+            self.covered += 1
+            if base.n > self.max:
+                self.max = base.n
+            self.coverage[base.pos] = base.n
+
+        if not self.covered:
+            raise Exception("Not a valid bam file")
+
+        self.log.debug("maximum coverage: %d" % self.max)
+        self.log.debug("number of bases covered by short reads: %d/%d" % (
+                                    self.covered, len(self.genbank_record.seq)))
+
+
+        # available here:
+        # ---------------
+        #
+        # - self.genbank_record: Biopython SeqIO.parse()d genbank file
+        #
+        # - self.coverage: [n,n,n,n,...] / len = len(self.genbank_record.seq)
+        #
+        # - self.hpterminators: ((id, begin, end, strand, confidence), ...)
+        #                         str, str, str, str (1/-), int
+        #
+
+        self.operons = Operon(begin=0, end=100, strand=1, confidence=10),
+        self.operons = Operon(begin=200, end=300, strand=1, confidence=50),
+        self.operons = Operon(begin=400, end=500, strand=1, confidence=100),
+
+    @stage
+    def create_operon_track(self):
+        track_name = "rna-seqlyze-operon_predictions"
+        os.chdir(self.analysis.data_dir)
+        if exists(track_name + ".bigbed"):
+            return
+
+        bed_file = open(track_name + ".bed", "w")
+        for i, o in enumerate(self.operons):
+            begin, end = str(o.begin), str(o.end)
+            rgb_color = ','.join((str(100 - int(o.confidence)),)*3)
+            print >> bed_file, '\t'.join((
+                'chr', begin, end,
+                'OPERON_%d' % i, str(o.confidence),
+                '+' if o.strand > 0 else '-', begin, end, rgb_color
+            ))
+        bed_file.close()
+
+        # chrom_sizes already generated during "transterm_hp"
+        self.log_cmd("bedToBigBed", track_name + ".bed",
+                         "chrom.sizes", track_name + ".bigbed")
+
+    @stage
+    def upload_track_data(self):
 
         # FIXME: names are not unique on galaxy:
         # is "%s_%s" % (srr_name, self.analysis.org_accession) good enough ?
 
         if not self.analysis.galaxy_bam:
-            bam_path = join(self.data_dir, 
+            bam_path = join(self.analysis.data_dir, 
                              "tophat-output", "accepted_hits.bam")
             self.log.info("uploading accepted_hits.bam to galaxy")
             self.analysis.galaxy_bam = GalaxyDataset(
-                    galaxy.upload(open(bam_path), self.bam_name))
+                id=galaxy.upload(open(bam_path), self.bam_name))
             self.log.info("...done - id: %s" % self.analysis.galaxy_bam.id)
             self.session.commit()
-            return
 
         if not self.analysis.galaxy_coverage:
-            coverage_path = join(self.data_dir, "coverage.bigwig")
+            coverage_path = join(self.analysis.data_dir, "coverage.bigwig")
             self.log.info("uploading coverage.bigwig to galaxy")
             self.analysis.galaxy_coverage = GalaxyDataset(
-                    galaxy.upload(open(coverage_path), self.coverage_name))
+                id=galaxy.upload(open(coverage_path), self.coverage_name))
             self.log.info("...done - id: %s" % self.analysis.galaxy_coverage.id)
             self.session.commit()
 
-        if not self.analysis.galaxy_hpterms:
-            hpterms_path = join(self.data_dir, "hpterminators.bigbed")
-            self.log.info("uploading hpterminators.bigbed galaxy")
-            self.analysis.galaxy_hpterms = GalaxyDataset(
-                    galaxy.upload(open(hpterms_path), self.hpterms_name))
-            self.log.info("...done - id: %s" % self.analysis.galaxy_hpterms.id)
+        if not self.analysis.galaxy_hp_terms:
+            hp_terms_path = join(self.analysis.data_dir,
+                                 "hp_terminators.bigbed")
+            self.log.info("uploading hp_terminators.bigbed to galaxy")
+            self.analysis.galaxy_hp_terms = GalaxyDataset(
+                id=galaxy.upload(open(hp_terms_path), self.hp_terms_name))
+            self.log.info("...done - id: %s" % self.analysis.galaxy_hp_terms.id)
             self.session.commit()
 
+        if not self.analysis.galaxy_pr_operons:
+            track_filename = "rna-seqlyze-operon_predictions.bigbed"
+            pr_operons_path = join(self.analysis.data_dir, track_filename)
+            self.log.info("uploading %s to galaxy" % track_filename)
+            self.analysis.galaxy_pr_operons = GalaxyDataset(
+                id=galaxy.upload(open(pr_operons_path), self.pr_operons_name))
+            self.log.info("...done - id: %s" %
+                                         self.analysis.galaxy_pr_operons.id)
+            self.session.commit()
 
     @stage
-    def create_and_upload_htg_custom_text(self):
+    def create_and_upload_hg_text(self):
         """
         ``hgt.customText`` is a paremeter of the UCSC
         "hgTracks" genome browser application that makes it
@@ -257,7 +349,7 @@ class WorkerStages(object):
         http://genome.ucsc.edu/goldenPath/help/customTrack.html#SHARE
         """
 
-        if self.analysis.galaxy_hgtext:
+        if self.analysis.galaxy_hg_text:
             return
 
         tracks = []
@@ -277,17 +369,27 @@ class WorkerStages(object):
                                   name="RNA-Seqlyze | %s" % self.coverage_name))
 
         # bigbed track (terminators)
-        hpterms_url = "https://" + galaxy.hostname \
+        hp_terms_url = "https://" + galaxy.hostname \
                         + galaxy.dataset_display_url_template \
-                            .format(dataset=self.analysis.galaxy_hpterms.id)
-        tracks.append(BigBedTrack(url=hpterms_url,
-                                  name="RNA-Seqlyze | %s" % self.hpterms_name))
+                            .format(dataset=self.analysis.galaxy_hp_terms.id)
+        tracks.append(BigBedTrack(url=hp_terms_url,
+                                  name="RNA-Seqlyze | %s" % self.hp_terms_name))
+
+        # bigbed track (predicted operons)
+        pr_operons_url = "https://" + galaxy.hostname \
+                        + galaxy.dataset_display_url_template \
+                            .format(dataset=self.analysis.galaxy_pr_operons.id)
+        tracks.append(BigBedTrack(url=pr_operons_url,
+                                  name="RNA-Seqlyze | %s" %
+                                                      self.pr_operons_name))
 
         track_file = StringIO()
         track_file.write('\n'.join(tracks))
         track_file.seek(0)
-        self.analysis.galaxy_hg_custom_id = \
-                    galaxy.upload(track_file, self.bam_name + ".txt")
+        self.analysis.galaxy_hg_text = GalaxyDataset(
+                    id=galaxy.upload(track_file,
+                                     "UCSC Tracks Analysis%d.txt" %
+                                                          self.analysis.id))
         self.session.commit()
 
     @stage
@@ -305,34 +407,34 @@ class WorkerStages(object):
          - http://www.ebi.ac.uk/\\
                  embl/Documentation/FT_definitions/feature_table.html
         """
-
-        class Operon(object):
-            def __init__(self, **kwargs):
-                self.__dict__.update(kwargs)
-        
-        operons = Operon(beg=0, end=100, strand=1),
+        if exists(self.analysis.xgenbankfile_path):
+            return
 
         record = SeqIO.parse(open(
             self.analysis.genbankfile_path), "genbank").next()
 
-        for i, oper in enumerate(operons):
-            location = FeatureLocation(ExactPosition(oper.beg),
-                                       ExactPosition(oper.end))
+        for i, o in enumerate(self.operons):
+            location = FeatureLocation(ExactPosition(o.begin),
+                                       ExactPosition(o.end))
             record.features.append(
                 SeqFeature(location,
                     type='mRNA',
-                    strand=oper.strand,
+                    strand=o.strand,
                     qualifiers=dict(
-                        note='putative',
-                        operon='operon%d' % i)))
+                        note='putative, confidence %d%%' % o.confidence,
+                        operon='rnas-%d' % i)))
 
         record.features.sort(key=lambda f: f.location.start.position)
 
         xgb_file = open(self.analysis.xgenbankfile_path, "w")
 
         SeqIO.write(record, xgb_file, "genbank")
+    #
+    ############################################################################
 
-WorkerStages.members = _stages
+    __iter__ = lambda self: self._stages
+
+WorkerStages._stages = _stages
 del _stages
 
 class UnknownInputfileTypeException(Exception):

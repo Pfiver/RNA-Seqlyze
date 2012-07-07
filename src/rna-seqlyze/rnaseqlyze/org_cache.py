@@ -47,8 +47,7 @@ def refresh(db_session):
     organisms = ucscbrowser.get_org_list()
     accessions = get_accessions()
 
-    # loop over a copy
-    for org in organisms[:]:
+    for org in organisms:
         ot = org.title
         for gt, acc in accessions:
             if ot == gt:
@@ -86,6 +85,18 @@ def refresh(db_session):
             log.warn(("'{org}' not found in NCBI 'genome' database"
                       " (best match ratio only {ratio})").format(
                           org=ot, ratio=best_ratio))
+
+    # make sure that that regular expression in views.post() that translates
+    # the 'org_accession' from 'title (db/accession)', as generated in
+    # rnaseqlyze.create.js, back to 'accession' doesn't fail
+    for org in db_session.query(UCSCOrganism).all():
+        if any(needle in heystack
+                    for needle in '()'
+                    for heystack in (org.db, org.acc, org.title)):
+            log.warn("Droping organism with parentesis"
+                     " to avoid problems in parsing auto"
+                     "completed form input in views.post()")
+            db_session.expunge(org)
 
 def get_accessions():
 

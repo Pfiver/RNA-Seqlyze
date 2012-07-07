@@ -5,6 +5,8 @@ Pyramid Application Custom Error Views
 import logging
 log = logging.getLogger(__name__)
 
+from string import Template
+
 from pyramid.view import view_config
 from pyramid.response import Response, FileResponse
 from pyramid.httpexceptions import (
@@ -49,6 +51,17 @@ class HTTPRNASeqError(HTTPError):
     code = 500
     title = "RNA-Seqlyze Web Application Error"
     explanation = "An Exception was raised in rnaseqlyze.web"
+    html_template_obj = Template(Template('\n'.join(map(lambda s: s[8:], """\
+        <html>
+        <head>
+        <title>${title}</title>
+        </head>
+        <body style="margin: 20px;">
+        <h1>${title}</h1>
+        ${body}
+        </body>
+        </html>
+        """.split('\n')))).safe_substitute(title=title))
     def __init__(self, exc_info):
         e = exc_info[1]
         log.error(repr(e))
@@ -62,7 +75,7 @@ class HTTPRNASeqError(HTTPError):
         if log.getEffectiveLevel() > logging.DEBUG:     # no debug
             detail = production_error_msg % \
                         rnaseqlyze.admin_email
-            body_template += "\n${detail}\n"
+            body_template += "${detail}"
         else:                                           # debug
             detail = ''
             if isinstance(e, DBAPIError):
@@ -72,11 +85,11 @@ class HTTPRNASeqError(HTTPError):
             detail += ''.join(traceback.format_tb(exc_info[2]))
 
             log.debug(detail)
-            body_template += "<pre>\n${detail}\n</pre>\n"
+            body_template += "<pre>\n${detail}</pre>"
 
         HTTPError.__init__(self, detail, body_template=body_template)
 
-dberror_msg = """
+dberror_msg = """\
 This is a database related eror.
 
 If it is not yet initialized or the schema has changed,
@@ -86,7 +99,7 @@ Afterwards, restart the Pyramid application, i.e. send a
 SIG_INT to the apache mod_wsgi daemon processes, and try again.
 """
 
-production_error_msg = """
+production_error_msg = """\
 If you think that this is a bug, please contact the application administrator,
 %s, and inform him/her of the time the error occurred, and anything you might
 have done that may have caused the error.

@@ -21,11 +21,7 @@ cron-hourly ()
         cd $rnas_topdir
         git push fhnw
 
-        # other things
-        re-install
-        re-apidoc
-        re-cover
-
+        # nudge buildbot
         buildbot sendchange
     }
 
@@ -42,7 +38,13 @@ cron-hourly ()
         git list-authors >| report/authors.html
         git diff --quiet HEAD report/authors.html ||
             git commit report/authors.html \
-                -m 'auto-commit report/authors.html' 
+                -m 'auto-commit report/authors.html'
+
+        # other things
+        re-install
+        re-apidoc
+        re-cover
+
     }
 
     _cron ()
@@ -157,16 +159,18 @@ re-cover ()
 
 logtail-developall ()
 {
+    logfiles=(/var/log/apache2/{access,error}.log \
+                $rnas_workdir/rna-seqlyze-{web,worker}.log)
+    touch ${logfiles[@]}
+    chmod 664 ${logfiles[@]}
+    chgrp www-data ${logfiles[@]}
     auto-sigint &
-
     while true
     do
         rnas-worker $rnas_workdir --development
         sleep 10
     done &
-
-    tail -f /var/log/apache2/{access,error}.log \
-            $rnas_workdir/rna-seqlyze-{web,worker}.log
+    tail -f ${logfiles[@]}
 }
 
 # vim: ft=sh:sw=4:ts=4:et

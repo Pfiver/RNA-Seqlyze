@@ -35,9 +35,10 @@ class Analysis(AnalysisMixins, Entity):
     owner_name          = Column(String, ForeignKey('user.name'))
 
     creation_date       = Column(DateTime)
-    error               = Column(String)
     started             = Column(Boolean)
     finished            = Column(Boolean)
+    stage               = Column(String)
+    error               = Column(String)
 
     rnaseq_run          = relationship("RNASeqRun", backref=backref("analyses"))
     rnaseq_run_srr      = Column(String, ForeignKey('rnaseqrun.srr'))
@@ -109,3 +110,16 @@ class GalaxyDataset(Entity):
     analysis    = relationship(Analysis, backref=backref("galaxy_datasets"))
     type        = Column(String)
     name        = Column(String)
+
+class StageLog(Entity):
+    """
+    Holds the log output of one processing stage
+    """
+    # the primary key could be stage/analysis_id
+    # but using an id automatically adds ordering
+    # which comes handy, because how to order the stages otherwise ?
+    id          = Column(Integer, primary_key=True)
+    stage       = Column(String)
+    analysis_id = Column(Integer, ForeignKey(Analysis.id))
+    analysis    = relationship(Analysis, backref=backref("stage_logs"))
+    text        = Column(Text)

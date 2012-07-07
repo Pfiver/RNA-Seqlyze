@@ -17,16 +17,13 @@ http://www.psu.edu/
 import logging
 log = logging.getLogger(__name__)
 
-import os
-import json
-import ftplib
-import urllib
-import urllib2
+import os, json, time, ftplib, \
+       urllib, urllib2, cookielib
+
 import lxml.html
-import cookielib
-import multipart
 
 import rnaseqlyze
+from rnaseqlyze import multipart
 
 email = 'ucgxccgr@mailinator.com'
 password = 'brtbhcdg'
@@ -34,7 +31,8 @@ api_key = 'dddb2c53c96c0c4d263e6c74b507d203'
 hostname = 'main.g2.bx.psu.edu'
 
 default_history = 'b8468b3367a258a6'
-default_history_url = 'https://main.g2.bx.psu.edu/u/dcgdftvcdv/h/biocalc'
+
+default_history_url = 'https://main.g2.bx.psu.edu/u/dcgdftvcdv/h/rna-seqlyze'
 
 history_path_template = '/api/histories/{history}/contents'
 ucsc_bam_track_template = \
@@ -43,6 +41,8 @@ ucsc_bam_track_template = \
 ucsc_bam_path_template = \
         '/display_application/{dataset}/' \
         'ucsc_bam/archaea/None/data/galaxy_{dataset}.bam'
+
+dataset_info_url_template = "/api/histories/{history}/contents/{dataset}"
 
 dataset_display_url_template = "/datasets/{dataset}/display"
 
@@ -143,6 +143,13 @@ def upload(fileobj, filename):
     }
 
     ftpupload(fileobj, filename)
+    # getting errors like this on galaxy:
+    # "An error occurred running this job: Uploaded temporary file
+    #  (/galaxy/.../NC_002754.1 SRR030768 Coverage) does not exist."
+    # maybe there is some hopefully not too long running asynchronous
+    # data handling operation taking place on the galaxy server ... ???
+    # try an ugly workaround...
+    time.sleep(1)
     import_uploads(login())
     histories = json.loads(api_call(
         history_path_template.format(history=default_history)))

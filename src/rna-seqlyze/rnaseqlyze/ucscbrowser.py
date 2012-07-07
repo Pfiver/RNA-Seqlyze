@@ -33,12 +33,12 @@ class BigDataTrack(str):
     keyword argument to the constructor.
     """
 
-    template = 'track type="{type} name="{name}" bigDataUrl="{url}"'
+    template = 'track type="{type}" name="{name}" bigDataUrl="{url}"'
 
-    __new__ = lambda self, **kwargs: template.format(type=self.type, **kwargs)
+    __new__ = lambda cls, **kwargs: cls.template.format(type=cls.type, **kwargs)
 
 class BAMTrack(BigDataTrack): type = "bam"
-class BigWigTrack(BigDataTrack): type = "bigwig"
+class BigWigTrack(BigDataTrack): type = "bigWig"
 class BigBedTrack(BigDataTrack): type = "bigBed"
 
 # FIXME:

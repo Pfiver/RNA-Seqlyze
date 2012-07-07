@@ -69,6 +69,7 @@ def main(global_config, **settings):
     config.add_route('analysis_files', '/analyses/{id}/files*subpath')
 
     config.add_route('analysis_rest', '/rest/analyses/{id}')
+    config.add_route('analysis_logs_rest', '/rest/analyses/{id}/logs')
     config.add_route('analysis_files_rest', '/rest/analyses/{id}/files')
 
     config.add_route('organisms_rest', '/rest/organisms')

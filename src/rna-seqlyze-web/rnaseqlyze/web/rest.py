@@ -11,7 +11,7 @@ from pyramid.view import view_config
 import rnaseqlyze
 from rnaseqlyze.web import DBSession, DBSession_unmanaged
 from rnaseqlyze.core import service
-from rnaseqlyze.core.entities import Analysis, UCSCOrganism
+from rnaseqlyze.core.entities import Analysis, StageLog, UCSCOrganism
 
 @view_config(route_name='analysis_rest', renderer='jsonx')
 def display(request):
@@ -26,6 +26,15 @@ def display(request):
         'org_db': org_db,
         'hg_url': analysis.get_hg_url(org_db)})
     return analysis
+
+@view_config(route_name='analysis_logs_rest', renderer='jsonx')
+def analysis_stage_logs(request):
+    """
+    ***REST Stage Logs View***
+    """
+    criterion = StageLog.analysis_id == int(request.matchdict["id"])
+    logs = DBSession.query(StageLog).filter(criterion).all()
+    return sorted(logs, key=lambda log: log.id)
 
 @view_config(route_name='analysis_files_rest', renderer='jsonx')
 def analysis_files(request):

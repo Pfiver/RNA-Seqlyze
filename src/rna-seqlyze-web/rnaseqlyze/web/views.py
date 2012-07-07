@@ -5,6 +5,7 @@ Pyramid Application User Views
 import logging
 log = logging.getLogger(__name__)
 
+import re
 from os.path import join
 
 from pyramid.view import view_config
@@ -15,9 +16,12 @@ import transaction
 from sqlalchemy.exc import DBAPIError
 
 import rnaseqlyze
+from rnaseqlyze import galaxy
 from rnaseqlyze.web import DBSession, DBSession_unmanaged
 from rnaseqlyze.core import service
 from rnaseqlyze.core.entities import Analysis, UCSCOrganism
+
+autocomplete_re = re.compile(r"^[^(]+\([^/]+/([^)]+)\).*$")
 
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
@@ -57,7 +61,10 @@ def display(request):
     """
     
     id = int(request.matchdict["id"])
-    return { 'analysis': DBSession.query(Analysis).get(id) }
+    return {
+        'analysis': DBSession.query(Analysis).get(id),
+        'galaxy_history_url': galaxy.default_history_url,
+    }
 
 @view_config(route_name='analysis_files')
 def analysis_files(request):
@@ -103,6 +110,9 @@ def post(request):
     #  otoh, if the _unmanaged session is used, it _has_ to
     #  be manually commited or rolled back if objects are modified
 
+    if 'org_accession' in request.POST:
+        request.POST['org_accession'] = \
+                autocomplete_re.sub(r"\1", request.POST['org_accession'])
     try:
         analysis = service.get_analysis(
                     DBSession_unmanaged, attributes=request.POST)

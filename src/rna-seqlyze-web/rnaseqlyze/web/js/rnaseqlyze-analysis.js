@@ -14,11 +14,15 @@ window.Analysis = Backbone.Model.extend({
         this.files = new WorkdirListing();
         this.files.analysis = this;
 
+        this.stage_logs = new StageLogList();
+        this.stage_logs.analysis = this;
+
         // "cascade": update files list
         this.bind("change", function (self) {
             // FIXME: maybe update this less often
             //        in production, e.g. every second time,
             self.files.fetch();
+            self.stage_logs.fetch();
         });
     }
 });
@@ -26,13 +30,25 @@ window.Analysis = Backbone.Model.extend({
 window.WorkdirFile = Backbone.Model.extend({
     defaults: {
         path: null,
-    }
+    },
 });
 // and for a collection of files
 window.WorkdirListing = Backbone.Collection.extend({
     model: WorkdirFile,
     url: function () {
         return this.analysis.url() + "/files";
+    },
+});
+window.StageLog = Backbone.Model.extend({
+    defaults: {
+        stage: null,
+        text: null,
+    },
+});
+window.StageLogList = Backbone.Collection.extend({
+    model: StageLog,
+    url: function () {
+        return this.analysis.url() + "/logs";
     },
 });
 
@@ -105,7 +121,7 @@ window.ProcessingView = Backbone.View.extend({
         this.$el.append(el.div(
             el.h3("Input analysis")
         ,
-            analysis.inputfile_name ?
+            analysis.inputfile_uploaded ?
                 el.p("Type of input: ",
                      analysis.inputfile_type ?
                         el.strong(analysis.inputfile_type) :
@@ -114,11 +130,18 @@ window.ProcessingView = Backbone.View.extend({
                 null
         ,
             analysis.inputfile_header ?
-                el.p("First lines in input data: ",
+                el.p("First read in input data: ",
                      el.pre(analysis.inputfile_header))
                 :
                 null
 
+        ));
+
+        this.$el.append(el.div(
+            el.h3("Stage Logs")
+        ,
+            el.div(new StageLogListView({
+                model: this.model.stage_logs}).render().el)
         ));
 
         this.$el.append(el.div(
@@ -131,7 +154,7 @@ window.ProcessingView = Backbone.View.extend({
             this.$el.append(
                 el.div({class: "alert alert-error"},
                        el.h4({class: "alert-heading"},
-                             "...there was a problem"),
+                             "An error occured while analyzing the data"),
                        analysis.error));
 
         return this;
@@ -169,6 +192,35 @@ window.WorkdirFileView = Backbone.View.extend({
     }
 });
 
+window.StageLogListView = Backbone.View.extend({
+    initialize: function () {
+        this.model.bind("reset", this.reset, this);
+    },
+    reset: function (model, value, options) {
+        this.$el.empty();
+        this.render();
+        log.debug("stage: " + _(model.models).last().attributes.stage);
+        $("#" + _(model.models).last().attributes.stage).scrollTo();
+    },
+    render: function () {
+        this.$el.append(el.div.apply(el,
+            _(this.model.models).map(function (model) {
+                return new StageLogView({model: model}).render().el;
+            })
+        ));
+        return this;
+    },
+});
+window.StageLogView = Backbone.View.extend({
+    el: "<div>",
+    render: function (model) {
+        var log = this.model.toJSON();
+        this.$el.append(el.h4({id:log.stage}, log.stage));
+        this.$el.append(el.pre(log.text));
+        return this;
+    },
+});
+
 // The "Results" section
 window.ResultsView = Backbone.View.extend({
     initialize: function () {
@@ -192,7 +244,12 @@ window.ResultsView = Backbone.View.extend({
                 el.ul(
                     el.li(
                         el.a({href: analysis.hg_url},
-                             "Link to BAM Track in UCSC Browser"))));
+                             "Link to custom tracks in UCSC browser"),
+                        el.p("It might take a minute until the tracks become " +
+                             "available.", el.br(),
+                             "As soon as the last few items ",
+                             el.a({href: galaxy_history_url}, "here"),
+                             " turn green it should work."))));
         }
 
         return this;

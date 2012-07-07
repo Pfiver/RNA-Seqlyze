@@ -89,6 +89,11 @@
   </tal:block>
 
   <tal:block metal:fill-slot="footer">
+    <script type="text/javascript">
+      //<![CDATA[
+      window.galaxy_history_url = "${galaxy_history_url}";
+      //]]>
+    </script>
     <script src="${path('js/underscore-min.js')}"></script>
     <script src="${path('js/backbone-min.js')}"></script>
     <script src="${path('js/laconic.js')}"></script>

@@ -32,7 +32,7 @@ def render_object(obj):
     "default" function for json.dumps()
     """
     attrs = dict((attr, getattr(obj, attr))
-                    for base in obj.__class__.__bases__
+                    for base in obj.__class__.__mro__
                     for attr in base.__dict__
                     if attr[0] != '_')
 

@@ -46,3 +46,13 @@ $(function() {
     };
 
 });
+
+// http://stackoverflow.com/a/7531350
+jQuery.fn.extend({
+    scrollTo: function () {
+        var offset = jQuery(this).offset();
+        if (!offset) return;
+        var x = offset.top - 100;
+        jQuery('html,body').animate({scrollTop: x}, 100);
+    },
+});

@@ -45,7 +45,7 @@ class Methods(object):
             - in this file
     """
 
-    def __xinit__(self, **kwargs):
+    def __init__(self, **kwargs):
         super(Methods, self).__init__(**kwargs)
         self.creation_date = datetime.datetime.utcnow()
 
@@ -53,24 +53,17 @@ class Methods(object):
         if not os.path.isdir(self.data_dir):
             os.makedirs(self.data_dir)
 
-    def create_gb_data_dir(self):
-        if self.gb_data_dir and not os.path.isdir(self.gb_data_dir):
-            os.makedirs(self.gb_data_dir)
-
     # org_db and hg_url (which depends upon org_db) are not set
     # as a db attribute, so old analyses where the organism was not
     # known at creation time automatically get the right url set if the
     # organism later on becomes available in the UCSC Browser
 
     def get_hg_url(self, org_db):
-        if not self.galaxy_hgtext:
+        if not self.galaxy_hg_text:
             return
-        track_url = "https://" + galaxy.hostname \
-                    + galaxy.dataset_display_url_template \
-                        .format(dataset=self.galaxy_hgtext.id)
         hg_url = ucscbrowser.custom_track_url + \
                     ucscbrowser.custom_track_params.format(
-                        org_db=org_db, track_url=quote(track_url))
+                        org_db=org_db, track_url=quote(self.hg_url))
         return hg_url
 
     def get_galaxy_id(self, name):
@@ -140,16 +133,16 @@ class Properties(object):
         return self.inputfile_name.rsplit(".", 1)[0]
 
     @property
-    def inputfile_fqname(self):
+    def inputfile_fq_name(self):
         return self.inputfile_base_name + ".fastq"
 
     @property
-    def inputfile_fqpath(self):
-        return self.input_data_dir + self.inputfile_fqname
+    def inputfile_fq_path(self):
+        return join(self.input_data_dir, self.inputfile_fq_name)
 
     @property
     def inputfile_header(self):
-        fq_file = open(self.inputfile_fqpath)
+        fq_file = open(self.inputfile_fq_path)
         lines = [fq_file.readline() for i in range(4)]
         log.info("Header: %s" % lines[0])
         fq_file.close()
@@ -169,7 +162,7 @@ class Properties(object):
 
     @property
     def genbankfile_path(self):
-        return join(self.org_data_dir, self.ganbankfile_name)
+        return join(self.genbank_data_dir, self.genbankfile_name)
 
     @property
     def genbankfile_base_name(self):
@@ -194,10 +187,9 @@ class Properties(object):
 # magic galaxy_xxx attributes
 # ---------------------------
 
-    galaxy_stuff = "hgtext bam coverage hpterms".split()
+    galaxy_stuff = "hg_text bam coverage hp_terms pr_operons".split()
 
-    for x in galaxy_stuff: exec """if True: # just to enable indentedation ...
-
+    for x in galaxy_stuff: exec """if True: # just to enable indentation ...
         @declared_attr
         def galaxy_%s(self):
             return relationship("GalaxyDataset",
@@ -205,11 +197,22 @@ class Properties(object):
 
                 "and_(GalaxyDataset.type == '%s', "
                      "Analysis.id == GalaxyDataset.analysis_id)" % x)
-
+    del x
     @validates(*("galaxy_" + x for x in galaxy_stuff))
-    def set_bam(self, attr, dataset):
+    def _set_galaxy_(self, attr, dataset):
         dataset.type=attr[7:]
         return dataset
+
+# other things
+# ------------
+
+    @property
+    def hg_url(self):
+        if not self.galaxy_hg_text:
+            return
+        return "https://" + galaxy.hostname \
+                    + galaxy.dataset_display_url_template \
+                        .format(dataset=self.galaxy_hg_text.id)
 
 class Validators(object):
     @validates('org_accession')
