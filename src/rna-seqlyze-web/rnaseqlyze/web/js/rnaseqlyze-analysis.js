@@ -7,48 +7,66 @@
 //
 // -> http://backbonejs.org/#Model
 
-// this analysis
+// The Analysis
 window.Analysis = Backbone.Model.extend({
     urlRoot: "../rest/analyses",
     initialize: function () {
-        this.files = new WorkdirListing();
+        this.files = new DataDirListing();
         this.files.analysis = this;
 
         this.stage_logs = new StageLogList();
         this.stage_logs.analysis = this;
 
         // "cascade": update files list
-        this.bind("change", function (self) {
-            // FIXME: maybe update this less often
-            //        in production, e.g. every second time,
-            self.files.fetch();
-            self.stage_logs.fetch();
+        this.bind("change:data_dir_state", function (self) {
+            self.files.fetch({add: true});
+        });
+        // "cascade": update stage_logs
+        this.bind("change:stage_logs_state", function (self) {
+            var len = self.stage_logs.size();
+            self.stage_logs.fetch({
+                add: true,
+                // The last stage_log is the current one and updates frequently.
+                // It's id stays the same though and which causes backbone.js
+                // to regard it as a duplicate and drop it. But a copy of the
+                // ajax response is passed to the success callback. So we pick
+                // the changed log text from there and fire a "change" event
+                // by set()ting the 'text' attribute of the affected model.
+                success: function (stage_logs, rsp) {
+                    if (len)
+                        stage_logs.at(len-1).set('text', rsp[len-1].text);
+                },
+            });
         });
     }
 });
-// a model for the files
-window.WorkdirFile = Backbone.Model.extend({
-    defaults: {
-        path: null,
-    },
-});
-// and for a collection of files
-window.WorkdirListing = Backbone.Collection.extend({
-    model: WorkdirFile,
-    url: function () {
-        return this.analysis.url() + "/files";
-    },
-});
+// log output of one stage
 window.StageLog = Backbone.Model.extend({
     defaults: {
         stage: null,
         text: null,
     },
+    idAttribute: "id",
 });
+// log output of all stages
 window.StageLogList = Backbone.Collection.extend({
     model: StageLog,
     url: function () {
         return this.analysis.url() + "/logs";
+    },
+});
+// a model for the files
+window.DataDirFile = Backbone.Model.extend({
+    defaults: {
+        path: null,
+    },
+    idAttribute: "path",
+});
+// and for a collection of files
+window.DataDirListing = Backbone.Collection.extend({
+    model: DataDirFile,
+    url: function () {
+        return this.analysis.url() + "/files";
     },
 });
 
@@ -90,6 +108,8 @@ window.ProcessingView = Backbone.View.extend({
 
     initialize: function () {
         this.model.bind("change", this.change, this);
+        this.stage_logs = (
+            new StageLogListView({model: this.model.stage_logs}).render().el);
     },
     change: function (model, value, options) {
 
@@ -102,10 +122,7 @@ window.ProcessingView = Backbone.View.extend({
             $('#spinner').remove();
 
         // make scrollspy refresh it's coordinates
-        // because the page size has very likely changed
-        // DON'T FIXME: this sadly gets called twice now
-        //              since we have two views...
-        //              no harm in it! :-)
+        // because the page size has likely changed
         $(window).scrollspy('refresh');
     },
     render: function () {
@@ -119,7 +136,7 @@ window.ProcessingView = Backbone.View.extend({
         );
 
         this.$el.append(el.div(
-            el.h3("Input analysis")
+            el.h3("Input Check")
         ,
             analysis.inputfile_uploaded ?
                 el.p("Type of input: ",
@@ -140,14 +157,7 @@ window.ProcessingView = Backbone.View.extend({
         this.$el.append(el.div(
             el.h3("Stage Logs")
         ,
-            el.div(new StageLogListView({
-                model: this.model.stage_logs}).render().el)
-        ));
-
-        this.$el.append(el.div(
-            el.h3("Working Directory")
-        ,
-            el.div(new WorkdirView({model: this.model.files}).render().el)
+            this.stage_logs
         ));
 
         if (analysis.error)
@@ -161,28 +171,120 @@ window.ProcessingView = Backbone.View.extend({
     },
 });
 
+// The monospaced stage log blocks
+window.StageLogListView = Backbone.View.extend({
+    initialize: function () {
+        this.model.bind("add", this.add, this);
+    },
+    add: function (model) {
+        if (this.$el.size())
+            this.$el.contents().find("pre").removeAttr('style');
+        this.$el.append(
+            new StageLogView({model: model}).render().el
+        );
+        if (!this.model.analysis.get('finished'))
+            this.$el.contents().last().scrollToBottom();
+        $(window).scrollspy('refresh');
+    },
+});
+
+// _One_ monospaced stage log block
+window.StageLogView = Backbone.View.extend({
+    initialize: function () {
+        this.model.bind("change", this.change, this);
+    },
+    change: function () {
+        this.$el.empty();
+        this.render(this.model);
+        this.$el.scrollToBottom();
+        $(window).scrollspy('refresh');
+    },
+    render: function (model) {
+        var log = this.model.toJSON();
+        this.$el.attr('id', log.stage);
+        this.$el.append(el.h4(log.stage));
+        this.$el.append(el.pre({style: 'background-color: #ddf;'}, log.text));
+        return this;
+    },
+});
+
+// The "Results" section
+window.ResultsView = Backbone.View.extend({
+    initialize: function () {
+        this.model.bind("change", this.change, this);
+        this.model.files.bind("add", this.fileadd, this);
+    },
+    change: function (model, value, options) {
+        this.$el.empty();
+        this.render();
+        $(window).scrollspy('refresh');
+    },
+    fileadd: function () {
+        var augmented_gb = this.model.files.find(function (file) {
+            return file.get('path').match(/augmented\.gb$/);
+        });
+        if (!this.augmented_gb) {
+            this.augmented_gb = augmented_gb;
+            this.$el.empty();
+            this.render();
+        }
+    },
+    render: function () {
+        var analysis = this.model.toJSON();
+        if (analysis.hg_url || this.augmented_gb) {
+            this.$el.append(el.h2("Results"));
+            var $ul = $(el.ul())
+            this.$el.append($ul[0]);
+            if (this.augmented_gb) {
+                var href = _id + '/files/' + this.augmented_gb.get('path');
+                $ul.append(el.li(
+                    el.a({href: href},
+                         "Augmented Genbank File")));
+            }
+            if (analysis.hg_url) {
+                $ul.append(el.li(
+                    el.a({href: analysis.hg_url},
+                         "Link to custom tracks in UCSC browser"),
+                    el.p("It might take a minute until the tracks become " +
+                         "available.", el.br(),
+                         "As soon as the last few items ",
+                         el.a({href: galaxy_history_url}, "here"),
+                         " turn green it should work.")));
+            }
+        }
+        return this;
+    },
+});
+
 // A View displaying the list of files associated with
 // this analysis available on the server (log files, mostly).
 // This is currently rendered inside the "Processing" section above.
-window.WorkdirView = Backbone.View.extend({
+window.DataDirView = Backbone.View.extend({
     initialize: function () {
         this.model.bind("reset", this.reset, this);
+        this.model.bind("add", this.add, this);
     },
     reset: function (model, value, options) {
         this.$el.empty();
         this.render();
     },
     render: function () {
-        this.$el.append(el.ul.apply(el,
-            _(this.model.models).map(function (model) {
-                return new WorkdirFileView({model: model}).render().el;
-            })
-        ));
+        this.$el.append(el.h2("Data Directory"));
+        var ul = el.ul();
+        this.$ul = $(ul);
+        this.$el.append(ul);
+        $(window).scrollspy('refresh');
         return this;
+    },
+    add: function(model) {
+        this.$ul.append(
+            new DataDirFileView({model: model}).render().el
+        );
+        $(window).scrollspy('refresh');
     },
 });
 // An View, that renders one file
-window.WorkdirFileView = Backbone.View.extend({
+window.DataDirFileView = Backbone.View.extend({
     el: "<li>",
     render: function (model) {
         var file = this.model.toJSON();
@@ -192,69 +294,6 @@ window.WorkdirFileView = Backbone.View.extend({
     }
 });
 
-window.StageLogListView = Backbone.View.extend({
-    initialize: function () {
-        this.model.bind("reset", this.reset, this);
-    },
-    reset: function (model, value, options) {
-        this.$el.empty();
-        this.render();
-        log.debug("stage: " + _(model.models).last().attributes.stage);
-        $("#" + _(model.models).last().attributes.stage).scrollTo();
-    },
-    render: function () {
-        this.$el.append(el.div.apply(el,
-            _(this.model.models).map(function (model) {
-                return new StageLogView({model: model}).render().el;
-            })
-        ));
-        return this;
-    },
-});
-window.StageLogView = Backbone.View.extend({
-    el: "<div>",
-    render: function (model) {
-        var log = this.model.toJSON();
-        this.$el.append(el.h4({id:log.stage}, log.stage));
-        this.$el.append(el.pre(log.text));
-        return this;
-    },
-});
-
-// The "Results" section
-window.ResultsView = Backbone.View.extend({
-    initialize: function () {
-        this.model.bind("change", this.change, this);
-    },
-    change: function (model, value, options) {
-        this.$el.empty();
-        this.render();
-        $(window).scrollspy('refresh');
-    },
-    render: function () {
-        var analysis = this.model.toJSON();
-
-        if (analysis.hg_url) {
-
-            this.$el.append(
-                el.h2("Results")
-            );
-
-            this.$el.append(
-                el.ul(
-                    el.li(
-                        el.a({href: analysis.hg_url},
-                             "Link to custom tracks in UCSC browser"),
-                        el.p("It might take a minute until the tracks become " +
-                             "available.", el.br(),
-                             "As soon as the last few items ",
-                             el.a({href: galaxy_history_url}, "here"),
-                             " turn green it should work."))));
-        }
-
-        return this;
-    },
-});
 
 // Initialization
 // --------------
@@ -278,16 +317,24 @@ $(document).ready(function () {
     $('#results').html(
         new ResultsView({model: analysis}).render().el
     );
+    $('#datadir').html(
+        new DataDirView({model: analysis.files}).render().el
+    );
 
-    // see what's going on with backbone.js
+/*
+    // uncomment this to see what's going on in backbone.js
     if (rnaseqlyze_debug) {
         analysis.bind("all", function (event) {
-               log.debug("analysis", event);
+            log.debug("analysis", arguments);
         });
         analysis.files.bind("all", function (event) {
-                log.debug("analysis.files", event);
+            log.debug("analysis.files", arguments);
+        });
+        analysis.stage_logs.bind("all", function (event) {
+            log.debug("analysis.stage_logs", arguments);
         });
     }
+ */
 
     // update the models until the analysis is finished
     var update = function () {
@@ -296,7 +343,7 @@ $(document).ready(function () {
         if (analysis.attributes.finished)
             return;
         analysis.fetch();
-        log.debug(analysis);
+//        log.debug("analysis.fetch()");
         window.setTimeout(update, 7000); // re-update in 7 seconds
     }
     update();

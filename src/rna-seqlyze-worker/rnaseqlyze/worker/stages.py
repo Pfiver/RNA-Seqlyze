@@ -3,11 +3,14 @@ RNA-Seqlyze Worker Stages
 
     -- **this** is where things are actually getting done! :-)
 """
+import logging
+log = logging.getLogger(__name__)
 
 import os
 from os.path import join, exists, isdir, relpath
 from subprocess import Popen, PIPE
 from StringIO import StringIO
+from threading import Thread
 from urllib import quote
 
 import pysam
@@ -15,6 +18,8 @@ import pysam
 from Bio import SeqIO
 from Bio.SeqFeature import \
         SeqFeature, FeatureLocation, ExactPosition
+
+from psutil import cpu_percent
 
 from rnaseqlyze import efetch
 from rnaseqlyze import galaxy
@@ -29,6 +34,7 @@ class Operon(object):
         self.__dict__.update(kwargs)
 
 _stages = []
+_stage_conds = {}
 def stage(method):
     """
     Just a small helper to collect the stages in the order defined.
@@ -36,8 +42,22 @@ def stage(method):
     To add a new stage, simply add a method to :class:`~WorkerStages`.
     It will be automatically executed for all new analyses.
     """
+    if method.func_name in _stage_conds:
+        method.should_run = _stage_conds[method.func_name]
+        del _stage_conds[method.func_name]
+    else:
+        method.should_run = lambda self: True
     _stages.append(method)
     return method
+
+def stage_cond(method):
+    """
+    Stage Condition
+    
+     - must be declared before @stage
+     - must return true for the @stage of the same name to run
+    """
+    _stage_conds[method.func_name] = method
 
 class WorkerStages(object):
     """
@@ -56,9 +76,20 @@ class WorkerStages(object):
     ############################################################################
     # Utility Methods & Properties
 
+
     def log_cmd(self, *cmd):
+        # can't wait() on subprocess with a timeout, alas start up
+        # a 2nd thread to do it and join() on that one with a timeout
+        log.info("forking subprocess: $ %s" % ' '.join(map(repr, cmd)))
         proc = Popen(cmd, stdout=self.logfile, stderr=self.logfile)
-        proc.wait()
+        waiter = Thread(target=proc.wait)
+        cpu_percent(0, True)
+        waiter.start()
+        waiter.join(15)
+        while waiter.is_alive():
+            log.info("subprocess still running - system load: " +
+                     " / ".join(("%d%%" % p for p in cpu_percent(0, True))))
+            waiter.join(15)
         if proc.returncode != 0:
             raise Exception("%s failed" % (cmd,))
 
@@ -86,41 +117,51 @@ class WorkerStages(object):
     ############################################################################
     # Stages
 
+    @stage_cond
+    def determine_inputfile_type(self):
+        return self.analysis.inputfile_uploaded
     @stage
     def determine_inputfile_type(self):
-        def getit(header):
-            if header[0] == '@': return 'fastq'
-            elif header[:8] == 'NCBI.sra': return 'sra'
-            else: raise UnknownInputfileTypeException()
-        self.analysis.inputfile_type = \
-                getit(open(self.analysis.inputfile_path).read(8))
+        _8bytes = open(self.analysis.inputfile_path).read(8)
+        log.info("first 8 bytes of input data: %r" % _8bytes)
+        self.analysis.inputfile_type = (
+                     'fastq' if _8bytes[0] == '@'
+                else 'sra'   if header == 'NCBI.sra' else None)
         self.session.commit()
+        if not self.analysis.inputfile_type:
+            raise Exception("Unknown input data type")
 
+    @stage_cond
+    def fetch_srr(self):
+        # don't download if private
+        # file uploaded or srr already in cache
+        return not self.analysis.inputfile_uploaded \
+               and not os.path.exists(self.analysis.rnaseq_run.sra_path)
     @stage
     def fetch_srr(self):
-        # download if not already in cache
-        if not os.path.exists(self.analysis.rnaseq_run.sra_path):
-            self.log.debug("transfering input file from sra")
-            self.analysis.rnaseq_run.download()
-            self.log.debug("done")
+        self.analysis.rnaseq_run.download()
 
+    @stage_cond
+    def convert_input_file(self):
+        return not exists(self.analysis.inputfile_fq_path)
     @stage
     def convert_input_file(self):
-        if not exists(self.analysis.inputfile_fq_path):
-            self.log.debug("creating %s" % self.analysis.inputfile_fq_path)
-            os.chdir(self.analysis.input_data_dir)
-            self.log_cmd("fastq-dump", self.analysis.inputfile_name)
+        os.chdir(self.analysis.input_data_dir)
+        self.log_cmd("fastq-dump", self.analysis.inputfile_name)
+        log.debug("created %s" % self.analysis.inputfile_fq_path)
 
+    @stage_cond
+    def fetch_genbank_file(self):
+        return not exists(self.analysis.genbankfile_path)
     @stage
     def fetch_genbank_file(self):
-        if not exists(self.analysis.genbankfile_path):
-            if not exists(self.analysis.genbank_data_dir):
-                os.makedirs(self.analysis.genbank_data_dir)
-            self.log.info("Fetching '%s' from entrez..." %
-                                     self.analysis.org_accession)
-            gb_id = efetch.get_nc_id(self.analysis.org_accession)
-            efetch.fetch_nc_gb(gb_id, open(self.analysis.genbankfile_path, "w"))
-            self.log.info("...done")
+        if not exists(self.analysis.genbank_data_dir):
+            os.makedirs(self.analysis.genbank_data_dir)
+        log.info("Fetching '%s' from entrez..." %
+                                 self.analysis.org_accession)
+        gb_id = efetch.get_nc_id(self.analysis.org_accession)
+        efetch.fetch_nc_gb(gb_id, open(self.analysis.genbankfile_path, "w"))
+        log.info("...done")
 
     @stage
     def read_genbank_file(self):
@@ -128,101 +169,113 @@ class WorkerStages(object):
                                     .genbankfile_path), "genbank").next()
         ngenes = sum(1 for f in self.genbank_record.features
                        if f.type == 'gene')
-        self.log.info("genbank file lists %d genes" % ngenes)
+        log.info("genbank file lists %d genes" % ngenes)
 
+    @stage_cond
+    def genbank_to_fasta(self):
+        return not exists(self.analysis.genbankfile_fa_path)
     @stage
-    def gb2fasta(self):
-        if not exists(self.analysis.genbankfile_fa_path):
-            self.log.info("Converting '%s' to fasta format..." %
-                    self.analysis.genbankfile_path)
-            saved_id = record.id
-            record.id = "chr" # required (!) for ucsc browser
-            SeqIO.write(record, open(
-                self.analysis.genbankfile_fa_path, "w"), "fasta")
-            record.id = saved_id
+    def genbank_to_fasta(self):
+        log.info("Converting '%s' to fasta format" %
+                                           self.analysis.genbankfile_name)
+        record = self.genbank_record
+        saved_id = record.id
+        record.id = "chr" # make ucsc browser custom tracks work
+        SeqIO.write(record, open(
+            self.analysis.genbankfile_fa_path, "w"), "fasta")
+        record.id = saved_id
 
+    @stage_cond
+    def bowtie_build(self):
+        return not exists(join(self.analysis.genbank_data_dir,
+                               self.analysis.genbankfile_base_name + ".1.bt2"))
     @stage
     def bowtie_build(self):
-        if not exists(join(self.analysis.genbank_data_dir,
-                           self.analysis.genbankfile_base_name + ".1.bt2")):
-            os.chdir(self.analysis.genbank_data_dir)
-            self.log_cmd("bowtie2-build",
-                            self.analysis.genbankfile_fa_name,
-                            self.analysis.genbankfile_base_name)
+        os.chdir(self.analysis.genbank_data_dir)
+        self.log_cmd("bowtie2-build", self.analysis.genbankfile_fa_name,
+                                      self.analysis.genbankfile_base_name)
 
+    @stage_cond
+    def tophat(self):
+        return not exists(join(self.analysis.data_dir,
+                               "tophat-output", "accepted_hits.bam"))
     @stage
     def tophat(self):
-        if not exists(join(self.analysis.data_dir,
-                           "tophat-output", "accepted_hits.bam")):
-            os.chdir(self.analysis.data_dir)
-            n_cpus = os.sysconf("SC_NPROCESSORS_ONLN")
-            self.log_cmd("tophat", "-p", str(n_cpus),
-                    "-o", "tophat-output",
-                    relpath(join(self.analysis.genbank_data_dir,
-                                 self.analysis.genbankfile_base_name)),
-                    relpath(self.analysis.inputfile_fq_path))
+        os.chdir(self.analysis.data_dir)
+        n_cpus = os.sysconf("SC_NPROCESSORS_ONLN")
+        fq = relpath(self.analysis.inputfile_fq_path)
+        gb = relpath(join(self.analysis.genbank_data_dir,
+                          self.analysis.genbankfile_base_name))
+        self.log_cmd("tophat", "-p", str(n_cpus), "-o", "tophat-output", gb, fq)
 
+    @stage_cond
+    def create_coverage_track(self):
+        return not exists(join(self.analysis.data_dir, "coverage.bigwig"))
     @stage
-    def bam_to_bigwig(self):
-        if exists(join(self.analysis.data_dir,
-                       "tophat-output", "accepted_hits.bam")) \
-           and not exists(join(self.analysis.data_dir, "coverage.bigwig")):
-            os.chdir(self.analysis.data_dir)
-            # the script automatically converts it's
-            # output to bigwig if it finds kent's wigToBigWig
-            self.log_cmd("bam_to_wiggle.py", "-o", "coverage.bigwig",
-                                        "tophat-output/accepted_hits.bam")
+    def create_coverage_track(self):
+        os.chdir(self.analysis.data_dir)
+        # the script automatically converts it's
+        # output to bigwig if it finds kent's wigToBigWig
+        self.log_cmd("bam_to_wiggle.py", "-o", "coverage.bigwig",
+                                    "tophat-output/accepted_hits.bam")
 
+    @stage_cond
+    def genbank_to_ptt(self):
+        return not exists(join(self.analysis.genbank_data_dir,
+                               self.genbank_record.id + ".ptt"))
     @stage
-    def transterm_hp(self):
+    def genbank_to_ptt(self):
         ptt_name = self.genbank_record.id + ".ptt"
         ptt_path = join(self.analysis.genbank_data_dir, ptt_name)
-        dummy_ptt_path = join(self.analysis.genbank_data_dir, "chr.ptt")
+        os.symlink(ptt_name, join(self.analysis.genbank_data_dir, "chr.ptt"))
+        log.debug("converting %s to ptt" % self.analysis.genbankfile_name)
+        ptt_file = open(ptt_path, "w")
+        gb_file = open(self.analysis.genbankfile_path)
+        gb2ptt.gb2ptt(gb_file, ptt_file)
+        ptt_file.close()
+        gb_file.close()
 
-        if not exists(dummy_ptt_path):
-            os.symlink(ptt_name, dummy_ptt_path)
+    @stage_cond
+    def transterm_hp(self):
+        return not exists(join(self.analysis.data_dir,
+                               "hp_terminators.bigbed"))
+    @stage
+    def transterm_hp(self):
+        os.chdir(self.analysis.data_dir)
+        log.debug("running transterm")
 
-        if not exists(join(self.analysis.data_dir, ptt_path)):
-            self.log.debug("converting %s to ptt" % 
-                                       self.analysis.genbankfile_name)
-            ptt_file = open(ptt_path, "w")
-            gb_file = open(self.analysis.genbankfile_path)
-            gb2ptt.gb2ptt(gb_file, ptt_file)
-            ptt_file.close()
-            gb_file.close()
+        tt_out = open("transterm_hp.out", "w+")
+        # --min-conf=n n is the cut-off confidence value,
+        #              between 0 and 100, the default is 76
+        tt_args = ("--min-conf=47",
+                   self.analysis.genbankfile_fa_path,
+                   relpath(join(self.analysis.genbank_data_dir, "chr.ptt")))
+        transterm.run(tt_args, out=tt_out, err=self.logfile)
+        tt_out.seek(0)
+        # keep a copy in memory
+        self.hp_terminators = list(transterm.iterator(tt_out))
+        tt_out.seek(0)
+        log.info("found {0} possible hairpin terminators"
+                                 .format(len(self.hp_terminators)))
+        # create a bed track
+        bed_file = open("hp_terminators.bed", "w")
+        transterm.tt2bed(tt_out, bed_file)
+        bed_file.close()
+        tt_out.close()
 
-        if not exists(join(self.analysis.data_dir, "hp_terminators.bigbed")):
-            os.chdir(self.analysis.data_dir)
-            self.log.debug("running transterm")
+        log.debug("running bedToBigBed")
 
-            tt_out = open("transterm_hp.out", "w+")
-            # --min-conf=n n is the cut-off confidence value,
-            #              between 0 and 100, the default is 76
-            tt_args = ("--min-conf=47",
-                       self.analysis.genbankfile_fa_path, dummy_ptt_path)
-            transterm.run(tt_args, out=tt_out, err=self.logfile)
-            tt_out.seek(0)
-
-            self.hp_terminators = list(transterm.iterator(tt_out))
-            tt_out.seek(0)
-            self.log.info("found {0} possible hairpin terminators"
-                                     .format(len(self.hp_terminators)))
-
-            bed_file = open("hp_terminators.bed", "w")
-            transterm.tt2bed(tt_out, bed_file)
-            bed_file.close()
-            tt_out.close()
-
-            self.log.debug("running bedToBigBed")
-
-            chrs = open("chrom.sizes", "w")
-            chrs.write("chr %d" % len(self.genbank_record.seq))
-            chrs.close()
-            self.log_cmd("bedToBigBed", "hp_terminators.bed",
-                             "chrom.sizes", "hp_terminators.bigbed")
+        # convert it to bigBed
+        chrs = open("chrom.sizes", "w")
+        chrs.write("chr %d" % len(self.genbank_record.seq))
+        chrs.close()
+        self.log_cmd("bedToBigBed", "hp_terminators.bed",
+                         "chrom.sizes", "hp_terminators.bigbed")
 
     @stage
     def predict_operons(self):
+
+        # extract the coverage data from the bam track created by tophat
         bam_path = join(join(self.analysis.data_dir,
                         "tophat-output", "accepted_hits.bam"))
         if not exists(bam_path + ".bai"):
@@ -248,33 +301,31 @@ class WorkerStages(object):
         if not self.covered:
             raise Exception("Not a valid bam file")
 
-        self.log.debug("maximum coverage: %d" % self.max)
-        self.log.debug("number of bases covered by short reads: %d/%d" % (
+        log.debug("maximum coverage: %d" % self.max)
+        log.debug("number of bases covered by short reads: %d/%d" % (
                                     self.covered, len(self.genbank_record.seq)))
 
-
-        # available here:
-        # ---------------
+        # available objects at this point
+        # -------------------------------
         #
         # - self.genbank_record: Biopython SeqIO.parse()d genbank file
         #
         # - self.coverage: [n,n,n,n,...] / len = len(self.genbank_record.seq)
         #
+        # - self.max: max(n)
+        #
         # - self.hpterminators: ((id, begin, end, strand, confidence), ...)
         #                         str, str, str, str (1/-), int
         #
 
+        # FIXME: do some magic here
         self.operons = Operon(begin=0, end=100, strand=1, confidence=10),
         self.operons = Operon(begin=200, end=300, strand=1, confidence=50),
         self.operons = Operon(begin=400, end=500, strand=1, confidence=100),
 
-    @stage
-    def create_operon_track(self):
+        # create a bed track
         track_name = "rna-seqlyze-operon_predictions"
         os.chdir(self.analysis.data_dir)
-        if exists(track_name + ".bigbed"):
-            return
-
         bed_file = open(track_name + ".bed", "w")
         for i, o in enumerate(self.operons):
             begin, end = str(o.begin), str(o.end)
@@ -286,6 +337,7 @@ class WorkerStages(object):
             ))
         bed_file.close()
 
+        # convert it to bigBed
         # chrom_sizes already generated during "transterm_hp"
         self.log_cmd("bedToBigBed", track_name + ".bed",
                          "chrom.sizes", track_name + ".bigbed")
@@ -299,36 +351,36 @@ class WorkerStages(object):
         if not self.analysis.galaxy_bam:
             bam_path = join(self.analysis.data_dir, 
                              "tophat-output", "accepted_hits.bam")
-            self.log.info("uploading accepted_hits.bam to galaxy")
+            log.info("uploading accepted_hits.bam to galaxy")
             self.analysis.galaxy_bam = GalaxyDataset(
                 id=galaxy.upload(open(bam_path), self.bam_name))
-            self.log.info("...done - id: %s" % self.analysis.galaxy_bam.id)
+            log.info("...done - id: %s" % self.analysis.galaxy_bam.id)
             self.session.commit()
 
         if not self.analysis.galaxy_coverage:
             coverage_path = join(self.analysis.data_dir, "coverage.bigwig")
-            self.log.info("uploading coverage.bigwig to galaxy")
+            log.info("uploading coverage.bigwig to galaxy")
             self.analysis.galaxy_coverage = GalaxyDataset(
                 id=galaxy.upload(open(coverage_path), self.coverage_name))
-            self.log.info("...done - id: %s" % self.analysis.galaxy_coverage.id)
+            log.info("...done - id: %s" % self.analysis.galaxy_coverage.id)
             self.session.commit()
 
         if not self.analysis.galaxy_hp_terms:
             hp_terms_path = join(self.analysis.data_dir,
                                  "hp_terminators.bigbed")
-            self.log.info("uploading hp_terminators.bigbed to galaxy")
+            log.info("uploading hp_terminators.bigbed to galaxy")
             self.analysis.galaxy_hp_terms = GalaxyDataset(
                 id=galaxy.upload(open(hp_terms_path), self.hp_terms_name))
-            self.log.info("...done - id: %s" % self.analysis.galaxy_hp_terms.id)
+            log.info("...done - id: %s" % self.analysis.galaxy_hp_terms.id)
             self.session.commit()
 
         if not self.analysis.galaxy_pr_operons:
             track_filename = "rna-seqlyze-operon_predictions.bigbed"
             pr_operons_path = join(self.analysis.data_dir, track_filename)
-            self.log.info("uploading %s to galaxy" % track_filename)
+            log.info("uploading %s to galaxy" % track_filename)
             self.analysis.galaxy_pr_operons = GalaxyDataset(
                 id=galaxy.upload(open(pr_operons_path), self.pr_operons_name))
-            self.log.info("...done - id: %s" %
+            log.info("...done - id: %s" %
                                          self.analysis.galaxy_pr_operons.id)
             self.session.commit()
 
@@ -353,6 +405,8 @@ class WorkerStages(object):
             return
 
         tracks = []
+
+        # FIXME: this cries for refactoring -- with logging!
 
         # bam track (mapping)
         bam_url = "https://" + galaxy.hostname \
@@ -407,16 +461,14 @@ class WorkerStages(object):
          - http://www.ebi.ac.uk/\\
                  embl/Documentation/FT_definitions/feature_table.html
         """
-        if exists(self.analysis.xgenbankfile_path):
-            return
 
-        record = SeqIO.parse(open(
-            self.analysis.genbankfile_path), "genbank").next()
+        log.info("augmenting genbank file %s with putative operons" %
+                                          self.analysis.genbankfile_name)
 
         for i, o in enumerate(self.operons):
             location = FeatureLocation(ExactPosition(o.begin),
                                        ExactPosition(o.end))
-            record.features.append(
+            self.genbank_record.features.append(
                 SeqFeature(location,
                     type='mRNA',
                     strand=o.strand,
@@ -424,18 +476,15 @@ class WorkerStages(object):
                         note='putative, confidence %d%%' % o.confidence,
                         operon='rnas-%d' % i)))
 
-        record.features.sort(key=lambda f: f.location.start.position)
+        self.genbank_record.features.sort(
+                key=lambda f: f.location.start.position)
 
         xgb_file = open(self.analysis.xgenbankfile_path, "w")
 
-        SeqIO.write(record, xgb_file, "genbank")
+        SeqIO.write(self.genbank_record, xgb_file, "genbank")
     #
     ############################################################################
 
-    __iter__ = lambda self: self._stages
-
-WorkerStages._stages = _stages
-del _stages
-
-class UnknownInputfileTypeException(Exception):
-    pass
+assert not _stage_conds, "@stage_cond's must be declared before @stage's"
+WorkerStages.stages = _stages
+del _stages, _stage_conds

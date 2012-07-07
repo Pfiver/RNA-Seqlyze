@@ -30,7 +30,7 @@ password = 'brtbhcdg'
 api_key = 'dddb2c53c96c0c4d263e6c74b507d203'
 hostname = 'main.g2.bx.psu.edu'
 
-default_history = 'b8468b3367a258a6'
+default_history = '16f9a8e916e0e908'
 
 default_history_url = 'https://main.g2.bx.psu.edu/u/dcgdftvcdv/h/rna-seqlyze'
 
@@ -148,8 +148,8 @@ def upload(fileobj, filename):
     #  (/galaxy/.../NC_002754.1 SRR030768 Coverage) does not exist."
     # maybe there is some hopefully not too long running asynchronous
     # data handling operation taking place on the galaxy server ... ???
-    # try an ugly workaround...
-    time.sleep(1)
+    # try an ugly workaround... EDT: Waiting 1s still didn't fix it...
+    time.sleep(5)
     import_uploads(login())
     histories = json.loads(api_call(
         history_path_template.format(history=default_history)))

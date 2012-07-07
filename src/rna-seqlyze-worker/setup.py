@@ -22,6 +22,7 @@ setup(
         'rnaseqlyze.sh',
     ])],
     setup_requires=[
+        "psutil",
         "nose >= 1.1.2",
         "docopt > 0.4.1",
         "rna-seqlyze >= 0.1",

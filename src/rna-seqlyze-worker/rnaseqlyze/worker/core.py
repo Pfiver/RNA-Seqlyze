@@ -7,6 +7,7 @@ various analysis steps defined in :class:`~.WorkerStages`.
 
 import logging
 log = logging.getLogger(__name__)
+root_logger = logging.getLogger()
 
 from threading import Thread
 from logging import Formatter
@@ -70,23 +71,22 @@ class Worker(Thread, WorkerStages):
 
         self.logfile = open(path.join(
                 self.analysis.data_dir, "rna-seqlyze-worker.log"), "w")
-        self.log = logging.getLogger("%s.Worker(Analysis #%d)" % (
-                                      __name__,           self.analysis_id))
         self.log_handler = StreamHandler(self.logfile)
         self.log_handler.setFormatter(Formatter(log_format))
-        self.log.addHandler(self.log_handler)
-        self.log.info("starting work on analysis #%d" % self.analysis_id)
+        root_logger.addHandler(self.log_handler)
+        log.info("starting work on analysis #%d" % self.analysis_id)
         self.analysis.finished = False
         self.analysis.started = True
+        self.analysis.error = None
         self.session.commit()
 
     @contextmanager
     def _stage_log_manager(self, stage):
-        handler = StreamHandler(StageLogStream(
-                                        self.analysis, stage, self.session))
-        self.log.addHandler(handler)
+        handler = StreamHandler(
+                    StageLogStream(self.analysis, stage, self.session))
+        root_logger.addHandler(handler)
         yield
-        self.log.removeHandler(handler)
+        root_logger.removeHandler(handler)
 
     def run(self):
 
@@ -94,11 +94,11 @@ class Worker(Thread, WorkerStages):
         #       maybe @stages -> @stages(condition) something ...
 
         self._thread_init()
-        self.analysis.error = None
-        self.session.commit()
         try:
-            for stage in WorkerStages:
-                self.log.info("=== %s ===" % stage.func_name)
+            for stage in self.stages:
+                if not stage.should_run(self):
+                    continue
+                log.info("=== %s ===" % stage.func_name)
                 with self._stage_log_manager(stage.func_name):
                     self.analysis.stage = stage.func_name
                     self.session.commit()
@@ -108,13 +108,11 @@ class Worker(Thread, WorkerStages):
             raise
         finally:
             if self.analysis.error:
-                self.log.error("error processing analysis #%d: %r" % (
-                                                           self.analysis.id,
-                                                           self.analysis.error))
+                log.error(self.analysis.error)
             else:
-                self.log.info("work on analysis #%d completed" % (
-                                                 self.analysis.id,))
+                log.info("analysis finished")
+
             self.analysis.finished = True
             self.session.commit()
-            self.log.removeHandler(self.log_handler)
+            root_logger.removeHandler(self.log_handler)
             self.logfile.close()

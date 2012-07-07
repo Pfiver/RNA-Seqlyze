@@ -14,15 +14,15 @@ from sqlalchemy.orm import validates
 
 import rnaseqlyze
 
-srr_url_template = "http://ftp-private.ncbi.nlm.nih.gov" \
+url_template = "http://ftp-private.ncbi.nlm.nih.gov" \
         "/sra/sra-instant/reads/ByRun/sra/SRR/{srr:.6}/{srr}/{srr}.sra"
 # e.g.  "/sra/sra-instant/reads/ByRun/sra/SRR/SRR000/SRR000001/SRR000001.sra"
 
 class Methods(object):
     def download(self):
         try:
-            log.debug("fetching " + self.srr)
-            srr_url = srr_url_template.format(srr=self.srr)
+            log.info("fetching " + self.srr)
+            srr_url = url_template.format(srr=self.srr)
             remote = urlopen(srr_url, timeout=60)
             local = open(self.sra_path, "w")
             copyfileobj(remote, local)

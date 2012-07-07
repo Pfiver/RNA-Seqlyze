@@ -6,7 +6,7 @@ import logging
 log = logging.getLogger(__name__)
 
 import os
-from os.path import join
+from os.path import join, exists
 import datetime
 from urllib import quote
 
@@ -142,6 +142,8 @@ class Properties(object):
 
     @property
     def inputfile_header(self):
+        if not exists(self.inputfile_fq_path):
+            return
         fq_file = open(self.inputfile_fq_path)
         lines = [fq_file.readline() for i in range(4)]
         log.info("Header: %s" % lines[0])
@@ -213,6 +215,15 @@ class Properties(object):
         return "https://" + galaxy.hostname \
                     + galaxy.dataset_display_url_template \
                         .format(dataset=self.galaxy_hg_text.id)
+
+    @property
+    def data_dir_state(self):
+        return hash(tuple((x,tuple(y),tuple(z))
+                          for x, y, z in os.walk(self.data_dir)))
+
+    @property
+    def stage_logs_state(self):
+        return hash(tuple(self.stage_logs))
 
 class Validators(object):
     @validates('org_accession')
