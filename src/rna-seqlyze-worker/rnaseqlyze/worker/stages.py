@@ -126,7 +126,7 @@ class WorkerStages(object):
         log.info("first 8 bytes of input data: %r" % _8bytes)
         self.analysis.inputfile_type = (
                      'fastq' if _8bytes[0] == '@'
-                else 'sra'   if header == 'NCBI.sra' else None)
+                else 'sra'   if _8bytes    == 'NCBI.sra' else None)
         self.session.commit()
         if not self.analysis.inputfile_type:
             raise Exception("Unknown input data type")
@@ -206,7 +206,8 @@ class WorkerStages(object):
         fq = relpath(self.analysis.inputfile_fq_path)
         gb = relpath(join(self.analysis.genbank_data_dir,
                           self.analysis.genbankfile_base_name))
-        self.log_cmd("tophat", "-p", str(n_cpus), "-o", "tophat-output", gb, fq)
+        self.log_cmd("tophat", "-o", "tophat-output",
+                        "-p", str(n_cpus), "--no-novel-juncs", gb, fq)
 
     @stage_cond
     def create_coverage_track(self):
