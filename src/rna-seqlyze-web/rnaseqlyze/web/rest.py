@@ -19,9 +19,10 @@ def display(request):
     **REST Analysis View**
     """
     analysis = DBSession.query(Analysis).get(int(request.matchdict["id"]))
-    org_db = DBSession.query(UCSCOrganism) \
+    first = DBSession.query(UCSCOrganism) \
                 .filter(UCSCOrganism.acc.like(
-                    analysis.org_accession + '%')).first().db
+                    analysis.org_accession + '%')).first()
+    org_db = first and first.db
     analysis.__dict__.update({
         'org_db': org_db,
         'hg_url': analysis.get_hg_url(org_db)})

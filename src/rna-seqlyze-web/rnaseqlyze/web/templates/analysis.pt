@@ -24,14 +24,14 @@
     <h2 id="input">Input</h2>
     <div class="form-horizontal">
       <h3 id="shortreads">Short Reads</h3>
-      <div class="control-group" tal:condition="not analysis.inputfile_name">
+      <div class="control-group" tal:condition="not analysis.inputfile_uploaded">
         <label for="inputfileInput" class="control-label">SRR Indentifier</label>
         <div class="controls entered-values">
           <a href="http://www.ncbi.nlm.nih.gov/sra/${analysis.rnaseq_run.srr}"
             >${analysis.rnaseq_run.srr}</a>
         </div>
       </div>
-      <div class="control-group" tal:condition="analysis.inputfile_name">
+      <div class="control-group" tal:condition="analysis.inputfile_uploaded">
         <label for="inputfileInput" class="control-label">SRA or FASTQ File</label>
         <div class="controls entered-values">
           <strong>${analysis.inputfile_name}</strong>
@@ -56,14 +56,14 @@
         </div>
       </div>
       <h3>Organism</h3>
-      <div class="control-group" tal:condition="not analysis.genbankfile_name">
+      <div class="control-group" tal:condition="not analysis.genbankfile_uploaded">
         <label class="control-label">Accession Number</label>
         <div class="controls entered-values">
           <a href="http://www.ncbi.nlm.nih.gov/nuccore/${analysis.org_accession}"
             >${analysis.org_accession}</a>
         </div>
       </div>
-      <div class="control-group" tal:condition="analysis.genbankfile_name">
+      <div class="control-group" tal:condition="analysis.genbankfile_uploaded">
         <label class="control-label">Genebank File</label>
         <div class="controls entered-values">
           <strong>${analysis.genbankfile_name}</strong>
@@ -73,10 +73,10 @@
     </div>
 
 <!--.
-     \_____________________________________________________________________
-     /                                                                     \
-            This part is dynamically updated using backbone.js              \
-            __________________________________________________               -->
+     \____________________________________________________________________
+     /                                                                    \
+            This part is dynamically generated with backbone.js            \
+            ___________________________________________________             `-->
 
 
             <div id="processing"></div>
