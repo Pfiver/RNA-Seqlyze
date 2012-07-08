@@ -6,7 +6,7 @@ Shamelessly piggy-back onto Penn-State University's "Galaxy" Project.
 RNA-Seqlyze needs a some publicly available Web-Space, which PSU provides
 plenty of for bioinformatics reseach data (250.0 Gb per user as of 4 Jul 2012).
 
-Thanks go to Penn-State Universitie!
+Thanks go to Penn-State University!
 
 http://www.psu.edu/
 
@@ -19,6 +19,8 @@ log = logging.getLogger(__name__)
 
 import os, json, time, ftplib, \
        urllib, urllib2, cookielib
+from threading import local
+from datetime import datetime, timedelta
 
 import lxml.html
 
@@ -48,22 +50,24 @@ dataset_display_url_template = "/datasets/{dataset}/display"
 
 rq_headers = {}
 
+class Session(local):
+    cookies = None
+    created = None
+
+session = Session()
+
 def api_call(path):
     url = "https://" + hostname + path
     return urllib2.urlopen(url + "?key=" + api_key).read()
 
-def login(cookie_file=None):
-    if not cookie_file:
-        cookie_jar = cookielib.CookieJar()
-    else:
-        cookie_jar = cookielib.MozillaCookieJar()
+def login():
+    cookie_jar = cookielib.CookieJar()
     urllib2.install_opener(urllib2.build_opener(
-                                    urllib2.HTTPCookieProcessor(cookie_jar)))
+                    urllib2.HTTPCookieProcessor(cookie_jar)))
     log.info("Loggin in to galaxy server %s ..." % hostname)
     login = "https://" + hostname + "/user/login"
     rq = urllib2.Request(login, headers=rq_headers)
     request = urllib2.urlopen(rq)
-#    request = urllib2.urlopen(login)
     doc = lxml.html.parse(request).getroot()
     form = doc.forms[0]
     form.fields["email"] = email
@@ -73,46 +77,44 @@ def login(cookie_file=None):
     log.debug("posting login form: %s" % form.action)
     rq = urllib2.Request(form.action, headers=rq_headers)
     request = urllib2.urlopen(rq, data)
-#    request = urllib2.urlopen(form.action, data)
     doc = lxml.html.parse(request).getroot()
     log.info("Success!")
-    if cookie_file:
-        cookie_jar.save(cookie_file, ignore_discard=True, ignore_expires=True)
     return cookie_jar
 
-def import_uploads(cookie_jar=None, cookie_file="cookies.txt"):
-    if cookie_jar:
-        cookie_file = None
-    else:
-        cookie_jar = cookielib.MozillaCookieJar()
-        cookie_jar.load(cookie_file, ignore_discard=True, ignore_expires=True)
+def import_upload(filename):
+    if not (session.created
+            and session.created > (datetime.now() - timedelta(minutes=30))):
+        session.cookies = login()
+        session.created = datetime.now()
+
     urllib2.install_opener(urllib2.build_opener(
-                                    urllib2.HTTPCookieProcessor(cookie_jar)))
-    log.info("Importing ftp files...")
+                    urllib2.HTTPCookieProcessor(session.cookies)))
+    log.info("Importing ftp file")
     tool = "https://" + hostname + "/tool_runner?tool_id=upload1"
     rq = urllib2.Request(tool, headers=rq_headers)
     request = urllib2.urlopen(rq)
-#    request = urllib2.urlopen(tool)
     doc = lxml.html.parse(request).getroot()
+    found = False
     form = doc.forms[0]
     inp = form.inputs["files_0|ftp_files"]
     if isinstance(inp, lxml.html.InputElement):
-        inp.checked = True
+        if inp.attrib['value'] == filename:
+            found = inp.checked = True
     elif isinstance(inp, lxml.html.CheckboxGroup):
-        for group in inp:
-            group.checked = True
+        for box in inp:
+            if box.attrib['value'] == filename:
+                found = box.checked = True
     else:
         raise Exception("unexpected html element: %s" % inp)
+    if not found:
+        raise Exception("file not available for import: %s" % filename)
     submit = "runtool_btn", form.fields["runtool_btn"]
     data = multipart.urlencode(form.form_values() + [submit])
     log.debug("posting upload form: %s" % form.action)
     rq = urllib2.Request(form.action, data, headers=rq_headers)
     request = multipart.urlopen(rq)
-#    request = multipart.urlopen(form.action, data)
     doc = lxml.html.parse(request).getroot()
     log.info("Success!")
-    if cookie_file:
-        cookie_jar.save(cookie_file, ignore_discard=True, ignore_expires=True)
 
 def ftpupload(fileobj, filename):
     """
@@ -143,11 +145,11 @@ def upload(fileobj, filename):
     }
 
     ftpupload(fileobj, filename)
-    import_uploads(login())
+    import_upload(filename)
     datasets = json.loads(api_call(
         history_path_template.format(history=default_history)))
     # assume objects are ordered chronologically...
     for dataset in reversed(datasets):
-        if dataset['name'] == filename and dataset['state'] == 'ok':
+        if dataset['name'] == filename:
             return dataset['id']
     raise Exception("Couldn't find id of uploaded file in dataset")
