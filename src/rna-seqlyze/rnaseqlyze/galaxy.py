@@ -119,10 +119,10 @@ def ftpupload(fileobj, filename):
     upload a file object to galaxy
     based on http://love-python.blogspot.com/2008/02/ftp-file-upload.html
     """
-    log.debug("uploading file to ftp server")
+    log.info("uploading file to ftp server")
     ftp = ftplib.FTP(hostname, email, password)
     ftp.storbinary('STOR ' + filename, fileobj)
-    log.debug("Success!")
+    log.info("Success!")
     ftp.quit()
 
 def upload(fileobj, filename):
@@ -143,17 +143,11 @@ def upload(fileobj, filename):
     }
 
     ftpupload(fileobj, filename)
-    # getting errors like this on galaxy:
-    # "An error occurred running this job: Uploaded temporary file
-    #  (/galaxy/.../NC_002754.1 SRR030768 Coverage) does not exist."
-    # maybe there is some hopefully not too long running asynchronous
-    # data handling operation taking place on the galaxy server ... ???
-    # try an ugly workaround... EDT: Waiting 1s still didn't fix it...
-    time.sleep(5)
     import_uploads(login())
-    histories = json.loads(api_call(
+    datasets = json.loads(api_call(
         history_path_template.format(history=default_history)))
     # assume objects are ordered chronologically...
-    for history in reversed(histories):
-        if history['name'] == filename:
-            return history['id']
+    for dataset in reversed(datasets):
+        if dataset['name'] == filename and dataset['state'] == 'ok':
+            return dataset['id']
+    raise Exception("Couldn't find id of uploaded file in dataset")

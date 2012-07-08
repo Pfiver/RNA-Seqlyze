@@ -177,13 +177,15 @@ window.StageLogListView = Backbone.View.extend({
         this.model.bind("add", this.add, this);
     },
     add: function (model) {
-        if (this.$el.size())
-            this.$el.contents().find("pre").removeAttr('style');
         this.$el.append(
             new StageLogView({model: model}).render().el
         );
-        if (!this.model.analysis.get('finished'))
+        if (!this.model.analysis.get('finished')) {
+            this.$el.contents().find("pre")
+                .not(':last').css('background-color', '')
+                .prevObject.last().css('background-color', '#ddf');
             this.$el.contents().last().scrollToBottom();
+        }
         $(window).scrollspy('refresh');
     },
 });
@@ -193,17 +195,16 @@ window.StageLogView = Backbone.View.extend({
     initialize: function () {
         this.model.bind("change", this.change, this);
     },
-    change: function () {
-        this.$el.empty();
-        this.render(this.model);
+    change: function (model, options) {
+        this.$el.children("pre").text(model.get('text'));
         this.$el.scrollToBottom();
         $(window).scrollspy('refresh');
     },
-    render: function (model) {
+    render: function () {
         var log = this.model.toJSON();
         this.$el.attr('id', log.stage);
         this.$el.append(el.h4(log.stage));
-        this.$el.append(el.pre({style: 'background-color: #ddf;'}, log.text));
+        this.$el.append(el.pre(log.text));
         return this;
     },
 });

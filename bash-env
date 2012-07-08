@@ -11,6 +11,7 @@ rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
 
 cron-hourly ()
 {
+    return
     _cron-hourly ()
     {
         # push home directory repository to 'biocalc-env' branch
@@ -44,7 +45,6 @@ cron-hourly ()
         re-install
         re-apidoc
         re-cover
-
     }
 
     _cron ()
