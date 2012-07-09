@@ -11,6 +11,9 @@ BachelorThesis-$(VERSION).pdf: main.tex $(wildcard *.tex *.cls)
 	touch $@ # nudge evince
 	make clean
 
+sourcecode.tex:	../apidoc/_build/latex/RNA-Seqlyze.tex
+	sed '/^\\subsubsection.*rnaseqlyze/,$$!d' $< | head -n-5 > $@
+
 clean:
 ifneq ($(DIRT),)
 	rm $(DIRT)

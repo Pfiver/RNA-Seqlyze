@@ -54,8 +54,16 @@
 \pagestyle{scrheadings}
 \clearscrheadfoot
 \setheadsepline{1pt}
-\renewcommand{\sectionmark}[1]{\markright{\thesection\ - #1}{}}
-\chead{\rightmark}
+\renewcommand{\sectionmark}[1]{\markleft{\thesection\ - #1}{}}
+\def\nextmark{}\def\curmark{}
+\renewcommand{\paragraphmark}[1]{\def\nextmark{#1}}
+\renewcommand\rightmark{
+	\let\tmpmark\curmark
+	\global\let\curmark\nextmark
+	\tmpmark
+}
+\ihead{\leftmark}
+\ohead{\rightmark}
 \cfoot{\thepage\ / \pageref*{LastPage}}
 \ifoot[
 	\upshape \setlength\parindent{0pt}
