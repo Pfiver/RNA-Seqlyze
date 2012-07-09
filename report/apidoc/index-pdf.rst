@@ -1,13 +1,6 @@
-.. RNA-Seqlyze PDF documentation master file
+Chapters
+********
 
 .. toctree::
-	:titlesonly:
-
-	rnaseqlyze
-	rnaseqlyze.core
-	rnaseqlyze.cli
-	rnaseqlyze.web
-	rnaseqlyze.worker
-
-:ref:`modindex`
-:ref:`genindex`
+	
+	index-pdf1

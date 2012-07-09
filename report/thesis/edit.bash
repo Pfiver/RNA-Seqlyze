@@ -17,7 +17,7 @@ fi
 
                                                 # determine version
 VERSION=$(make -p . | sed '/^VERSION/!d;s/.*= //')
-pdf=SRS-$VERSION.pdf
+pdf=BachelorThesis-$VERSION.pdf
 #evince "$pdf" &                                # start evince & gedit
 
 inputs=(*.tex *.cls)

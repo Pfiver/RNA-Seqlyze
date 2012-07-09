@@ -104,3 +104,6 @@
 \else
 	\usepackage[disable]{todonotes}	% hide todo notes
 \fi
+
+\usepackage{longtable}
+\usepackage{sphinx}

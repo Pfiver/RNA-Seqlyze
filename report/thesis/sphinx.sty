@@ -1,0 +1,514 @@
+%
+% sphinx.sty
+%
+% Adapted from the old python.sty, mostly written by Fred Drake,
+% by Georg Brandl.
+%
+
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{sphinx}[2010/01/15 LaTeX package (Sphinx markup)]
+
+\RequirePackage{textcomp}
+\RequirePackage{fancybox}
+\RequirePackage{titlesec}
+\RequirePackage{tabulary}
+\RequirePackage{amsmath} % for \text
+\RequirePackage{makeidx}
+\RequirePackage{framed}
+\RequirePackage{ifthen}
+\RequirePackage{color}
+% For highlighted code.
+\RequirePackage{fancyvrb}
+% For table captions.
+\RequirePackage{threeparttable}
+% Handle footnotes in tables.
+\RequirePackage{footnote}
+\makesavenoteenv{tabulary}
+% For floating figures in the text.
+\RequirePackage{wrapfig}
+% Separate paragraphs by space by default.
+\RequirePackage{parskip}
+
+% Redefine these colors to your liking in the preamble.
+\definecolor{TitleColor}{rgb}{0.126,0.263,0.361}
+\definecolor{InnerLinkColor}{rgb}{0.208,0.374,0.486}
+\definecolor{OuterLinkColor}{rgb}{0.216,0.439,0.388}
+% Redefine these colors to something not white if you want to have colored
+% background and border for code examples.
+\definecolor{VerbatimColor}{rgb}{1,1,1}
+\definecolor{VerbatimBorderColor}{rgb}{1,1,1}
+
+% Uncomment these two lines to ignore the paper size and make the page 
+% size more like a typical published manual.
+%\renewcommand{\paperheight}{9in}
+%\renewcommand{\paperwidth}{8.5in}   % typical squarish manual
+%\renewcommand{\paperwidth}{7in}     % O'Reilly ``Programmming Python''
+
+% For graphicx, check if we are compiling under latex or pdflatex.
+\ifx\pdftexversion\undefined
+  \usepackage{graphicx}
+\else
+  \usepackage[pdftex]{graphicx}
+\fi
+
+% for PDF output, use colors and maximal compression
+\newif\ifsphinxpdfoutput\sphinxpdfoutputfalse
+\ifx\pdfoutput\undefined\else\ifcase\pdfoutput
+  \let\py@NormalColor\relax
+  \let\py@TitleColor\relax
+\else
+  \sphinxpdfoutputtrue
+  \input{pdfcolor}
+  \def\py@NormalColor{\color[rgb]{0.0,0.0,0.0}}
+  \def\py@TitleColor{\color{TitleColor}}
+  \pdfcompresslevel=9
+\fi\fi
+
+% XeLaTeX can do colors, too
+\ifx\XeTeXrevision\undefined\else
+  \def\py@NormalColor{\color[rgb]{0.0,0.0,0.0}}
+  \def\py@TitleColor{\color{TitleColor}}
+\fi
+
+% Use this to set the font family for headers and other decor:
+\newcommand{\py@HeaderFamily}{\sffamily\bfseries}
+
+% Some custom font markup commands.
+%
+\newcommand{\strong}[1]{{\bf #1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\bfcode}[1]{\code{\bfseries#1}}
+\newcommand{\samp}[1]{`\code{#1}'}
+\newcommand{\email}[1]{\textsf{#1}}
+
+% Redefine the Verbatim environment to allow border and background colors.
+% The original environment is still used for verbatims within tables.
+\let\OriginalVerbatim=\Verbatim
+\let\endOriginalVerbatim=\endVerbatim
+
+% Play with vspace to be able to keep the indentation.
+\newlength\distancetoright
+\def\mycolorbox#1{%
+  \setlength\distancetoright{\linewidth}%
+  \advance\distancetoright -\@totalleftmargin %
+  \fcolorbox{VerbatimBorderColor}{VerbatimColor}{%
+  \begin{minipage}{\distancetoright}%
+    #1
+  \end{minipage}%
+  }%
+}
+\def\FrameCommand{\mycolorbox}
+
+\renewcommand{\Verbatim}[1][1]{%
+  % list starts new par, but we don't want it to be set apart vertically
+  \bgroup\parskip=0pt%
+  \smallskip%
+  % The list environement is needed to control perfectly the vertical
+  % space.
+  \list{}{%
+  \setlength\parskip{0pt}%
+  \setlength\itemsep{0ex}%
+  \setlength\topsep{0ex}%
+  \setlength\partopsep{0pt}%
+  \setlength\leftmargin{0pt}%
+  }%
+  \item\MakeFramed {\FrameRestore}%
+     \small%
+    \OriginalVerbatim[#1]%
+}
+\renewcommand{\endVerbatim}{%
+    \endOriginalVerbatim%
+  \endMakeFramed%
+  \endlist%
+  % close group to restore \parskip
+  \egroup%
+}
+
+
+% Index-entry generation support.
+%
+
+% Command to generate two index entries (using subentries)
+\newcommand{\indexii}[2]{\index{#1!#2}\index{#2!#1}}
+
+% And three entries (using only one level of subentries)
+\newcommand{\indexiii}[3]{\index{#1!#2 #3}\index{#2!#3, #1}\index{#3!#1 #2}}
+
+% And four (again, using only one level of subentries)
+\newcommand{\indexiv}[4]{
+\index{#1!#2 #3 #4}
+\index{#2!#3 #4, #1}
+\index{#3!#4, #1 #2}
+\index{#4!#1 #2 #3}
+}
+
+% \moduleauthor{name}{email}
+\newcommand{\moduleauthor}[2]{}
+
+% \sectionauthor{name}{email}
+\newcommand{\sectionauthor}[2]{}
+
+% Augment the sectioning commands used to get our own font family in place,
+% and reset some internal data items:
+\titleformat{\section}{\Large\py@HeaderFamily}%
+            {\py@TitleColor\thesection}{0.5em}{\py@TitleColor}{\py@NormalColor}
+\titleformat{\subsection}{\large\py@HeaderFamily}%
+            {\py@TitleColor\thesubsection}{0.5em}{\py@TitleColor}{\py@NormalColor}
+\titleformat{\subsubsection}{\py@HeaderFamily}%
+            {\py@TitleColor\thesubsubsection}{0.5em}{\py@TitleColor}{\py@NormalColor}
+\titleformat{\paragraph}{\small\py@HeaderFamily}%
+            {\py@TitleColor}{0em}{\py@TitleColor}{\py@NormalColor}
+
+% {fulllineitems} is the main environment for object descriptions.
+%
+\newcommand{\py@itemnewline}[1]{%
+  \@tempdima\linewidth%
+  \advance\@tempdima \leftmargin\makebox[\@tempdima][l]{#1}%
+}
+
+\newenvironment{fulllineitems}{
+  \begin{list}{}{\labelwidth \leftmargin \labelsep 0pt
+                 \rightmargin 0pt \topsep -\parskip \partopsep \parskip
+                 \itemsep -\parsep
+                 \let\makelabel=\py@itemnewline}
+}{\end{list}}
+
+% \optional is used for ``[, arg]``, i.e. desc_optional nodes.
+\newcommand{\optional}[1]{%
+  {\textnormal{\Large[}}{#1}\hspace{0.5mm}{\textnormal{\Large]}}}
+
+\newlength{\py@argswidth}
+\newcommand{\py@sigparams}[2]{%
+  \parbox[t]{\py@argswidth}{#1\code{)}#2}}
+\newcommand{\pysigline}[1]{\item[#1]\nopagebreak}
+\newcommand{\pysiglinewithargsret}[3]{%
+  \settowidth{\py@argswidth}{#1\code{(}}%
+  \addtolength{\py@argswidth}{-2\py@argswidth}%
+  \addtolength{\py@argswidth}{\linewidth}%
+  \item[#1\code{(}\py@sigparams{#2}{#3}]}
+
+% Production lists
+%
+\newenvironment{productionlist}{
+%  \def\optional##1{{\Large[}##1{\Large]}}
+  \def\production##1##2{\\\code{##1}&::=&\code{##2}}
+  \def\productioncont##1{\\& &\code{##1}}
+  \parindent=2em
+  \indent
+  \begin{tabular}{lcl}
+}{%
+  \end{tabular}
+}
+
+% Notices / Admonitions
+%
+\newlength{\py@noticelength}
+
+\newcommand{\py@heavybox}{
+  \setlength{\fboxrule}{1pt}
+  \setlength{\fboxsep}{6pt}
+  \setlength{\py@noticelength}{\linewidth}
+  \addtolength{\py@noticelength}{-2\fboxsep}
+  \addtolength{\py@noticelength}{-2\fboxrule}
+  %\setlength{\shadowsize}{3pt}
+  \Sbox
+  \minipage{\py@noticelength}
+}
+\newcommand{\py@endheavybox}{
+  \endminipage
+  \endSbox
+  \fbox{\TheSbox}
+}
+
+\newcommand{\py@lightbox}{{%
+  \setlength\parskip{0pt}\par
+  \rule[0ex]{\linewidth}{0.5pt}%
+  \par\vspace{-0.5ex}%
+  }}
+\newcommand{\py@endlightbox}{{%
+  \setlength{\parskip}{0pt}%
+  \par\rule[0.5ex]{\linewidth}{0.5pt}%
+  \par\vspace{-0.5ex}%
+  }}
+
+% Some are quite plain:
+\newcommand{\py@noticestart@note}{\py@lightbox}
+\newcommand{\py@noticeend@note}{\py@endlightbox}
+\newcommand{\py@noticestart@hint}{\py@lightbox}
+\newcommand{\py@noticeend@hint}{\py@endlightbox}
+\newcommand{\py@noticestart@important}{\py@lightbox}
+\newcommand{\py@noticeend@important}{\py@endlightbox}
+\newcommand{\py@noticestart@tip}{\py@lightbox}
+\newcommand{\py@noticeend@tip}{\py@endlightbox}
+
+% Others gets more visible distinction:
+\newcommand{\py@noticestart@warning}{\py@heavybox}
+\newcommand{\py@noticeend@warning}{\py@endheavybox}
+\newcommand{\py@noticestart@caution}{\py@heavybox}
+\newcommand{\py@noticeend@caution}{\py@endheavybox}
+\newcommand{\py@noticestart@attention}{\py@heavybox}
+\newcommand{\py@noticeend@attention}{\py@endheavybox}
+\newcommand{\py@noticestart@danger}{\py@heavybox}
+\newcommand{\py@noticeend@danger}{\py@endheavybox}
+\newcommand{\py@noticestart@error}{\py@heavybox}
+\newcommand{\py@noticeend@error}{\py@endheavybox}
+
+\newenvironment{notice}[2]{
+  \def\py@noticetype{#1}
+  \csname py@noticestart@#1\endcsname
+  \strong{#2}
+}{\csname py@noticeend@\py@noticetype\endcsname}
+
+% Allow the release number to be specified independently of the
+% \date{}.  This allows the date to reflect the document's date and
+% release to specify the release that is documented.
+%
+\newcommand{\py@release}{}
+\newcommand{\version}{}
+\newcommand{\shortversion}{}
+\newcommand{\releaseinfo}{}
+\newcommand{\releasename}{Release}
+\newcommand{\release}[1]{%
+  \renewcommand{\py@release}{\releasename\space\version}%
+  \renewcommand{\version}{#1}}
+\newcommand{\setshortversion}[1]{%
+  \renewcommand{\shortversion}{#1}}
+\newcommand{\setreleaseinfo}[1]{%
+  \renewcommand{\releaseinfo}{#1}}
+
+% Allow specification of the author's address separately from the
+% author's name.  This can be used to format them differently, which
+% is a good thing.
+%
+\newcommand{\py@authoraddress}{}
+\newcommand{\authoraddress}[1]{\renewcommand{\py@authoraddress}{#1}}
+
+% This sets up the fancy chapter headings that make the documents look
+% at least a little better than the usual LaTeX output.
+%
+\@ifundefined{ChTitleVar}{}{
+  \ChNameVar{\raggedleft\normalsize\py@HeaderFamily}
+  \ChNumVar{\raggedleft \bfseries\Large\py@HeaderFamily}
+  \ChTitleVar{\raggedleft \rm\Huge\py@HeaderFamily}
+  % This creates chapter heads without the leading \vspace*{}:
+  \def\@makechapterhead#1{%
+    {\parindent \z@ \raggedright \normalfont
+      \ifnum \c@secnumdepth >\m@ne
+        \DOCH
+      \fi
+      \interlinepenalty\@M
+      \DOTI{#1}
+    }
+  }
+}
+
+% Redefine description environment so that it is usable inside fulllineitems.
+%
+\renewcommand{\description}{%
+  \list{}{\labelwidth\z@%
+          \itemindent-\leftmargin%
+	  \labelsep5pt%
+          \let\makelabel=\descriptionlabel}}
+
+% Definition lists; requested by AMK for HOWTO documents.  Probably useful
+% elsewhere as well, so keep in in the general style support.
+%
+\newenvironment{definitions}{%
+  \begin{description}%
+  \def\term##1{\item[##1]\mbox{}\\*[0mm]}
+}{%
+  \end{description}%
+}
+
+% Tell TeX about pathological hyphenation cases:
+\hyphenation{Base-HTTP-Re-quest-Hand-ler}
+
+
+% The following is stuff copied from docutils' latex writer.
+%
+\newcommand{\optionlistlabel}[1]{\bf #1 \hfill}
+\newenvironment{optionlist}[1]
+{\begin{list}{}
+  {\setlength{\labelwidth}{#1}
+   \setlength{\rightmargin}{1cm}
+   \setlength{\leftmargin}{\rightmargin}
+   \addtolength{\leftmargin}{\labelwidth}
+   \addtolength{\leftmargin}{\labelsep}
+   \renewcommand{\makelabel}{\optionlistlabel}}
+}{\end{list}}
+
+\newlength{\lineblockindentation}
+\setlength{\lineblockindentation}{2.5em}
+\newenvironment{lineblock}[1]
+{\begin{list}{}
+  {\setlength{\partopsep}{\parskip}
+   \addtolength{\partopsep}{\baselineskip}
+   \topsep0pt\itemsep0.15\baselineskip\parsep0pt
+   \leftmargin#1}
+ \raggedright}
+{\end{list}}
+
+% Redefine includgraphics for avoiding images larger than the screen size
+% If the size is not specified.
+\let\py@Oldincludegraphics\includegraphics
+
+\newbox\image@box%
+\newdimen\image@width%
+\renewcommand\includegraphics[2][\@empty]{%
+  \ifx#1\@empty%
+    \setbox\image@box=\hbox{\py@Oldincludegraphics{#2}}%
+    \image@width\wd\image@box%
+    \ifdim \image@width>\linewidth%
+      \setbox\image@box=\hbox{\py@Oldincludegraphics[width=\linewidth]{#2}}%
+      \box\image@box%
+    \else%
+      \py@Oldincludegraphics{#2}%
+    \fi%
+  \else%
+    \py@Oldincludegraphics[#1]{#2}%
+  \fi%
+}
+
+
+% Fix the index and bibliography environments to add an entry to the Table of
+% Contents; this is much nicer than just having to jump to the end of the book
+% and flip around, especially with multiple indexes.
+%
+\let\py@OldTheindex=\theindex
+\renewcommand{\theindex}{
+  \cleardoublepage
+  \phantomsection
+  \py@OldTheindex
+  \addcontentsline{toc}{chapter}{\indexname}
+}
+
+\let\py@OldThebibliography=\thebibliography
+\renewcommand{\thebibliography}[1]{
+  \cleardoublepage
+  \phantomsection
+  \py@OldThebibliography{1}
+  \addcontentsline{toc}{chapter}{\bibname}
+}
+
+% Fix anchor placement for figures with captions.
+% (Note: we don't use a package option here; instead, we give an explicit
+% \capstart for figures that actually have a caption.)
+\RequirePackage{hypcap}
+
+% From docutils.writers.latex2e
+\providecommand{\DUspan}[2]{%
+  {% group ("span") to limit the scope of styling commands
+    \@for\node@class@name:=#1\do{%
+    \ifcsname docutilsrole\node@class@name\endcsname%
+      \csname docutilsrole\node@class@name\endcsname%
+    \fi%
+    }%
+    {#2}% node content
+  }% close "span"
+}
+
+\providecommand*{\DUprovidelength}[2]{
+  \ifthenelse{\isundefined{#1}}{\newlength{#1}\setlength{#1}{#2}}{}
+}
+
+\DUprovidelength{\DUlineblockindent}{2.5em}
+\ifthenelse{\isundefined{\DUlineblock}}{
+  \newenvironment{DUlineblock}[1]{%
+    \list{}{\setlength{\partopsep}{\parskip}
+            \addtolength{\partopsep}{\baselineskip}
+            \setlength{\topsep}{0pt}
+            \setlength{\itemsep}{0.15\baselineskip}
+            \setlength{\parsep}{0pt}
+            \setlength{\leftmargin}{#1}}
+    \raggedright
+  }
+  {\endlist}
+}{}
+
+\makeatletter
+\def\PYG@reset{\let\PYG@it=\relax \let\PYG@bf=\relax%
+    \let\PYG@ul=\relax \let\PYG@tc=\relax%
+    \let\PYG@bc=\relax \let\PYG@ff=\relax}
+\def\PYG@tok#1{\csname PYG@tok@#1\endcsname}
+\def\PYG@toks#1+{\ifx\relax#1\empty\else%
+    \PYG@tok{#1}\expandafter\PYG@toks\fi}
+\def\PYG@do#1{\PYG@bc{\PYG@tc{\PYG@ul{%
+    \PYG@it{\PYG@bf{\PYG@ff{#1}}}}}}}
+\def\PYG#1#2{\PYG@reset\PYG@toks#1+\relax+\PYG@do{#2}}
+
+\def\PYG@tok@gd{\def\PYG@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\def\PYG@tok@gu{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\def\PYG@tok@gt{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.25,0.82}{##1}}}
+\def\PYG@tok@gs{\let\PYG@bf=\textbf}
+\def\PYG@tok@gr{\def\PYG@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\def\PYG@tok@cm{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
+\def\PYG@tok@vg{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
+\def\PYG@tok@m{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
+\def\PYG@tok@mh{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
+\def\PYG@tok@cs{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}\def\PYG@bc##1{\colorbox[rgb]{1.00,0.94,0.94}{##1}}}
+\def\PYG@tok@ge{\let\PYG@it=\textit}
+\def\PYG@tok@vc{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
+\def\PYG@tok@il{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
+\def\PYG@tok@go{\def\PYG@tc##1{\textcolor[rgb]{0.19,0.19,0.19}{##1}}}
+\def\PYG@tok@cp{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\def\PYG@tok@gi{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\def\PYG@tok@gh{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\def\PYG@tok@ni{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.84,0.33,0.22}{##1}}}
+\def\PYG@tok@nl{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.13,0.44}{##1}}}
+\def\PYG@tok@nn{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.05,0.52,0.71}{##1}}}
+\def\PYG@tok@no{\def\PYG@tc##1{\textcolor[rgb]{0.38,0.68,0.84}{##1}}}
+\def\PYG@tok@na{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\def\PYG@tok@nb{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\def\PYG@tok@nc{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.05,0.52,0.71}{##1}}}
+\def\PYG@tok@nd{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.33,0.33,0.33}{##1}}}
+\def\PYG@tok@ne{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\def\PYG@tok@nf{\def\PYG@tc##1{\textcolor[rgb]{0.02,0.16,0.49}{##1}}}
+\def\PYG@tok@si{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.44,0.63,0.82}{##1}}}
+\def\PYG@tok@s2{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\def\PYG@tok@vi{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
+\def\PYG@tok@nt{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.02,0.16,0.45}{##1}}}
+\def\PYG@tok@nv{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.38,0.84}{##1}}}
+\def\PYG@tok@s1{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\def\PYG@tok@gp{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.78,0.36,0.04}{##1}}}
+\def\PYG@tok@sh{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\def\PYG@tok@ow{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\def\PYG@tok@sx{\def\PYG@tc##1{\textcolor[rgb]{0.78,0.36,0.04}{##1}}}
+\def\PYG@tok@bp{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\def\PYG@tok@c1{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
+\def\PYG@tok@kc{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\def\PYG@tok@c{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.50,0.56}{##1}}}
+\def\PYG@tok@mf{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
+\def\PYG@tok@err{\def\PYG@bc##1{\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{##1}}}
+\def\PYG@tok@kd{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\def\PYG@tok@ss{\def\PYG@tc##1{\textcolor[rgb]{0.32,0.47,0.09}{##1}}}
+\def\PYG@tok@sr{\def\PYG@tc##1{\textcolor[rgb]{0.14,0.33,0.53}{##1}}}
+\def\PYG@tok@mo{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
+\def\PYG@tok@mi{\def\PYG@tc##1{\textcolor[rgb]{0.13,0.50,0.31}{##1}}}
+\def\PYG@tok@kn{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\def\PYG@tok@o{\def\PYG@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\def\PYG@tok@kr{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\def\PYG@tok@s{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\def\PYG@tok@kp{\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\def\PYG@tok@w{\def\PYG@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\def\PYG@tok@kt{\def\PYG@tc##1{\textcolor[rgb]{0.56,0.13,0.00}{##1}}}
+\def\PYG@tok@sc{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\def\PYG@tok@sb{\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\def\PYG@tok@k{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.00,0.44,0.13}{##1}}}
+\def\PYG@tok@se{\let\PYG@bf=\textbf\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+\def\PYG@tok@sd{\let\PYG@it=\textit\def\PYG@tc##1{\textcolor[rgb]{0.25,0.44,0.63}{##1}}}
+
+\def\PYGZbs{\char`\\}
+\def\PYGZus{\char`\_}
+\def\PYGZob{\char`\{}
+\def\PYGZcb{\char`\}}
+\def\PYGZca{\char`\^}
+\def\PYGZsh{\char`\#}
+\def\PYGZpc{\char`\%}
+\def\PYGZdl{\char`\$}
+\def\PYGZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYGZat{@}
+\def\PYGZlb{[}
+\def\PYGZrb{]}
+\makeatother
+
