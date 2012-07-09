@@ -206,8 +206,11 @@ class WorkerStages(object):
         fq = relpath(self.analysis.inputfile_fq_path)
         gb = relpath(join(self.analysis.genbank_data_dir,
                           self.analysis.genbankfile_base_name))
-        self.log_cmd("tophat", "-o", "tophat-output",
-                        "-p", str(n_cpus), "--no-novel-juncs", gb, fq)
+        self.log_cmd("tophat",
+                        "-p", str(n_cpus),
+                        "-o", "tophat-output",
+                        "--segment-length", "999999999",
+                        "--no-coverage-search", "--no-novel-juncs", gb, fq)
 
     @stage_cond
     def create_coverage_track(self):
