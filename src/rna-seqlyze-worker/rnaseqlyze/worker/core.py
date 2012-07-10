@@ -85,8 +85,10 @@ class Worker(Thread, WorkerStages):
         handler = StreamHandler(
                     StageLogStream(self.analysis, stage, self.session))
         root_logger.addHandler(handler)
-        yield
-        root_logger.removeHandler(handler)
+        try:
+            yield
+        finally:
+            root_logger.removeHandler(handler)
 
     def run(self):
 

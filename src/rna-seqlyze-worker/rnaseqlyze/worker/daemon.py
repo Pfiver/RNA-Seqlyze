@@ -58,8 +58,8 @@ def main():
 
     if mode == 'production':
         args.extend([
-#            "--user=" + rnaseqlyze.worker_user,
-#            "--group=" + rnaseqlyze.group,
+            "--user=" + rnaseqlyze.worker_user,
+            "--group=" + rnaseqlyze.group,
             "--log-file=" + join(workdir, 'worker-daemon.log'),
             "--pid-file=" + join(workdir, 'worker-daemon.pid'),
         ])
