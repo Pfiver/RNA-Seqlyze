@@ -147,7 +147,7 @@ class WorkerStages(object):
     @stage
     def convert_input_file(self):
         os.chdir(self.analysis.input_data_dir)
-        self.log_cmd("fastq-dump", self.analysis.inputfile_name)
+        self.log_cmd("fastq-dump", "-B", self.analysis.inputfile_name)
         log.debug("created %s" % self.analysis.inputfile_fq_path)
 
     @stage_cond
