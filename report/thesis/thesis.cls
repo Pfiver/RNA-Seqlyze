@@ -110,8 +110,11 @@
 	\usepackage{todonotes}		% display todo notes
 	%\usepackage{savetrees}		% minimal page margins
 \else
-	\usepackage[disable]{todonotes}	% hide todo notes
+%	\usepackage[disable]{todonotes}	% hide todo notes
+	\usepackage{todonotes}		% show todo notes
 \fi
 
 \usepackage{longtable}
 \usepackage{sphinx}
+
+\renewcommand\figurename{Abb.}

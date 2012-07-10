@@ -18,10 +18,10 @@ fi
                                                 # determine version
 VERSION=$(make -p . | sed '/^VERSION/!d;s/.*= //')
 pdf=BachelorThesis-$VERSION.pdf
-#evince "$pdf" &                                # start evince & gedit
+evince "$pdf" &                                # start evince & gedit
 
 inputs=(*.tex *.cls)
-#gedit "${inputs[@]}" &
+gedit "${inputs[@]}" &
 
 exec 10< <(inotifywait -m --format "%e %f" .)	# watch the current directory
 while read -u 10 event arg			# read events from inotifywait

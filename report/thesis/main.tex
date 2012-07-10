@@ -8,22 +8,136 @@
 \begin{document}
 \input{titlepage}
 \tableofcontents
+\listoftodos
 \newpage
 
 \section{Einleitung}
-%        =========
+%        ==========
+
+\subsection{Zusammenfassung}
+
+Die Vorliegende Arbeit beschreibt die Architektur und die
+Anwendungs\-möglichkeiten einer neuen Software zur Analyse von RNA-seq Daten.
 
 \subsection{Motivation / Ziel}
 %           -----------------
 
+Die Erforschung der Funktionsweise prokaryontischer Lebensformen birgt ein
+enormes Potential. Bereits heute sind zahlreiche Industriezweige von der
+Kultivierung biotechnologisch hergestellter prokaryontischer Lebewesen
+abhängig.
+
+\begin{list}{-}{}
+ \item Bsp. Diovan Herstellung
+ \item Bsp. Kläranlage
+ \item Bsp. ... \todo{weitere Beispiele ?}
+\end{list}
+
+Aufgrund der grösseren Popularität und daher auch besseren
+Anwendungs- und Vermarktungsmöglichkeiten Theoretischer Genforschung an
+Eukaryonten, konzentrieren sich die Anstrengungen vieler Forscher heute
+aber auf andere Schwerpunkte.
+
+Aufgrund dessen werden daher heute verhältnismässig wenige Studien auf diesem
+Gebiet durchgeführt. Ausserdem, stehen die Auswertung der durch diese Studien
+produzierten Daten nur wenige, bzw. keine brauchbaren Werkzeuge, d.h.
+Web- oder Desktop- Software, zur Verfügung.
+
+Die Herstellung einer solchen Software im Rahmen einer Bachelor-Thesis
+bietet sich an. Zum einen erhalte ich als Student der Biomedizinischen
+Informatik einen Einblick in die die Welt der Genforschung. Zum andern kann ich
+hoffentlich mit meiner Arbeit einen kleinen Beitrag zur Verbesserung der
+Zugänglichkeit zu der beeindruckenden Menge an RNA-Sequenzdaten leisten.
+
+
 \subsection{Theoretischer Hintergrund}
 %           -------------------------
+
+
+Seit einiger Zeit bieten eine Hanvoll Produzenten Gensequenzierungsanlagen an,
+die auf Prinzipien beruhen, welche die Kosten pro sequenziertem Basenpaar
+drastisch verringern konnten. Diese "next-generation" Sequencing Platformen
+werden vor allem \todo{od. "unter anderem" ?} dazu verwendet, die Transktiptome,
+also die gesamte in einer Zelle bzw. einem einzelligen Organismus vorhandene RNA
+zu sequenzieren.
+
+Gegenüber der klassischen Sequenzierung mit Microarrays, bietet RNA-seq
+verschieden Vorteile, wie z.B. die annotations-unabhängige Messung der
+Transkription.
+
+
+\hrule
+
+verschiedene
+
+Die Erforschung von kompletten prokaryontischen Genomen anhand von RNA-seq hat
+
+ birgt
+heute 
+Studien . Der Fokus verschiebt sich, weg von
+
+
+RNA-seq ist 
+
+Genome-wide studies of bacterial gene expression are shifting from microarray technology to second generation sequencing platforms.
+
+ RNA-seq has a number of advantages over hybridization-based techniques, such as annotation-independent detection of transcription, improved sensitivity and increased dynamic range.
+
+ Early studies have uncovered a wealth of novel coding sequences and non-coding RNA, and are revealing a transcriptional landscape that increasingly mirrors that of eukaryotes.
+
+ Already basic RNA-seq protocols have been improved and adapted to looking at particular aspects of RNA biology, often with an emphasis on non-coding RNAs, and further refinements to current techniques will improve our understanding of gene expression, and genome content, in the future.
+Go to:
+Introduction
+
+The advent of second generation sequencing technologies has created many opportunities to improve functional genomics experiments, including quantitative gene expression studies. Most previous transcriptional analysis methods have relied on hybridization of targeted oligonucleotides to particular loci for their sequence specificity: either primers binding to target cDNA in quantitative reverse transcription polymerase chain reaction (qRT-PCR), labeled probes binding to RNA in Northern blotting or hybridization of cDNA to probes on microarray chips. RNA-seq is different in principle in that data are matched to genes by sequence alignment instead.
+
+This has intrinsic advantages: first, because no probe sequences are specified, all transcription is studied in an unbiased manner, and experimental design does not need to be altered in accordance with differences in genome sequence. This promises to be a particular advantage in the study of bacteria with large amounts of genetic variation between strains [1]. It also allows the discovery of novel genetic features, as well as permitting the delineation of operons and untranslated regions, allowing the improvement and extension of sequence annotation.
+
+
+
+
+
+
+
+
+
+
+
+Second, mapping of sequence data is more precise than hybridization between oligonucleotides. This allows transcription to be studied at a much higher resolution by sequencing, thereby also permitting the study of more repetitive regions of the genome. Additionally, it means quantification of gene expression by RNA-seq does not suffer from the issues of interference between genes due to non-specific hybridization of cDNA to probes [2,3].
+
+Third, whereas hybridization-based methods measure gene expression levels through detection of fluorescence or radioactivity, RNA-seq uses the amount of data matching a given coding sequence (CDS), typically quantified as reads per kilobase CDS length per million reads analyzed (RPKM) [4]. This measure cannot be saturated in the way the detection of light or radioactivity can, hence RNA-seq has a much greater dynamic range for measuring variability in expression levels. Consequently, it can also be much more discriminatory both at high levels of gene expression and more sensitive at very low levels of expression, given sufficient sequencing depth.
+Go to:
+Preparation of cDNA
+
+RNA is typically extracted using organic solvents or commercially available kits; however, care should be taken to ensure the method does not bias the sampling of the transcriptome [5] and is capable of harvesting sufficient starting material needed to construct a sequencing library, as more RNA is typically needed than for microarray experiments. Furthermore, the exclusion of highly expressed transcripts, which risk saturating the dataset, is also more difficult than with microarray experiments, where probes can be omitted from the chip design as required. As ribosomal RNA comprises the vast majority of the extracted RNA population, depletion of these molecules through hybridization to magnetic bead-linked complementary oligonucleotides [5–10,11•], or the use of terminator exonucleases that specifically degrade transcripts with a 5′ monophosphate group [12••], has been used in efforts to increase the coverage of mRNA and ncRNA. However, the rapid increase in the productivity of the second generation sequencing technologies renders the expensive depletion processes largely unnecessary, especially given the opportunity for sample degradation and bias it presents [10]. Nevertheless, saturation of sequence data by abundant transcripts will remain an issue in some cases; for instance, when analyzing bacterial gene expression within host tissues, where eukaryotic RNA will be far more abundant than that of the prokaryote.
+
+In the original RNA-seq protocols, following extensive DNase treatment, RNA was typically converted into cDNA through random hexamer-primed reverse transcription followed by second DNA strand synthesis [5–9,13•]. However, using double stranded cDNA for making sequencing libraries results in equal levels of signal on both the sense and antisense strands, thereby losing information regarding the direction of transcription. A simple method for maintaining the directional signal in RNA-seq data is to construct Illumina libraries from only first strand cDNA [10]. Alternative techniques used to maintain directional fidelity involve sequentially ligating adapters onto RNA molecules in an orientation-specific manner [14,15], with one approach implemented in studies of Mycoplasma pneumoniae and Pseudomonas syringae transcriptomes [16••,17•] and another used for RNA-seq in Helicobacter pylori and Salmonella enterica Typhimurium [12••,18•] (Figure 1). Other methods for maintaining directional information pioneered in studies of eukaryotes include the use of template switching PCR [19], bisulfite-induced conversion of cytosine to uracil in transcripts before reverse transcription [20], addition of sequence tags into the primers used for reverse transcription [21] and incorporation of deoxyuridine into the second strand of cDNA, which can subsequently be degraded using uracil-N-glycosylase [22]. The importance of this information in characterizing ncRNA and observing antisense transcription is becoming increasingly evident.
+Figure 1
+Figure 1
+Methods for preparation of cDNA. All methods require the extraction of nucleic acids from a sample of cells, followed by the enzymatic removal of DNA. Ribosomal RNA may then be depleted to increase the sequence coverage of other transcripts. To identify (more ...)
+Go to:
+Alternative applications of RNA-seq
+
+As well as surveying the entire transcriptomes of bacterial strains, RNA-seq can be adapted to other experiments as well. For instance, techniques have been developed to specifically sequence the 5′ region of RNA molecules, allowing the identification of putative transcriptional start sites and helping to define operons and ncRNA [12••,13•] (Figure 1). In S. Typhimurium, coimmunoprecipitation of RNA molecules with Hfq, a chaperone that facilitates hybridization between ncRNA and mRNA, was used to enrich a sample for transcripts participating in such interactions [18•], while in Vibrio cholerae, a very stringent depletion and size-selection process was used to specifically sequence small ncRNA [23]. RNA-seq has also been applied to whole environments, leading to the development of techniques for sampling the metatranscriptomes of marine [24,25] and soil communities [26].
 
 \section{Architektur der implementierten Lösung}
 %        ======================================
 
 \subsection{Komponenten}
 %           -----------
+
+\begin{figure}
+	\includegraphics{img/overview_architektur}
+	\caption{
+Übersicht der Architektur der RNA-Seqlyze Applikation.
+Zuunterst die Konfigurations- und Datenbank- Dateien.
+In der Mitte die Kernfunktionalität, mit SQLAlchemy
+als ORM-Mapper. Darüber die einzelnen Schnittstellen.
+Dann die von den Schnittstellen verwendeten Protokolle.
+Zuoberst die den Code ausführenden Prozesse.
+}
+	\label{fig:arch}
+\end{figure}
 
 \subsection{Technologie-Umfeld}
 %           ------------------
