@@ -38,12 +38,6 @@
 \definecolor{VerbatimColor}{rgb}{1,1,1}
 \definecolor{VerbatimBorderColor}{rgb}{1,1,1}
 
-% Uncomment these two lines to ignore the paper size and make the page 
-% size more like a typical published manual.
-%\renewcommand{\paperheight}{9in}
-%\renewcommand{\paperwidth}{8.5in}   % typical squarish manual
-%\renewcommand{\paperwidth}{7in}     % O'Reilly ``Programmming Python''
-
 % For graphicx, check if we are compiling under latex or pdflatex.
 \ifx\pdftexversion\undefined
   \usepackage{graphicx}
@@ -148,16 +142,6 @@
 % \sectionauthor{name}{email}
 \newcommand{\sectionauthor}[2]{}
 
-% Augment the sectioning commands used to get our own font family in place,
-% and reset some internal data items:
-%\titleformat{\section}{\Large\py@HeaderFamily}%
-%            {\py@TitleColor\thesection}{0.5em}{\py@TitleColor}{\py@NormalColor}
-%\titleformat{\subsection}{\large\py@HeaderFamily}%
-%            {\py@TitleColor\thesubsection}{0.5em}{\py@TitleColor}{\py@NormalColor}
-%\titleformat{\subsubsection}{\py@HeaderFamily}%
-%            {\py@TitleColor\thesubsubsection}{0.5em}{\py@TitleColor}{\py@NormalColor}
-%\titleformat{\paragraph}{\small\py@HeaderFamily}%
-%            {\py@TitleColor}{0em}{\py@TitleColor}{\py@NormalColor}
 
 % {fulllineitems} is the main environment for object descriptions.
 %
