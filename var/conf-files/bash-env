@@ -191,8 +191,7 @@ auto-sigint ()
 }
 
 logtail-developall ()
-(
-    . $rnas_workdir_dev/bin/activate
+{
     logfiles=(/var/log/apache2/{access,error}.log \
                 $rnas_workdir_dev/rna-seqlyze-{web,worker}.log)
     touch ${logfiles[@]:2}
@@ -201,11 +200,11 @@ logtail-developall ()
     auto-sigint &
     while true
     do
-        rnas-worker $rnas_workdir_dev --development
+        $rnas_workdir_dev/bin/rnas-worker $rnas_workdir_dev --development
         sleep 10
     done &
     tail -f ${logfiles[@]}
-)
+}
 
 # install-commands for 3rd-party developper tools
 #################################################
