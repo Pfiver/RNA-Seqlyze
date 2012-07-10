@@ -5,7 +5,7 @@ tmux="$HOME/.local/bin/tmux -S /tmp/tmux-pfeifer"
 
 if ! [ $TMUX ]
 then
-	$tmux display 2> /dev/null && TERM=xterm-256color exec $tmux attach
+	$tmux display 2> /dev/null && exec $tmux attach
 	TERM=xterm-256color exec $tmux
 fi
 
@@ -61,7 +61,7 @@ stty -ixon -ixoff
 export VISUAL=vim EDITOR=vim PYTHONSTARTUP=~/.pythonstartup.py
 
 PS1='\[\033[;92m\]\u@\h\[\033[00m\]:\[\033[;94m\]\w\[\033[00m\]\$ '
-PROMPT_COMMAND='echo -ne "\033]0;${USER}@'$(hostname -s)': ${PWD/$HOME/~}\007"'
+PROMPT_COMMAND='echo -ne "\033]0;${USER}@$(hostname -s): ${PWD/$HOME/~}\007"'
 
 find-py()
 {
