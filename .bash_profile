@@ -5,7 +5,7 @@ tmux="$HOME/.local/bin/tmux -S /tmp/tmux-pfeifer"
 
 if ! [ $TMUX ]
 then
-	$tmux display 2> /dev/null && exec $tmux attach
+	$tmux display 2> /dev/null && TERM=xterm-256color exec $tmux attach
 	TERM=xterm-256color exec $tmux
 fi
 
