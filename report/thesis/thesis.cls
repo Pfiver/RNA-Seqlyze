@@ -55,12 +55,18 @@
 \clearscrheadfoot
 \setheadsepline{1pt}
 \renewcommand{\sectionmark}[1]{\markleft{\thesection\ - #1}{}}
-\def\nextmark{}\def\curmark{}
+\def\empty{}\def\trigger{}\def\nextmark{}\def\curmark{}
 \renewcommand{\paragraphmark}[1]{\def\nextmark{#1}}
 \renewcommand\rightmark{
-	\let\tmpmark\curmark
-	\global\let\curmark\nextmark
-	\tmpmark
+	\ifx\trigger\empty
+	\ifx\nextmark\empty
+	\else
+		\global\def\trigger{x}
+	\fi
+	\else
+		\scriptsize\curmark
+		\global\let\curmark\nextmark
+	\fi
 }
 \ihead{\leftmark}
 \ohead{\rightmark}
