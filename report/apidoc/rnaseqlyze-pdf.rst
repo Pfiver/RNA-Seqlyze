@@ -282,24 +282,24 @@ Modul :mod:`rnaseqlyze.worker.stages`
 Javascript Code
 ===============
 
-File `rnaseqlyze.js`
---------------------
+`rnaseqlyze.js`
+---------------
 
 .. literalinclude:: ../../src/rna-seqlyze-web/rnaseqlyze/web/js/rnaseqlyze.js
         :language: javascript
         :linenos:
         :highlight-args: linenostep=5
 
-File `rnaseqlyze-create.js`
--------------------------------
+`rnaseqlyze-create.js`
+----------------------
 
 .. literalinclude:: ../../src/rna-seqlyze-web/rnaseqlyze/web/js/rnaseqlyze-create.js
         :language: javascript
         :linenos:
         :highlight-args: linenostep=5
 
-File `rnaseqlyze-analysis.js`
----------------------------------
+`rnaseqlyze-analysis.js`
+------------------------
 
 .. literalinclude:: ../../src/rna-seqlyze-web/rnaseqlyze/web/js/rnaseqlyze-analysis.js
         :language: javascript
