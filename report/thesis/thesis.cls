@@ -26,8 +26,11 @@
 % ! never blindy change the order of package imports !
 
 \usepackage{graphicx}		% includegraphics[widdth=...]
-\graphicspath{{./}}
-\graphicspath{{../assets/}}
+\graphicspath{
+	{./}
+	{./img/}
+	{../assets/}
+}
 \usepackage{scrtime}		% ??? nice \today output
 
 \usepackage{xcolor}		% tables
@@ -71,17 +74,18 @@
 \ihead{\leftmark}
 \ohead{\rightmark}
 \cfoot{\thepage\ / \pageref*{LastPage}}
-\ifoot[
-	\upshape \setlength\parindent{0pt}
-	\hspace{-0.34cm} \includegraphics{FHNW_HLS_10mm} \par
-	{ \sffamily \scriptsize Institut für Chemie und Bioanalytik \par }
-	\vskip -\baselineskip \hfill Muttenz, Juli 2012
-\vspace{999pt}
-]{}
 
 \usepackage{ifxetex}
 
 \ifxetex
+	\ifoot[
+		\upshape \setlength\parindent{0pt}
+		\hspace{-0.34cm} \includegraphics{FHNW_HLS_10mm} \par
+		{ \sffamily \scriptsize Institut für Chemie und Bioanalytik \par }
+		\vskip -\baselineskip \hfill Muttenz, Juli 2012
+	\vspace{999pt}
+	]{}
+
 	% FHNW Fonts
 	% XeTeX needed -- this doesn't work with pdflatex
 	% if it doesn't work with xelatex,
@@ -103,6 +107,14 @@
 	\usepackage[utf8]{inputenc}
 	\usepackage[T1]{fontenc}
 	\usepackage{charter}
+	\usepackage{babel}
+
+	\ifoot[
+		[FHNW HLS Logo]
+		{ \sffamily \scriptsize Institut für Chemie und Bioanalytik \par }
+		\vskip -\baselineskip \hfill Muttenz, Juli 2012
+	\vspace{999pt}
+	]{}
 \fi
 
 % Scrict text justification
@@ -123,4 +135,11 @@
 \usepackage{longtable}
 \usepackage{sphinx}
 
+\usepackage[style=alphabetic]{biblatex}
+\usepackage[nottoc]{tocbibind}
+
+\addbibresource{Genomics}
+
 \renewcommand\figurename{Abb.}
+
+

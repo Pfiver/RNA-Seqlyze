@@ -38,12 +38,7 @@
 \definecolor{VerbatimColor}{rgb}{1,1,1}
 \definecolor{VerbatimBorderColor}{rgb}{1,1,1}
 
-% For graphicx, check if we are compiling under latex or pdflatex.
-\ifx\pdftexversion\undefined
-  \usepackage{graphicx}
-\else
-  \usepackage[pdftex]{graphicx}
-\fi
+\RequirePackage{graphix}
 
 % for PDF output, use colors and maximal compression
 \newif\ifsphinxpdfoutput\sphinxpdfoutputfalse

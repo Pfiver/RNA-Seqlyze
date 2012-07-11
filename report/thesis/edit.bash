@@ -15,13 +15,15 @@ then
 	exit
 fi
 
+start=true
+case $1 in ?*) start=false;; esac
                                                 # determine version
 VERSION=$(make -p . | sed '/^VERSION/!d;s/.*= //')
 pdf=BachelorThesis-$VERSION.pdf
-evince "$pdf" &                                # start evince & gedit
+$start && evince "$pdf" &                       # start evince & gedit
 
 inputs=(*.tex *.cls)
-gedit "${inputs[@]}" &
+$start && gedit "${inputs[@]}" &
 
 exec 10< <(inotifywait -m --format "%e %f" .)	# watch the current directory
 while read -u 10 event arg			# read events from inotifywait

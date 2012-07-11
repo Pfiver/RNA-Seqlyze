@@ -2,12 +2,14 @@
 
 VERSION = 0.1
 
-DIRT = $(wildcard *.out *.toc *.aux *.ps *.eps *.log *.lof *.bib *.bbl *.blg *.dvi *.tdo *~)
+DIRT = $(wildcard *.out *.toc *.aux *.ps *.eps *.log *.lof *.bbl *.blg *.dvi *.tdo *-blx.bib *~)
 
 SVGS = $(wildcard img/*.svg)
 
-BachelorThesis-$(VERSION).pdf: main.tex $(wildcard *.tex *.cls) $(patsubst %.svg,%.pdf,$(SVGS))
+BachelorThesis-$(VERSION).pdf: main.tex $(wildcard *.tex *.cls *.bib) $(patsubst %.svg,%.pdf,$(SVGS))
 	xelatex -halt-on-error $<
+	bibtex $(patsubst %.tex,%,$<)
+	xelatex -interaction batchmode $<
 	xelatex -interaction batchmode $<
 	mv main.pdf $@
 	touch $@ # nudge evince
