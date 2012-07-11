@@ -7,8 +7,8 @@ log = logging.getLogger(__name__)
 
 import os
 from os import path
+from time import time
 from urllib2 import urlopen
-from shutil import copyfileobj
 from urlparse import urlparse
 from httplib import HTTPConnection
 from socket import timeout
@@ -18,7 +18,7 @@ from sqlalchemy.orm import validates
 import rnaseqlyze
 
 url_template = "http://ftp-private.ncbi.nlm.nih.gov" \
-        "/sra/sra-instant/reads/ByRun/sra/SRR/{srr:.6}/{srr}/{srr}.sra"
+        "/sra/sra-instant/reads/ByRun/sra/{srr:.3}/{srr:.6}/{srr}/{srr}.sra"
 # e.g.  "/sra/sra-instant/reads/ByRun/sra/SRR/SRR000/SRR000001/SRR000001.sra"
 
 class Methods(object):
@@ -46,6 +46,8 @@ class Methods(object):
                 msg = "waiting for response from server"
                 log.debug(msg)
                 resp = conn.getresponse()
+
+                break
             except timeout:
                 log.warn("timeout " + msg)
                 if tries_left > 0:
@@ -66,7 +68,21 @@ class Methods(object):
 
         try:
             local = open(self.sra_path, "w")
-            copyfileobj(resp, local)
+            total = resp.length
+            read = 0
+            then = time()
+            log.info("transfering %d kb data..." % (total / 1024
+                                                    if total else -1))
+            while True:
+                buf = resp.read(16*1024)
+                read += len(buf)
+                now = time()
+                if then < now - 15:
+                    then = now
+                    log.info("%d kb left" % (((total or 0) - read) / 1024))
+                if not buf:
+                    break
+                local.write(buf)
         except Exception, e:
             log.error("Error downloading SRR: %r" % e)
             os.unlink(self.sra_path)

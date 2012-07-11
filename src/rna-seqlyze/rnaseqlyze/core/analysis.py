@@ -223,7 +223,7 @@ class Properties(object):
 
     @property
     def stage_logs_state(self):
-        return hash(tuple(self.stage_logs))
+        return hash(tuple(log.text for log in self.stage_logs))
 
 class Validators(object):
     @validates('org_accession')
