@@ -11,7 +11,6 @@ rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
 
 cron-hourly ()
 {
-    return
     _cron-hourly ()
     {
         # push home directory repository to 'biocalc-env' branch
@@ -24,6 +23,9 @@ cron-hourly ()
 
         # nudge buildbot
         buildbot sendchange
+
+        # update list of available analyses
+        update_available_list
     }
 
     _cron-daily ()
@@ -75,6 +77,25 @@ cron-hourly ()
         { _cron daily; ret=ret+$?; }
 
     return $ret
+}
+
+update_available_list ()
+{
+    local base select
+    {
+        echo '{{{#!html'
+        echo '<table>'
+        base=/biopython/rna-seqlyze/analyses/
+        select="select"
+        select+=" '<tr><td>'||'<a href=\"$base'||id||'\">'||id||'</a>',"
+        select+="   org_accession,title,rnaseq_run_srr,error||'</td></tr>'"
+        select+=" from analysis left outer join ucscorganism"
+        select+="               on org_accession = acc order by id desc"
+        sqlite3 -separator '</td><td>' \
+                        $rnas_workdir/rnaseqlyze.db "$select"
+        echo '</table>'
+        echo '}}}'
+    } | trac-admin $rnas_topdir/src/trac_env wiki import Analyses
 }
 
 buildbot ()
