@@ -107,10 +107,10 @@
 	\usepackage[utf8]{inputenc}
 	\usepackage[T1]{fontenc}
 	\usepackage{charter}
-	\usepackage{babel}
+	\usepackage[ngerman]{babel}
 
 	\ifoot[
-		[FHNW HLS Logo]
+		{\[FHNW HLS Logo\]}
 		{ \sffamily \scriptsize Institut für Chemie und Bioanalytik \par }
 		\vskip -\baselineskip \hfill Muttenz, Juli 2012
 	\vspace{999pt}
