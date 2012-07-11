@@ -103,8 +103,12 @@
 		ItalicFont    =*-Italic,
 		BoldItalicFont=*-Italic
 		]{EgyptienneFLTStd}
+
+	\usepackage[style=alphabetic]{biblatex}
+
+	\addbibresource{Genomics}
 \else
-	\usepackage[utf8]{inputenc}
+%	\usepackage[utf8]{inputenc}
 	\usepackage[T1]{fontenc}
 	\usepackage{charter}
 	\usepackage[ngerman]{babel}
@@ -135,11 +139,7 @@
 \usepackage{longtable}
 \usepackage{sphinx}
 
-\usepackage[style=alphabetic]{biblatex}
-\usepackage[nottoc]{tocbibind}
-
-\addbibresource{Genomics}
-
 \renewcommand\figurename{Abb.}
 
+\usepackage[nottoc]{tocbibind}
 

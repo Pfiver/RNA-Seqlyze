@@ -192,10 +192,15 @@ dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 %\subsection{Quellenverzeichnis}
 %            ------------------
 \nocite{*}
-\printbibliography[
-	title=Quellenverzeichnis,
-	heading=subbibnumbered,
-]
+\ifxetex
+	\printbibliography[
+		title=Quellenverzeichnis,
+		heading=subbibnumbered,
+	]
+\else
+	\bibliographystyle{plain}
+	\bibliography{Genomics}
+\if
 
 \end{document}
 
