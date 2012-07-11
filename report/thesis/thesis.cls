@@ -108,18 +108,18 @@
 
 	\addbibresource{Genomics}
 \else
+	\ifoot[
+		{ [FHNW HLS Logo] \par }
+		{ \sffamily \scriptsize Institut für Chemie und Bioanalytik \par }
+		\vskip -\baselineskip \hfill Muttenz, Juli 2012
+	\vspace{999pt}
+	]{}
+
 	\usepackage[utf8]{inputenc}
 	\usepackage[T1]{fontenc}
 	\usepackage{textcomp}
 	\usepackage{charter}
 	\usepackage[ngerman]{babel}
-
-	\ifoot[
-		{[FHNW HLS Logo]}
-		{ \sffamily \scriptsize Institut für Chemie und Bioanalytik \par }
-		\vskip -\baselineskip \hfill Muttenz, Juli 2012
-	\vspace{999pt}
-	]{}
 \fi
 
 % Scrict text justification

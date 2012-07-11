@@ -2,16 +2,24 @@
 
 if ! [ -x $(type -p inotifywait) ]
 then
-	echo install inotify-tools: $ sudo apt-get install inotify-tools
-	echo "> gives you a directory watcher command line ulity"
+        echo
+	echo "  install inotify-tools:"
+        echo
+        echo " $ sudo apt-get install inotify-tools"
+        echo
+	echo "      -> gives you a directory watcher command line ulity"
 	exit
 fi
 
 if ! make					# compile once
 then
-	echo install some latex stuff: $ sudo apt-get install \
-		texlive-latex-recommended texlive-humanities texlive-latex-extra
-	echo "> gives you koma-script, lineno, lastpage & todonotes"
+        echo
+	echo "  install some latex stuff:"
+        echo
+        echo " $ sudo apt-get install texlive-latex-recommended \\"
+        echo "                         texlive-humanities texlive-latex-extra"
+        echo
+	echo "      -> gives you koma-script, lineno, lastpage & todonotes"
 	exit
 fi
 
