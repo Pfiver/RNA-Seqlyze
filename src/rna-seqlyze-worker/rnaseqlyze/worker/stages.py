@@ -322,10 +322,21 @@ class WorkerStages(object):
         #                         str, str, str, str (1/-), int
         #
 
-        # FIXME: do some magic here
-        self.operons = Operon(begin=0, end=100, strand=1, confidence=10),
-        self.operons = Operon(begin=200, end=300, strand=1, confidence=50),
-        self.operons = Operon(begin=400, end=500, strand=1, confidence=100),
+        # FIXME: this is just a dummy implementation, that predicts an
+        #        operon for every transcribed (i.e. coverage > 1) region
+
+        self.operons = []
+
+        operon = None
+        for i, n in enumerate(self.coverage):
+            if n > 0:
+                if not operon:
+                    operon = Operon(begin=i + 1, strand=1, confidence=1)
+            else:
+                if operon:
+                    operon.end = i
+                    self.operons.append(operon)
+                    operon = None
 
         # create a bed track
         track_name = "rna-seqlyze-operon_predictions"
