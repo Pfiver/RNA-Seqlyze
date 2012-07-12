@@ -2361,9 +2361,6 @@
   \expandafter\ifx\csname #1\endcsname\coffee
     \MTC@WriteCoffeeline{#1}{#3}%
   \fi
-  \expandafter\ifx\csname #1\endcsname\subsection
-    \MTC@WriteContentsline{#1}{stcSS}{#3}{#4}%
-  \fi
   \expandafter\ifx\csname #1\endcsname\subsubsection
     \MTC@WriteContentsline{#1}{stcSSS}{#3}{#4}%
   \fi
