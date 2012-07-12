@@ -371,6 +371,7 @@
 
 \PYG{k+kn}{import} \PYG{n+nn}{os}\PYG{o}{,} \PYG{n+nn}{json}\PYG{o}{,} \PYG{n+nn}{time}\PYG{o}{,} \PYG{n+nn}{ftplib}\PYG{o}{,} \PYGZbs{}
        \PYG{n}{urllib}\PYG{p}{,} \PYG{n}{urllib2}\PYG{p}{,} \PYG{n}{cookielib}
+\PYG{k+kn}{from} \PYG{n+nn}{time} \PYG{k+kn}{import} \PYG{n}{time}
 \PYG{k+kn}{from} \PYG{n+nn}{threading} \PYG{k+kn}{import} \PYG{n}{local}
 \PYG{k+kn}{from} \PYG{n+nn}{datetime} \PYG{k+kn}{import} \PYG{n}{datetime}\PYG{p}{,} \PYG{n}{timedelta}
 
@@ -475,7 +476,26 @@
 \PYG{l+s+sd}{    """}
     \PYG{n}{log}\PYG{o}{.}\PYG{n}{info}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{uploading file to ftp server}\PYG{l+s}{"}\PYG{p}{)}
     \PYG{n}{ftp} \PYG{o}{=} \PYG{n}{ftplib}\PYG{o}{.}\PYG{n}{FTP}\PYG{p}{(}\PYG{n}{hostname}\PYG{p}{,} \PYG{n}{email}\PYG{p}{,} \PYG{n}{password}\PYG{p}{)}
-    \PYG{n}{ftp}\PYG{o}{.}\PYG{n}{storbinary}\PYG{p}{(}\PYG{l+s}{'}\PYG{l+s}{STOR }\PYG{l+s}{'} \PYG{o}{+} \PYG{n}{filename}\PYG{p}{,} \PYG{n}{fileobj}\PYG{p}{)}
+
+    \PYG{k}{try}\PYG{p}{:}
+        \PYG{n}{total} \PYG{o}{=} \PYG{n}{os}\PYG{o}{.}\PYG{n}{stat}\PYG{p}{(}\PYG{n}{fileobj}\PYG{o}{.}\PYG{n}{name}\PYG{p}{)}\PYG{o}{.}\PYG{n}{st\PYGZus{}size}
+    \PYG{k}{except}\PYG{p}{:}
+        \PYG{n}{total} \PYG{o}{=} \PYG{l+m+mi}{0}
+
+    \PYG{k}{class} \PYG{n+nc}{cbc}\PYG{p}{(}\PYG{n+nb}{object}\PYG{p}{)}\PYG{p}{:}
+        \PYG{k}{def} \PYG{n+nf}{\PYGZus{}\PYGZus{}init\PYGZus{}\PYGZus{}}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{total}\PYG{p}{)}\PYG{p}{:}
+            \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{total} \PYG{o}{=} \PYG{n}{total}
+            \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{sent} \PYG{o}{=} \PYG{l+m+mi}{0}
+            \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{then} \PYG{o}{=} \PYG{n}{time}\PYG{p}{(}\PYG{p}{)}
+        \PYG{k}{def} \PYG{n+nf}{\PYGZus{}\PYGZus{}call\PYGZus{}\PYGZus{}}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{buf}\PYG{p}{)}\PYG{p}{:}
+            \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{sent} \PYG{o}{+}\PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{buf}\PYG{p}{)}
+            \PYG{n}{now} \PYG{o}{=} \PYG{n}{time}\PYG{p}{(}\PYG{p}{)}
+            \PYG{k}{if} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{then} \PYG{o}{\textless{}} \PYG{n}{now} \PYG{o}{-} \PYG{l+m+mi}{15}\PYG{p}{:}
+                \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{then} \PYG{o}{=} \PYG{n}{now}
+                \PYG{n}{log}\PYG{o}{.}\PYG{n}{info}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s+si}{\PYGZpc{}d}\PYG{l+s}{ kb left}\PYG{l+s}{"} \PYG{o}{\PYGZpc{}} \PYG{p}{(}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{total} \PYG{o}{-} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{sent}\PYG{p}{)} \PYG{o}{/} \PYG{l+m+mi}{1024}\PYG{p}{)}\PYG{p}{)}
+
+    \PYG{n}{log}\PYG{o}{.}\PYG{n}{info}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{sending }\PYG{l+s+si}{\PYGZpc{}d}\PYG{l+s}{ kb of data...}\PYG{l+s}{"} \PYG{o}{\PYGZpc{}} \PYG{p}{(}\PYG{p}{(}\PYG{n}{total} \PYG{o}{/} \PYG{l+m+mi}{1024} \PYG{o+ow}{or} \PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+    \PYG{n}{ftp}\PYG{o}{.}\PYG{n}{storbinary}\PYG{p}{(}\PYG{l+s}{'}\PYG{l+s}{STOR }\PYG{l+s}{'} \PYG{o}{+} \PYG{n}{filename}\PYG{p}{,} \PYG{n}{fileobj}\PYG{p}{,} \PYG{n}{callback}\PYG{o}{=}\PYG{n}{cbc}\PYG{p}{(}\PYG{n}{total}\PYG{p}{)}\PYG{p}{)}
     \PYG{n}{log}\PYG{o}{.}\PYG{n}{info}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{Success!}\PYG{l+s}{"}\PYG{p}{)}
     \PYG{n}{ftp}\PYG{o}{.}\PYG{n}{quit}\PYG{p}{(}\PYG{p}{)}
 
@@ -1380,7 +1400,7 @@
 
     \PYG{n+nd}{@property}
     \PYG{k}{def} \PYG{n+nf}{stage\PYGZus{}logs\PYGZus{}state}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{p}{:}
-        \PYG{k}{return} \PYG{n+nb}{hash}\PYG{p}{(}\PYG{n+nb}{tuple}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{stage\PYGZus{}logs}\PYG{p}{)}\PYG{p}{)}
+        \PYG{k}{return} \PYG{n+nb}{hash}\PYG{p}{(}\PYG{n+nb}{tuple}\PYG{p}{(}\PYG{n}{log}\PYG{o}{.}\PYG{n}{text} \PYG{k}{for} \PYG{n}{log} \PYG{o+ow}{in} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{stage\PYGZus{}logs}\PYG{p}{)}\PYG{p}{)}
 
 \PYG{k}{class} \PYG{n+nc}{Validators}\PYG{p}{(}\PYG{n+nb}{object}\PYG{p}{)}\PYG{p}{:}
     \PYG{n+nd}{@validates}\PYG{p}{(}\PYG{l+s}{'}\PYG{l+s}{org\PYGZus{}accession}\PYG{l+s}{'}\PYG{p}{)}
@@ -1780,36 +1800,93 @@
 
 \PYG{k+kn}{import} \PYG{n+nn}{os}
 \PYG{k+kn}{from} \PYG{n+nn}{os} \PYG{k+kn}{import} \PYG{n}{path}
+\PYG{k+kn}{from} \PYG{n+nn}{time} \PYG{k+kn}{import} \PYG{n}{time}
 \PYG{k+kn}{from} \PYG{n+nn}{urllib2} \PYG{k+kn}{import} \PYG{n}{urlopen}
-\PYG{k+kn}{from} \PYG{n+nn}{shutil} \PYG{k+kn}{import} \PYG{n}{copyfileobj}
+\PYG{k+kn}{from} \PYG{n+nn}{urlparse} \PYG{k+kn}{import} \PYG{n}{urlparse}
+\PYG{k+kn}{from} \PYG{n+nn}{httplib} \PYG{k+kn}{import} \PYG{n}{HTTPConnection}
+\PYG{k+kn}{from} \PYG{n+nn}{socket} \PYG{k+kn}{import} \PYG{n}{timeout}
 
 \PYG{k+kn}{from} \PYG{n+nn}{sqlalchemy.orm} \PYG{k+kn}{import} \PYG{n}{validates}
 
 \PYG{k+kn}{import} \PYG{n+nn}{rnaseqlyze}
 
 \PYG{n}{url\PYGZus{}template} \PYG{o}{=} \PYG{l+s}{"}\PYG{l+s}{http://ftp-private.ncbi.nlm.nih.gov}\PYG{l+s}{"} \PYGZbs{}
-        \PYG{l+s}{"}\PYG{l+s}{/sra/sra-instant/reads/ByRun/sra/SRR/\PYGZob{}srr:.6\PYGZcb{}/\PYGZob{}srr\PYGZcb{}/\PYGZob{}srr\PYGZcb{}.sra}\PYG{l+s}{"}
+        \PYG{l+s}{"}\PYG{l+s}{/sra/sra-instant/reads/ByRun/sra/\PYGZob{}srr:.3\PYGZcb{}/\PYGZob{}srr:.6\PYGZcb{}/\PYGZob{}srr\PYGZcb{}/\PYGZob{}srr\PYGZcb{}.sra}\PYG{l+s}{"}
 \PYG{c}{\PYGZsh{} e.g.  "/sra/sra-instant/reads/ByRun/sra/SRR/SRR000/SRR000001/SRR000001.sra"}
 
 \PYG{k}{class} \PYG{n+nc}{Methods}\PYG{p}{(}\PYG{n+nb}{object}\PYG{p}{)}\PYG{p}{:}
+
     \PYG{k}{def} \PYG{n+nf}{download}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{p}{:}
+        \PYG{n}{srr\PYGZus{}url} \PYG{o}{=} \PYG{n}{url\PYGZus{}template}\PYG{o}{.}\PYG{n}{format}\PYG{p}{(}\PYG{n}{srr}\PYG{o}{=}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{srr}\PYG{p}{)}
+        \PYG{n}{log}\PYG{o}{.}\PYG{n}{info}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{fetching }\PYG{l+s+si}{\PYGZpc{}s}\PYG{l+s}{"} \PYG{o}{\PYGZpc{}} \PYG{n}{srr\PYGZus{}url}\PYG{p}{)}
+        \PYG{n}{url\PYGZus{}parts} \PYG{o}{=} \PYG{n}{urlparse}\PYG{p}{(}\PYG{n}{srr\PYGZus{}url}\PYG{p}{)}
+
+        \PYG{n}{resp} \PYG{o}{=} \PYG{n+nb+bp}{None}
+        \PYG{n}{max\PYGZus{}tries} \PYG{o}{=} \PYG{l+m+mi}{3}
+
+        \PYG{k}{for} \PYG{n}{tries\PYGZus{}left} \PYG{o+ow}{in} \PYG{n+nb}{reversed}\PYG{p}{(}\PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{max\PYGZus{}tries}\PYG{p}{)}\PYG{p}{)}\PYG{p}{:}
+            \PYG{k}{try}\PYG{p}{:}
+                \PYG{n}{conn} \PYG{o}{=} \PYG{n}{HTTPConnection}\PYG{p}{(}\PYG{n}{url\PYGZus{}parts}\PYG{o}{.}\PYG{n}{netloc}\PYG{p}{,} \PYG{n}{strict}\PYG{o}{=}\PYG{n+nb+bp}{True}\PYG{p}{,} \PYG{n}{timeout}\PYG{o}{=}\PYG{l+m+mi}{60}\PYG{p}{)}
+
+                \PYG{n}{msg} \PYG{o}{=} \PYG{l+s}{"}\PYG{l+s}{connecting to server}\PYG{l+s}{"}
+                \PYG{n}{log}\PYG{o}{.}\PYG{n}{debug}\PYG{p}{(}\PYG{n}{msg}\PYG{p}{)}
+                \PYG{n}{conn}\PYG{o}{.}\PYG{n}{connect}\PYG{p}{(}\PYG{p}{)}
+
+                \PYG{n}{msg} \PYG{o}{=} \PYG{l+s}{"}\PYG{l+s}{sending GET request}\PYG{l+s}{"}
+                \PYG{n}{log}\PYG{o}{.}\PYG{n}{debug}\PYG{p}{(}\PYG{n}{msg}\PYG{p}{)}
+                \PYG{n}{conn}\PYG{o}{.}\PYG{n}{request}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{GET}\PYG{l+s}{"}\PYG{p}{,} \PYG{n}{url\PYGZus{}parts}\PYG{o}{.}\PYG{n}{path}\PYG{p}{)}
+
+                \PYG{n}{msg} \PYG{o}{=} \PYG{l+s}{"}\PYG{l+s}{waiting for response from server}\PYG{l+s}{"}
+                \PYG{n}{log}\PYG{o}{.}\PYG{n}{debug}\PYG{p}{(}\PYG{n}{msg}\PYG{p}{)}
+                \PYG{n}{resp} \PYG{o}{=} \PYG{n}{conn}\PYG{o}{.}\PYG{n}{getresponse}\PYG{p}{(}\PYG{p}{)}
+
+                \PYG{k}{break}
+            \PYG{k}{except} \PYG{n}{timeout}\PYG{p}{:}
+                \PYG{n}{log}\PYG{o}{.}\PYG{n}{warn}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{timeout }\PYG{l+s}{"} \PYG{o}{+} \PYG{n}{msg}\PYG{p}{)}
+                \PYG{k}{if} \PYG{n}{tries\PYGZus{}left} \PYG{o}{\textgreater{}} \PYG{l+m+mi}{0}\PYG{p}{:}
+                    \PYG{n}{log}\PYG{o}{.}\PYG{n}{info}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{trying }\PYG{l+s+si}{\PYGZpc{}d}\PYG{l+s}{ more time}\PYG{l+s+si}{\PYGZpc{}s}\PYG{l+s}{"} \PYG{o}{\PYGZpc{}}
+                                    \PYG{p}{(}\PYG{n}{tries\PYGZus{}left}\PYG{p}{,} \PYG{n}{tries\PYGZus{}left} \PYG{o}{\textgreater{}} \PYG{l+m+mi}{1} \PYG{o+ow}{and} \PYG{l+s}{'}\PYG{l+s}{s}\PYG{l+s}{'} \PYG{o+ow}{or} \PYG{l+s}{'}\PYG{l+s}{'}\PYG{p}{)}\PYG{p}{)}
+                \PYG{k}{else}\PYG{p}{:}
+                    \PYG{n}{log}\PYG{o}{.}\PYG{n}{error}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{tried }\PYG{l+s+si}{\PYGZpc{}d}\PYG{l+s}{ times - giving up}\PYG{l+s}{"}\PYG{p}{,} \PYG{n}{max\PYGZus{}tries}\PYG{p}{)}
+                    \PYG{k}{raise}
+
+        \PYG{c}{\PYGZsh{} Impossible really, but...}
+        \PYG{k}{assert} \PYG{n}{resp} \PYG{o}{!=} \PYG{n+nb+bp}{None}
+
+        \PYG{k}{if} \PYG{n}{resp}\PYG{o}{.}\PYG{n}{status} \PYG{o}{!=} \PYG{l+m+mi}{200}\PYG{p}{:}
+            \PYG{n}{problem} \PYG{o}{=} \PYG{l+s}{"}\PYG{l+s}{Bad response from server: }\PYG{l+s+si}{\PYGZpc{}d}\PYG{l+s}{ - }\PYG{l+s+si}{\PYGZpc{}s}\PYG{l+s}{"} \PYG{o}{\PYGZpc{}} \PYG{p}{(}
+                                         \PYG{n}{resp}\PYG{o}{.}\PYG{n}{status}\PYG{p}{,} \PYG{n}{resp}\PYG{o}{.}\PYG{n}{msg}\PYG{o}{.}\PYG{n}{status}\PYG{p}{)}
+            \PYG{n}{log}\PYG{o}{.}\PYG{n}{error}\PYG{p}{(}\PYG{n}{problem}\PYG{p}{)}
+            \PYG{k}{raise} \PYG{n+ne}{Exception}\PYG{p}{(}\PYG{n}{problem}\PYG{p}{)}
+
         \PYG{k}{try}\PYG{p}{:}
-            \PYG{n}{log}\PYG{o}{.}\PYG{n}{info}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{fetching }\PYG{l+s}{"} \PYG{o}{+} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{srr}\PYG{p}{)}
-            \PYG{n}{srr\PYGZus{}url} \PYG{o}{=} \PYG{n}{url\PYGZus{}template}\PYG{o}{.}\PYG{n}{format}\PYG{p}{(}\PYG{n}{srr}\PYG{o}{=}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{srr}\PYG{p}{)}
-            \PYG{n}{remote} \PYG{o}{=} \PYG{n}{urlopen}\PYG{p}{(}\PYG{n}{srr\PYGZus{}url}\PYG{p}{,} \PYG{n}{timeout}\PYG{o}{=}\PYG{l+m+mi}{60}\PYG{p}{)}
             \PYG{n}{local} \PYG{o}{=} \PYG{n+nb}{open}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{sra\PYGZus{}path}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{w}\PYG{l+s}{"}\PYG{p}{)}
-            \PYG{n}{copyfileobj}\PYG{p}{(}\PYG{n}{remote}\PYG{p}{,} \PYG{n}{local}\PYG{p}{)}
+            \PYG{n}{total} \PYG{o}{=} \PYG{n}{resp}\PYG{o}{.}\PYG{n}{length}
+            \PYG{n}{read} \PYG{o}{=} \PYG{l+m+mi}{0}
+            \PYG{n}{then} \PYG{o}{=} \PYG{n}{time}\PYG{p}{(}\PYG{p}{)}
+            \PYG{n}{log}\PYG{o}{.}\PYG{n}{info}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{transfering }\PYG{l+s+si}{\PYGZpc{}d}\PYG{l+s}{ kb data...}\PYG{l+s}{"} \PYG{o}{\PYGZpc{}} \PYG{p}{(}\PYG{n}{total} \PYG{o}{/} \PYG{l+m+mi}{1024}
+                                                    \PYG{k}{if} \PYG{n}{total} \PYG{k}{else} \PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{)}
+            \PYG{k}{while} \PYG{n+nb+bp}{True}\PYG{p}{:}
+                \PYG{n}{buf} \PYG{o}{=} \PYG{n}{resp}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(}\PYG{l+m+mi}{16}\PYG{o}{*}\PYG{l+m+mi}{1024}\PYG{p}{)}
+                \PYG{n}{read} \PYG{o}{+}\PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{buf}\PYG{p}{)}
+                \PYG{n}{now} \PYG{o}{=} \PYG{n}{time}\PYG{p}{(}\PYG{p}{)}
+                \PYG{k}{if} \PYG{n}{then} \PYG{o}{\textless{}} \PYG{n}{now} \PYG{o}{-} \PYG{l+m+mi}{15}\PYG{p}{:}
+                    \PYG{n}{then} \PYG{o}{=} \PYG{n}{now}
+                    \PYG{n}{log}\PYG{o}{.}\PYG{n}{info}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s+si}{\PYGZpc{}d}\PYG{l+s}{ kb left}\PYG{l+s}{"} \PYG{o}{\PYGZpc{}} \PYG{p}{(}\PYG{p}{(}\PYG{p}{(}\PYG{n}{total} \PYG{o+ow}{or} \PYG{l+m+mi}{0}\PYG{p}{)} \PYG{o}{-} \PYG{n}{read}\PYG{p}{)} \PYG{o}{/} \PYG{l+m+mi}{1024}\PYG{p}{)}\PYG{p}{)}
+                \PYG{k}{if} \PYG{o+ow}{not} \PYG{n}{buf}\PYG{p}{:}
+                    \PYG{k}{break}
+                \PYG{n}{local}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{buf}\PYG{p}{)}
         \PYG{k}{except} \PYG{n+ne}{Exception}\PYG{p}{,} \PYG{n}{e}\PYG{p}{:}
-            \PYG{n}{log}\PYG{o}{.}\PYG{n}{error}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{Error fetching SRR: }\PYG{l+s+si}{\PYGZpc{}r}\PYG{l+s}{"} \PYG{o}{\PYGZpc{}} \PYG{n}{e}\PYG{p}{)}
+            \PYG{n}{log}\PYG{o}{.}\PYG{n}{error}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{Error downloading SRR: }\PYG{l+s+si}{\PYGZpc{}r}\PYG{l+s}{"} \PYG{o}{\PYGZpc{}} \PYG{n}{e}\PYG{p}{)}
             \PYG{n}{os}\PYG{o}{.}\PYG{n}{unlink}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{sra\PYGZus{}path}\PYG{p}{)}
             \PYG{k}{raise}
         \PYG{k}{finally}\PYG{p}{:}
             \PYG{c}{\PYGZsh{} note:}
             \PYG{c}{\PYGZsh{}  in case of an error, unlinking wil precede closing}
             \PYG{c}{\PYGZsh{}   -- no problem on unix}
-            \PYG{k}{if} \PYG{n}{local}\PYG{p}{:}
-                \PYG{n}{local}\PYG{o}{.}\PYG{n}{close}\PYG{p}{(}\PYG{p}{)}
-        \PYG{n}{log}\PYG{o}{.}\PYG{n}{debug}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{done}\PYG{l+s}{"}\PYG{p}{)}
+            \PYG{n}{local}\PYG{o}{.}\PYG{n}{close}\PYG{p}{(}\PYG{p}{)}
+
+        \PYG{n}{log}\PYG{o}{.}\PYG{n}{debug}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{Success!}\PYG{l+s}{"}\PYG{p}{)}
 
 \PYG{k}{class} \PYG{n+nc}{Properties}\PYG{p}{(}\PYG{n+nb}{object}\PYG{p}{)}\PYG{p}{:}
     \PYG{n+nd}{@property}
@@ -3211,8 +3288,10 @@
         \PYG{n}{handler} \PYG{o}{=} \PYG{n}{StreamHandler}\PYG{p}{(}
                     \PYG{n}{StageLogStream}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{analysis}\PYG{p}{,} \PYG{n}{stage}\PYG{p}{,} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{session}\PYG{p}{)}\PYG{p}{)}
         \PYG{n}{root\PYGZus{}logger}\PYG{o}{.}\PYG{n}{addHandler}\PYG{p}{(}\PYG{n}{handler}\PYG{p}{)}
-        \PYG{k}{yield}
-        \PYG{n}{root\PYGZus{}logger}\PYG{o}{.}\PYG{n}{removeHandler}\PYG{p}{(}\PYG{n}{handler}\PYG{p}{)}
+        \PYG{k}{try}\PYG{p}{:}
+            \PYG{k}{yield}
+        \PYG{k}{finally}\PYG{p}{:}
+            \PYG{n}{root\PYGZus{}logger}\PYG{o}{.}\PYG{n}{removeHandler}\PYG{p}{(}\PYG{n}{handler}\PYG{p}{)}
 
     \PYG{k}{def} \PYG{n+nf}{run}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{p}{:}
 
@@ -3308,8 +3387,8 @@
 
     \PYG{k}{if} \PYG{n}{mode} \PYG{o}{==} \PYG{l+s}{'}\PYG{l+s}{production}\PYG{l+s}{'}\PYG{p}{:}
         \PYG{n}{args}\PYG{o}{.}\PYG{n}{extend}\PYG{p}{(}\PYG{p}{[}
-\PYG{c}{\PYGZsh{}            "--user=" + rnaseqlyze.worker\PYGZus{}user,}
-\PYG{c}{\PYGZsh{}            "--group=" + rnaseqlyze.group,}
+            \PYG{l+s}{"}\PYG{l+s}{--user=}\PYG{l+s}{"} \PYG{o}{+} \PYG{n}{rnaseqlyze}\PYG{o}{.}\PYG{n}{worker\PYGZus{}user}\PYG{p}{,}
+            \PYG{l+s}{"}\PYG{l+s}{--group=}\PYG{l+s}{"} \PYG{o}{+} \PYG{n}{rnaseqlyze}\PYG{o}{.}\PYG{n}{group}\PYG{p}{,}
             \PYG{l+s}{"}\PYG{l+s}{--log-file=}\PYG{l+s}{"} \PYG{o}{+} \PYG{n}{join}\PYG{p}{(}\PYG{n}{workdir}\PYG{p}{,} \PYG{l+s}{'}\PYG{l+s}{worker-daemon.log}\PYG{l+s}{'}\PYG{p}{)}\PYG{p}{,}
             \PYG{l+s}{"}\PYG{l+s}{--pid-file=}\PYG{l+s}{"} \PYG{o}{+} \PYG{n}{join}\PYG{p}{(}\PYG{n}{workdir}\PYG{p}{,} \PYG{l+s}{'}\PYG{l+s}{worker-daemon.pid}\PYG{l+s}{'}\PYG{p}{)}\PYG{p}{,}
         \PYG{p}{]}\PYG{p}{)}
@@ -3471,7 +3550,7 @@
     \PYG{n+nd}{@stage}
     \PYG{k}{def} \PYG{n+nf}{convert\PYGZus{}input\PYGZus{}file}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{p}{:}
         \PYG{n}{os}\PYG{o}{.}\PYG{n}{chdir}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{analysis}\PYG{o}{.}\PYG{n}{input\PYGZus{}data\PYGZus{}dir}\PYG{p}{)}
-        \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{log\PYGZus{}cmd}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{fastq-dump}\PYG{l+s}{"}\PYG{p}{,} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{analysis}\PYG{o}{.}\PYG{n}{inputfile\PYGZus{}name}\PYG{p}{)}
+        \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{log\PYGZus{}cmd}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{fastq-dump}\PYG{l+s}{"}\PYG{p}{,} \PYG{l+s}{"}\PYG{l+s}{-B}\PYG{l+s}{"}\PYG{p}{,} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{analysis}\PYG{o}{.}\PYG{n}{inputfile\PYGZus{}name}\PYG{p}{)}
         \PYG{n}{log}\PYG{o}{.}\PYG{n}{debug}\PYG{p}{(}\PYG{l+s}{"}\PYG{l+s}{created }\PYG{l+s+si}{\PYGZpc{}s}\PYG{l+s}{"} \PYG{o}{\PYGZpc{}} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{analysis}\PYG{o}{.}\PYG{n}{inputfile\PYGZus{}fq\PYGZus{}path}\PYG{p}{)}
 
     \PYG{n+nd}{@stage\PYGZus{}cond}
@@ -4241,6 +4320,16 @@
 \PYG{n+nb}{window}\PYG{p}{.}\PYG{n+nx}{StageLogListView} \PYG{o}{=} \PYG{n+nx}{Backbone}\PYG{p}{.}\PYG{n+nx}{View}\PYG{p}{.}\PYG{n+nx}{extend}\PYG{p}{(}\PYG{p}{\PYGZob{}}
     \PYG{n+nx}{initialize}\PYG{o}{:} \PYG{k+kd}{function} \PYG{p}{(}\PYG{p}{)} \PYG{p}{\PYGZob{}}
         \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{model}\PYG{p}{.}\PYG{n+nx}{bind}\PYG{p}{(}\PYG{l+s+s2}{"add"}\PYG{p}{,} \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{add}\PYG{p}{,} \PYG{k}{this}\PYG{p}{)}\PYG{p}{;}
+        \PYG{k}{if} \PYG{p}{(}\PYG{o}{!}\PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{model}\PYG{p}{.}\PYG{n+nx}{analysis}\PYG{p}{.}\PYG{n+nx}{get}\PYG{p}{(}\PYG{l+s+s1}{'finished'}\PYG{p}{)}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+            \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{model}\PYG{p}{.}\PYG{n+nx}{analysis}\PYG{p}{.}\PYG{n+nx}{bind}\PYG{p}{(}\PYG{l+s+s2}{"change:finished"}\PYG{p}{,}
+                                     \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{analysis\PYGZus{}change}\PYG{p}{,} \PYG{k}{this}\PYG{p}{)}\PYG{p}{;}
+        \PYG{p}{\PYGZcb{}}
+    \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+    \PYG{n+nx}{analysis\PYGZus{}change}\PYG{o}{:} \PYG{k+kd}{function} \PYG{p}{(}\PYG{n+nx}{model}\PYG{p}{,} \PYG{n+nx}{value}\PYG{p}{,} \PYG{n+nx}{options}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+        \PYG{k}{if} \PYG{p}{(}\PYG{n+nx}{value}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+            \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{\PYGZdl{}el}\PYG{p}{.}\PYG{n+nx}{contents}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n+nx}{find}\PYG{p}{(}\PYG{l+s+s2}{"pre"}\PYG{p}{)}
+                    \PYG{p}{.}\PYG{n+nx}{last}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n+nx}{css}\PYG{p}{(}\PYG{l+s+s1}{'background-color'}\PYG{p}{,} \PYG{l+s+s1}{''}\PYG{p}{)}\PYG{p}{;}
+        \PYG{p}{\PYGZcb{}}
     \PYG{p}{\PYGZcb{}}\PYG{p}{,}
     \PYG{n+nx}{add}\PYG{o}{:} \PYG{k+kd}{function} \PYG{p}{(}\PYG{n+nx}{model}\PYG{p}{)} \PYG{p}{\PYGZob{}}
         \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{\PYGZdl{}el}\PYG{p}{.}\PYG{n+nx}{append}\PYG{p}{(}
