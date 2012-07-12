@@ -175,6 +175,16 @@ window.ProcessingView = Backbone.View.extend({
 window.StageLogListView = Backbone.View.extend({
     initialize: function () {
         this.model.bind("add", this.add, this);
+        if (!this.model.analysis.get('finished')) {
+            this.model.analysis.bind("change:finished",
+                                     this.analysis_change, this);
+        }
+    },
+    analysis_change: function (model, value, options) {
+        if (value) {
+            this.$el.contents().find("pre")
+                    .last().css('background-color', '');
+        }
     },
     add: function (model) {
         this.$el.append(

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-~/.local/bin/trac-admin src/trac_env changeset added "(default)" HEAD
+~/.local/bin/trac-admin src/trac_env \
+	changeset added "(default)" $(git rev-parse HEAD)

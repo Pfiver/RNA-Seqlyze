@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 
 import os, json, time, ftplib, \
        urllib, urllib2, cookielib
+from time import time
 from threading import local
 from datetime import datetime, timedelta
 
@@ -123,7 +124,26 @@ def ftpupload(fileobj, filename):
     """
     log.info("uploading file to ftp server")
     ftp = ftplib.FTP(hostname, email, password)
-    ftp.storbinary('STOR ' + filename, fileobj)
+
+    try:
+        total = os.stat(fileobj.name).st_size
+    except:
+        total = 0
+
+    class cbc(object):
+        def __init__(self, total):
+            self.total = total
+            self.sent = 0
+            self.then = time()
+        def __call__(self, buf):
+            self.sent += len(buf)
+            now = time()
+            if self.then < now - 15:
+                self.then = now
+                log.info("%d kb left" % ((self.total - self.sent) / 1024))
+
+    log.info("sending %d kb of data..." % ((total / 1024 or -1)))
+    ftp.storbinary('STOR ' + filename, fileobj, callback=cbc(total))
     log.info("Success!")
     ftp.quit()
 
