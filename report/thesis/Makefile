@@ -2,7 +2,7 @@
 
 VERSION = 0.1
 
-DIRT = $(wildcard *.out *.toc *.aux *.ps *.eps *.log *.lof *.bbl *.blg *.dvi *.tdo *-blx.bib *~ main.pdf main.run.xml)
+DIRT = $(wildcard *.out *.toc *.aux *.ps *.eps *.log *.lof *.bbl *.blg *.dvi *.tdo *-blx.bib *~ main.pdf main.run.xml *.stc* *.maf *.ptc *.mtc*)
 
 SVGS = $(wildcard img/*.svg)
 
@@ -10,6 +10,7 @@ BachelorThesis-$(VERSION).pdf: main.tex $(wildcard *.tex *.cls *.bib) $(patsubst
 	xelatex -halt-on-error $<
 	bibtex $(patsubst %.tex,%,$<)
 	xelatex -interaction batchmode $<
+	sed -i /{subsection}/d main.stc5
 	xelatex -interaction batchmode $<
 	mv main.pdf $@
 	touch $@ # nudge evince
@@ -20,6 +21,8 @@ sourcecode.tex:	../apidoc/_build/latex/RNA-Seqlyze.tex
 
 img/%.pdf: $(SVGS)
 	convert $< $@
+
+all: BachelorThesis-$(VERSION).pdf
 
 clean:
 ifneq ($(DIRT),)

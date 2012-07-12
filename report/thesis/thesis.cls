@@ -1,6 +1,7 @@
 % provide the "thesis" documentclass class
 \ProvidesClass{thesis}[2012/07/09 Bachelor Thesis]
 
+
 % declare some options
 \newif\ifdraft
 \draftfalse
@@ -133,16 +134,32 @@
 	\usepackage{todonotes}		% display todo notes
 	%\usepackage{savetrees}		% minimal page margins
 \else
-%	\usepackage[disable]{todonotes}	% hide todo notes
-	\usepackage{todonotes}		% show todo notes
+	\usepackage[disable]{todonotes}	% hide todo notes
+%	\usepackage{todonotes}		% show todo notes
 \fi
+\usepackage{lipsum}
 
 \usepackage[all]{hypcap}
-\usepackage{longtable}
+
 \usepackage{sphinx}
 
 \renewcommand\figurename{Abb.}
 
+\usepackage{url}
+
 \usepackage[nottoc]{tocbibind}
 
-\usepackage{url}
+\usepackage[section]{placeins}
+
+\usepackage[undotted]{minitoc}
+\setcounter{secttocdepth}{4}
+%\stcsetoffset{secttoc}{-4em}
+%\stcsetformat{secttoc}{tocrightmargin}{0pt}
+\undottedmtctrue
+\ktightmtctrue
+\tightmtctrue
+\stcindent=0pt
+\nostcrule
+\dosecttoc
+
+

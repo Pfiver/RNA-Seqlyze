@@ -1,6 +1,5 @@
 \documentclass[a4paper]{thesis}
 
-\usepackage{lipsum}
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 \hypersetup{pdfauthor={Patrick Pfeifer}}
@@ -18,74 +17,56 @@
 \subsection{Zusammenfassung}
 
 Die Vorliegende Arbeit beschreibt die Architektur und die
-Anwendungs\-möglichkeiten einer neuen Software zur Analyse von RNA-seq Daten.
+Anwendungsmöglichkeiten einer neuen Software zur Analyse von RNA-seq Daten.
 
 Bei der RNA-seq - Methode, werden komplementäre DNAs (cDNAs), die aus den zu
 untersuchenden RNAs hergestellt wurden, mit neuartigen (eng. next-generation)
-Technologien direkt sequenziert. \cite{ausubel_rna-seq:_2010}
-
+Technologien sequenziert. \cite{ausubel_rna-seq:_2010}
+%
 Die Einführung dieser neuartiger Technologien der Gen-Sequenzierung
 ist ein wichtiger Meilenstein auf dem Weg zu einem besseren und
-tieferen Verständnis der Funktionsweise der kleinsten Einheiten
-des Lebens \todo{besserer Begriff? (~ "fauna+flora")}, der Zelle.
+tieferen Verständnis der Funktionsweise der Zellen. Bei der Durchführung
+von RNA-seq Experimenten fallen grosse Mengen von Daten in Form von
+relativ kurzen Sequenzabschnitten (< 200 Basen) an. Die Sequenzdaten
+werden dann an die NCBI und andere zentrale Sequenzarchive (SRA -
+Sequence Read Archive) übermittelt. Zum heutigen Tag sind bereits
+grosse Mengen an Daten gesammelt worden, die nun öffentlich
+online verfügbar sind.
 
-Bei der Durchführung von RNA-seq Experimenten fallen grosse Mengen von
-Sequenzdaten, sog. "Short-Reads", also kurze Basen-Sequenzen, an. Diese
-können, unter Zuhilfenahme von frei verfügbarer Software, an die NCBI
-und andere zentrale Sequenzarchive (SRA - Sequence Read Archive) übermittelt
-werden. So wurde denn von diesen Archiven bereits eine grosse Menge von
-Daten gesammelt, die nun öffentlich online verfügbar sind.
+Diese Daten werden mit der bereits bekannten
+Genomsequenz verglichen um die Bereiche des Genoms zu finden,
+die transkribiert werden. Transkription wird nicht für
+alle Genombereiche erwartet, sondern nur dort, wo sich proteinkodierende
+Abschnitte bzw. Gene für RNA-Moleküle befinden. Eine Analyse der RNA-Seq
+Daten wird daher durch die Visualisierung der RNA-Seq Daten entscheidend
+unterstützt. Darüber hinaus kann die Annotation eines Genoms durch die
+Verfügbarkeit der Transkriptdaten verbessert werden.
 
-Um aus diesen Daten Erkenntnisse und Wissen zu generieren, müssen sie
-zunächst einmal besser zugänglich gemacht, also visualisiert werden.
-Dabei möchte man die Daten erstens gerne im Kontext, zusammen mit anderen
-bekannten Daten, z.B. Gen-Annotationen, betrachten. Zweitens ist es oft
-wünschenswert, dass bekannte, oder bei der Sichtung eines Teils der Daten
-neu erkannte Muster, im Rest der Daten automatisch erkannt und protokolliert
-werden.
-
-\textbf{Begründung}
-
-Die \em{RNA-Seqlyze} Web-Anwendung wurde erstellt, um die von RNA-seq
+Die in dieser Diplomarbeit programmierte Web-Anwendung wurde erstellt, um
+die von RNA-seq
 Experimenten generierten Daten in einer bereits existierenden, populären,
-Visuali\-sier\-uns-Anwendung, dem \em{UCSC Archaea Browser}
+Visualisierungsanwendung, dem {\em UCSC Archaea Browser}
 \cite{schneider_ucsc_2006}, anzuzeigen. Durch die Verwendung der von dieser
 Anwendung unterstützten, bzw. definierten, Protokolle zur Formatierung
 und Darstellung der Daten, stehen dem Anwender viele Funktionen zur
 Verfügung, die sich mit einer gekapselten Desktop-Anwendung nur unter
-grossem Aufwand realisieren liessen. So können die Daten im \em{UCSC Archaea
-Browser} beispielsweise immer im Kontext mit den \em{aktuellen} RefSeq
-Gen-Annotationen betrachtet werden. Ausserdem ist der Applikations-Anwender
-selbst-verständlich vollkommen Ortsungebunden. Die Daten können auch am
-Strand, auf der Alp oder im Tram betrachtet werden. \todo{Satz löschen!}
-
+grossem Aufwand realisieren liessen. So können die Daten im {\em UCSC Archaea
+Browser} beispielsweise immer im Kontext mit den {\em aktuellen} RefSeq
+Gen-Annotationen betrachtet werden.
 
 \subsection{Motivation / Ziel}
 %           -----------------
 
-Die Erforschung der Funktionsweise prokaryontischer Lebensformen birgt ein
-enormes Potential. Ausserdem sind bereits heute sind zahlreiche
-Industriezweige von der Kultivierung biotechnologisch hergestellter
-prokaryontischer Lebewesen abhängig.
 
-\begin{list}{-}{}
- \item Bsp. Wirkstoff-Herstellung (abhängig)
- \item Bsp. Kläranlage ?? (abhängig)
- \item Energieproduktion (potential)
-       \\siehe \url{http://duckduckgo.com/?q=bacteria+producing+electric+energy}
- \item Bsp. ... \todo{weitere Beispiele ?}
-\end{list}
+Der Fokus vieler RNA-seq Studien liegt in der Analyse von
+eukaryontischen Transkriptomen. Die generierten Sequenzdaten sind z.B. sehr
+hilfreich, um die unterschiedlichen Transkripte eines Gens zu erfassen.
 
-Aufgrund der grösseren Popularität und daher auch besseren
-Anwendungs- und Vermarktungsmöglichkeiten theoretischer Genforschung an
-Eukaryonten, konzentrieren sich die Anstrengungen vieler Forscher heute
-jedoch auf andere Schwerpunkte.
+Für die prinzipiell wesentlich einfachere Auswertung von RNA-seq Daten von
+Prokaryonten stehen bisher keine geeigneten Auswerteprogramme zur Verfügung.
 
-Für die Auswertung der Daten aus RNA-seq Studien an prokrayontischen
-Organismen stehen heute kein brauchbaren Werkzeuge, d.h.
-Web- oder Desktop- Software, zur Verfügung.
 
-Die Herstellung einer solchen Software im Rahmen einer Bachelor-Thesis
+Die Programmierung einer solchen Software im Rahmen einer Bachelor-Thesis
 bietet sich daher an. Zum einen erhalte ich als Student der Biomedizinischen
 Informatik einen Einblick in die die Welt der Genforschung. Zum andern kann ich
 hoffentlich mit meiner Arbeit einen kleinen Beitrag zur Verbesserung der
@@ -98,48 +79,29 @@ Zugänglichkeit zu der beeindruckenden Menge an RNA-Sequenzdaten leisten.
 Seit einiger Zeit bieten eine Handvoll Produzenten Gensequenzierungsanlagen an,
 bei denen die Kosten pro sequenziertem Basenpaar
 drastisch verringert werden konnten. Diese neuartigen
-Sequenzierungs-Platformen werden vor allem \todo{od. "unter anderem" ?}
-dazu verwendet, das Zell-Transkriptom, also die gesamte RNA-Substanz die
+Sequenzierungs-Plattformen werden dazu verwendet, sowohl
+das Genom wie auch das Transkriptom, also die gesamte RNA-Substanz die
 in einer Zelle zu einem definierten Zeitpunkt vorhanden ist, zu sequenzieren.
 
-Gegenüber der klassischen Sequenzierung mit Microarrays, bietet RNA-seq
-vielfältige Vorteile. Weil die meisten bisher bekannten Sequenzierungs-
-technologien auf der Hybridisierung bestimmter Sequenz-abschnitte mit
-spezifischen Oligonucleotiden beruhen, sind sie nur schlecht dazu geeignet,
-bisher unbekannte oder stark mutierte Abschnitte überhaupt zu detektieren.
-Im Gegensatz dazu lassen dich die neuen Technologien universell einsetzen. Da
-keine Sequenz-spezifischen Adapter benötigt werden, können mit dem gleichen
-Setup mehrere Experimente, mit verschiedenen Organismen, durchgeführt werden.
-Die erzeugten Daten werden dann über ein Sequenz-Aligment mit den bereits
-bekannten Genen in Verbindung gebracht. Mit RNA-seq können aber auch - und
-das ist auch der Teil für den die Vorliegende Software eingesetzt werden
-soll - neue Gene gefunden bzw. untranskribierte Bereiche
-ausgemacht werden, wo bisher ein Gen vermutet wurde.
+Gegenüber der klassischen Transkritomanalyse mit Mikroarrays, bietet RNA-seq
+den gewichtigen Vorteil, dass damit {\em alle} Abschnitte des Genoms auf Transkription geprüft werden können.
+
+Mit RNA-seq können darum - und das ist auch der Teil für den die vorliegende
+Software eingesetzt werden soll - auch {\em neue Gene} gefunden bzw.
+untranskribierte Bereiche erkannt werden,
+wo bisher ein Gen vermutet wurde.
 \cite{croucher_studying_2010}
 
-\def\fnI{
-	Third, whereas hybridization-based methods measure gene expression
-	levels through detection of fluorescence or radioactivity, RNA-seq
-	uses the amount of data matching a given coding sequence (CDS),
-	typically quantified as reads per kilobase CDS length per million
-	reads analyzed (RPKM) [4].
-	\cite{croucher_studying_2010}
-}
-
 Ein weiterer Vorteil von RNA-seq Technologien, ist die Möglichkeit,
-das Expressions-Niveau jeder einzelnen Base exakt messen zu können.
+das Expressionsniveau jeder einzelnen Base exakt messen zu können.
 Indem die Anzahl der Reads bezüglich Ihrer Länge und der Länge des
-Gens auf dem sie liegen normalisiert wird \footnote{\expandafter\fnI}
-\todo{Fussnote Verstehen, ev Visualisieren, Übersetzen}, werden
+Gens auf dem sie liegen normalisiert wird, werden
 dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 \cite{croucher_studying_2010,wang_rna-seq:_2009}
 
 
-
 \section{Architektur der implementierten Lösung}
 %        ======================================
-
-
 
 \subsection{Komponenten}
 %           -----------
@@ -150,7 +112,8 @@ dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 	Übersicht der Architektur der RNA-Seqlyze Applikation.
 	Zuunterst die Konfigurations- und Datenbank- Dateien.
 	In der Mitte die Kernfunktionalität, mit SQLAlchemy
-	als ORM-Mapper. Darüber die einzelnen Schnittstellen.
+	als \ref{glo:ORM}{Object-Relational Mapper}.
+        Darüber die einzelnen Schnittstellen.
 	Dann die von den Schnittstellen verwendeten Protokolle.
 	Zuoberst die den Code ausführenden Prozesse.
 }
@@ -159,9 +122,6 @@ dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 
 \subsection{Technologie-Umfeld}
 %           ------------------
-
-\subsection{Begründung von Design und Technologieauswahl}
-%           --------------------------------------------
 
 \subsection{Erfahrungsbericht}
 %           -----------------
@@ -173,34 +133,28 @@ dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 %           -----------
 
 \begin{figure}[h]
-\includegraphics{img/screen1}
-\label{fig:screen1}
-\caption[Screenshot 1]{
+	\includegraphics{img/screen1}
+	\label{fig:screen1}
+	\caption[Screenshot 1]{
 	Darstellung einer bereits beendeten Analyse. Der graue Hintergrund
 	der Log-Ausgaben des letzten Analyseschrittes zeigt an, dass die
 	Analyse beendet ist. Unter der Überschrift "Results" finden sich
 	ein Link zum UCSC Genom Browser, wo die Resultate angezeigt werden
 	können und ein Link zu einer Genbank Datei, in der die gefundenen
-	Operons als "operon" Annotationen hinzugefügt wurden.
-}
-
+	Operons annotiert wurden.
+	}
 \end{figure}
+
 \begin{figure}[h]
 \includegraphics{img/screen2}
 \label{fig:screen2}
 \caption[Screenshot 2]{
 	Starten einer neuen Analyse. Benötigt werden Short Read Daten und
 	die Referenzsequenz. Für beide Inputs kann entweder die NCBI
-	Identifikationsnummer angegeben oder eine Date direkt
+	Identifikationsnummer angegeben oder eine Datei direkt
 	hochgeladen werden werden.
 }
 \end{figure}
-
-\subsection{Quellcode}
-%           ---------
-
-\input{sourcecode}
-\paragraphmark{}
 
 \section{Ausblick}
 %        ========
@@ -211,8 +165,19 @@ dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 \subsection{Inbetriebnahme}
 %           --------------
 
+\newpage
 \section{Anhang}
 %        ======
+
+\subsection{Quellcode}
+%           ---------
+
+\renewcommand\stctitle{Inhalt}
+\secttoc
+
+
+\input{sourcecode}
+\paragraphmark{}
 
 \subsection{Glossar}
 %           -------
@@ -222,13 +187,20 @@ dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 	& Next-generation Sequenzierungs-Technologe angewendet auf
           das Profiling kompletter Transkriptome
 \\
+          \label{glo:ORM}
+	  Object Relational Mapper
+	& Ein Programmbibliothek, die automatisch die von einer Software
+          verwendeten {\em Business-} bzw. {\em Domain-} Objekte in
+          einer Datenbank persistiert.
+\\
 \end{tabularx}
 
 %\subsection{Abbildungsverzeichnis}
 %            ---------------------
 {
 	\renewcommand\listfigurename{Abbildungsverzeichnis}
-	\tocsection\tocotherhead{subsection}\listoffigures
+	\tocsection\tocotherhead{subsection}
+	\listoffigures
 }
 
 %\subsection{Quellenverzeichnis}
