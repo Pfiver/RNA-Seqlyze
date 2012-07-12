@@ -20,6 +20,46 @@
 Die Vorliegende Arbeit beschreibt die Architektur und die
 Anwendungs\-möglichkeiten einer neuen Software zur Analyse von RNA-seq Daten.
 
+Bei der RNA-seq - Methode, werden komplementäre DNAs (cDNAs), die aus den zu
+untersuchenden RNAs hergestellt wurden, mit neuartigen (eng. next-generation)
+Technologien direkt sequenziert. \cite{ausubel_rna-seq:_2010}
+
+Die Einführung dieser neuartiger Technologien der Gen-Sequenzierung
+ist ein wichtiger Meilenstein auf dem Weg zu einem besseren und
+tieferen Verständnis der Funktionsweise der kleinsten Einheiten
+des Lebens \todo{besserer Begriff? (~ "fauna+flora")}, der Zelle.
+
+Bei der Durchführung von RNA-seq Experimenten fallen grosse Mengen von
+Sequenzdaten, sog. "Short-Reads", also kurze Basen-Sequenzen, an. Diese
+können, unter Zuhilfenahme von frei verfügbarer Software, an die NCBI
+und andere zentrale Sequenzarchive (SRA - Sequence Read Archive) übermittelt
+werden. So wurde denn von diesen Archiven bereits eine grosse Menge von
+Daten gesammelt, die nun öffentlich online verfügbar sind.
+
+Um aus diesen Daten Erkenntnisse und Wissen zu generieren, müssen sie
+zunächst einmal besser zugänglich gemacht, also visualisiert werden.
+Dabei möchte man die Daten erstens gerne im Kontext, zusammen mit anderen
+bekannten Daten, z.B. Gen-Annotationen, betrachten. Zweitens ist es oft
+wünschenswert, dass bekannte, oder bei der Sichtung eines Teils der Daten
+neu erkannte Muster, im Rest der Daten automatisch erkannt und protokolliert
+werden.
+
+\textbf{Begründung}
+
+Die \em{RNA-Seqlyze} Web-Anwendung wurde erstellt, um die von RNA-seq
+Experimenten generierten Daten in einer bereits existierenden, populären,
+Visuali\-sier\-uns-Anwendung, dem \em{UCSC Archaea Browser}
+\cite{schneider_ucsc_2006}, anzuzeigen. Durch die Verwendung der von dieser
+Anwendung unterstützten, bzw. definierten, Protokolle zur Formatierung
+und Darstellung der Daten, stehen dem Anwender viele Funktionen zur
+Verfügung, die sich mit einer gekapselten Desktop-Anwendung nur unter
+grossem Aufwand realisieren liessen. So können die Daten im \em{UCSC Archaea
+Browser} beispielsweise immer im Kontext mit den \em{aktuellen} RefSeq
+Gen-Annotationen betrachtet werden. Ausserdem ist der Applikations-Anwender
+selbst-verständlich vollkommen Ortsungebunden. Die Daten können auch am
+Strand, auf der Alp oder im Tram betrachtet werden. \todo{Satz löschen!}
+
+
 \subsection{Motivation / Ziel}
 %           -----------------
 
@@ -98,6 +138,8 @@ dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 
 \section{Architektur der implementierten Lösung}
 %        ======================================
+
+
 
 \subsection{Komponenten}
 %           -----------
