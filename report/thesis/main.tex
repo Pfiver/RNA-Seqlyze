@@ -29,23 +29,24 @@ Kultivierung biotechnologisch hergestellter prokaryontischer Lebewesen
 abhängig.
 
 \begin{list}{-}{}
- \item Bsp. Diovan Herstellung
- \item Bsp. Kläranlage
+ \item Bsp. Wirkstoff-Herstellung (abhängig)
+ \item Bsp. Kläranlage ?? (abhängig)
+ \item Energieproduktion (potential)
+       \\siehe \url{http://duckduckgo.com/?q=bacteria+producing+electric+energy}
  \item Bsp. ... \todo{weitere Beispiele ?}
 \end{list}
 
 Aufgrund der grösseren Popularität und daher auch besseren
-Anwendungs- und Vermarktungsmöglichkeiten Theoretischer Genforschung an
+Anwendungs- und Vermarktungsmöglichkeiten theoretischer Genforschung an
 Eukaryonten, konzentrieren sich die Anstrengungen vieler Forscher heute
-aber auf andere Schwerpunkte.
+jedoch auf andere Schwerpunkte.
 
-Aufgrund dessen werden daher heute verhältnismässig wenige Studien auf diesem
-Gebiet durchgeführt. Ausserdem, stehen die Auswertung der durch diese Studien
-produzierten Daten nur wenige, bzw. keine brauchbaren Werkzeuge, d.h.
+Für die Auswertung der Daten aus RNA-seq Studien an prokrayontischen
+Organismen stehen heute kein brauchbaren Werkzeuge, d.h.
 Web- oder Desktop- Software, zur Verfügung.
 
 Die Herstellung einer solchen Software im Rahmen einer Bachelor-Thesis
-bietet sich an. Zum einen erhalte ich als Student der Biomedizinischen
+bietet sich daher an. Zum einen erhalte ich als Student der Biomedizinischen
 Informatik einen Einblick in die die Welt der Genforschung. Zum andern kann ich
 hoffentlich mit meiner Arbeit einen kleinen Beitrag zur Verbesserung der
 Zugänglichkeit zu der beeindruckenden Menge an RNA-Sequenzdaten leisten.
@@ -55,8 +56,8 @@ Zugänglichkeit zu der beeindruckenden Menge an RNA-Sequenzdaten leisten.
 %           -------------------------
 
 Seit einiger Zeit bieten eine Handvoll Produzenten Gensequenzierungsanlagen an,
-die auf Prinzipien beruhen, welche die Kosten pro sequenziertem Basenpaar
-drastisch verringern konnten. Diese neuartigen
+bei denen die Kosten pro sequenziertem Basenpaar
+drastisch verringert werden konnten. Diese neuartigen
 Sequenzierungs-Platformen werden vor allem \todo{od. "unter anderem" ?}
 dazu verwendet, das Zell-Transkriptom, also die gesamte RNA-Substanz die
 in einer Zelle zu einem definierten Zeitpunkt vorhanden ist, zu sequenzieren.
@@ -67,12 +68,12 @@ technologien auf der Hybridisierung bestimmter Sequenz-abschnitte mit
 spezifischen Oligonucleotiden beruhen, sind sie nur schlecht dazu geeignet,
 bisher unbekannte oder stark mutierte Abschnitte überhaupt zu detektieren.
 Im Gegensatz dazu lassen dich die neuen Technologien universell einsetzen. Da
-keine sequenz-spezifischen Adapter benötigt werden, können mit dem gleichen
-Setup mehrere Experimente, mit verschiedenen Organismen durchgeführt werden.
+keine Sequenz-spezifischen Adapter benötigt werden, können mit dem gleichen
+Setup mehrere Experimente, mit verschiedenen Organismen, durchgeführt werden.
 Die erzeugten Daten werden dann über ein Sequenz-Aligment mit den bereits
 bekannten Genen in Verbindung gebracht. Mit RNA-seq können aber auch - und
 das ist auch der Teil für den die Vorliegende Software eingesetzt werden
-soll - können aber auch neue Gene gefunden bzw. untranskribierte Bereiche
+soll - neue Gene gefunden bzw. untranskribierte Bereiche
 ausgemacht werden, wo bisher ein Gen vermutet wurde.
 \cite{croucher_studying_2010}
 
@@ -88,7 +89,8 @@ ausgemacht werden, wo bisher ein Gen vermutet wurde.
 Ein weiterer Vorteil von RNA-seq Technologien, ist die Möglichkeit,
 das Expressions-Niveau jeder einzelnen Base exakt messen zu können.
 Indem die Anzahl der Reads bezüglich Ihrer Länge und der Länge des
-Gens auf dem sie liegen normalisiert wird \footnote{\expandafter\fnI}, werden
+Gens auf dem sie liegen normalisiert wird \footnote{\expandafter\fnI}
+\todo{Fussnote Verstehen, ev Visualisieren, Übersetzen}, werden
 dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 \cite{croucher_studying_2010,wang_rna-seq:_2009}
 
@@ -99,8 +101,6 @@ dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 
 \subsection{Komponenten}
 %           -----------
-
-
 
 \begin{figure}[h]
 \includegraphics{img/overview_architektur}

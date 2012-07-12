@@ -2,7 +2,7 @@
 
 VERSION = 0.1
 
-DIRT = $(wildcard *.out *.toc *.aux *.ps *.eps *.log *.lof *.bbl *.blg *.dvi *.tdo *-blx.bib *~)
+DIRT = $(wildcard *.out *.toc *.aux *.ps *.eps *.log *.lof *.bbl *.blg *.dvi *.tdo *-blx.bib *~ main.pdf main.run.xml)
 
 SVGS = $(wildcard img/*.svg)
 

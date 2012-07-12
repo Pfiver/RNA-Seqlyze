@@ -137,6 +137,7 @@
 	\usepackage{todonotes}		% show todo notes
 \fi
 
+\usepackage[all]{hypcap}
 \usepackage{longtable}
 \usepackage{sphinx}
 
@@ -144,3 +145,4 @@
 
 \usepackage[nottoc]{tocbibind}
 
+\usepackage{url}
