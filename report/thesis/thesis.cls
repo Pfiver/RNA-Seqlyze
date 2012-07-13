@@ -151,15 +151,21 @@
 
 \usepackage[section]{placeins}
 
-\usepackage[undotted]{minitoc}
+\usepackage{minitoc}
+%\usepackage[undotted]{minitoc}
 \setcounter{secttocdepth}{4}
 %\stcsetoffset{secttoc}{-4em}
 %\stcsetformat{secttoc}{tocrightmargin}{0pt}
-\undottedmtctrue
-\ktightmtctrue
-\tightmtctrue
-\stcindent=0pt
-\nostcrule
+%\undottedmtctrue
+%\ktightmtctrue
+%\tightmtctrue
+%\stcindent=0pt
+%\nostcrule
 \dosecttoc
 
+\renewcommand{\stcSSfont}{\scriptsize\rmfamily\upshape\bfseries}
+\renewcommand{\stcSSSfont}{\scriptsize\rmfamily\upshape\bfseries}
+\renewcommand{\stcPfont}{\scriptsize\rmfamily\upshape\bfseries}
 
+
+\usepackage[final]{pdfpages}

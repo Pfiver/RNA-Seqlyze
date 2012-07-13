@@ -3725,10 +3725,21 @@
         \PYG{c}{\PYGZsh{}                         str, str, str, str (1/-), int}
         \PYG{c}{\PYGZsh{}}
 
-        \PYG{c}{\PYGZsh{} FIXME: do some magic here}
-        \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{operons} \PYG{o}{=} \PYG{n}{Operon}\PYG{p}{(}\PYG{n}{begin}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{end}\PYG{o}{=}\PYG{l+m+mi}{100}\PYG{p}{,} \PYG{n}{strand}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{confidence}\PYG{o}{=}\PYG{l+m+mi}{10}\PYG{p}{)}\PYG{p}{,}
-        \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{operons} \PYG{o}{=} \PYG{n}{Operon}\PYG{p}{(}\PYG{n}{begin}\PYG{o}{=}\PYG{l+m+mi}{200}\PYG{p}{,} \PYG{n}{end}\PYG{o}{=}\PYG{l+m+mi}{300}\PYG{p}{,} \PYG{n}{strand}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{confidence}\PYG{o}{=}\PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,}
-        \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{operons} \PYG{o}{=} \PYG{n}{Operon}\PYG{p}{(}\PYG{n}{begin}\PYG{o}{=}\PYG{l+m+mi}{400}\PYG{p}{,} \PYG{n}{end}\PYG{o}{=}\PYG{l+m+mi}{500}\PYG{p}{,} \PYG{n}{strand}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{confidence}\PYG{o}{=}\PYG{l+m+mi}{100}\PYG{p}{)}\PYG{p}{,}
+        \PYG{c}{\PYGZsh{} FIXME: this is just a dummy implementation, that predicts an}
+        \PYG{c}{\PYGZsh{}        operon for every transcribed (i.e. coverage \textgreater{} 1) region}
+
+        \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{operons} \PYG{o}{=} \PYG{p}{[}\PYG{p}{]}
+
+        \PYG{n}{operon} \PYG{o}{=} \PYG{n+nb+bp}{None}
+        \PYG{k}{for} \PYG{n}{i}\PYG{p}{,} \PYG{n}{n} \PYG{o+ow}{in} \PYG{n+nb}{enumerate}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{coverage}\PYG{p}{)}\PYG{p}{:}
+            \PYG{k}{if} \PYG{n}{n} \PYG{o}{\textgreater{}} \PYG{l+m+mi}{0}\PYG{p}{:}
+                \PYG{k}{if} \PYG{o+ow}{not} \PYG{n}{operon}\PYG{p}{:}
+                    \PYG{n}{operon} \PYG{o}{=} \PYG{n}{Operon}\PYG{p}{(}\PYG{n}{begin}\PYG{o}{=}\PYG{n}{i} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{strand}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{confidence}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{)}
+            \PYG{k}{else}\PYG{p}{:}
+                \PYG{k}{if} \PYG{n}{operon}\PYG{p}{:}
+                    \PYG{n}{operon}\PYG{o}{.}\PYG{n}{end} \PYG{o}{=} \PYG{n}{i}
+                    \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{operons}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{operon}\PYG{p}{)}
+                    \PYG{n}{operon} \PYG{o}{=} \PYG{n+nb+bp}{None}
 
         \PYG{c}{\PYGZsh{} create a bed track}
         \PYG{n}{track\PYGZus{}name} \PYG{o}{=} \PYG{l+s}{"}\PYG{l+s}{rna-seqlyze-operon\PYGZus{}predictions}\PYG{l+s}{"}

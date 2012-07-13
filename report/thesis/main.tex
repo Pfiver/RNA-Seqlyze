@@ -57,7 +57,6 @@ Gen-Annotationen betrachtet werden.
 \subsection{Motivation / Ziel}
 %           -----------------
 
-
 Der Fokus vieler RNA-seq Studien liegt in der Analyse von
 eukaryontischen Transkriptomen. Die generierten Sequenzdaten sind z.B. sehr
 hilfreich, um die unterschiedlichen Transkripte eines Gens zu erfassen.
@@ -84,7 +83,8 @@ das Genom wie auch das Transkriptom, also die gesamte RNA-Substanz die
 in einer Zelle zu einem definierten Zeitpunkt vorhanden ist, zu sequenzieren.
 
 Gegenüber der klassischen Transkritomanalyse mit Mikroarrays, bietet RNA-seq
-den gewichtigen Vorteil, dass damit {\em alle} Abschnitte des Genoms auf Transkription geprüft werden können.
+den gewichtigen Vorteil, dass damit {\em alle} Abschnitte des Genoms
+auf Transkription geprüft werden können.
 
 Mit RNA-seq können darum - und das ist auch der Teil für den die vorliegende
 Software eingesetzt werden soll - auch {\em neue Gene} gefunden bzw.
@@ -103,11 +103,84 @@ dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 \section{Architektur der implementierten Lösung}
 %        ======================================
 
+\subsection{Technologie-Umfeld}
+%           ------------------
+
+\textbf{Betriebssystem}
+
+UNIX ist aus Entwicklersicht aus verschiedenen Gründen eine optimale
+Betriebssystemplatform, um Datenintensive Berechnungen, wie sie bei
+der Verarbeitung und Aufbereitung von RNA-seq Daten anfallen durchzuführen.
+Die Architektur des Systems hat sich bewährt und ist weitherum bekannt
+für Ihre Robustheit, Performanz.
+
+So sind denn auch die meisten Programme, die in jüngster Vergangenheit
+entwickelt wurden, um RNA-seq Daten zu verarbeiten, auf UNIX Umgebungen
+programmiert worden und darum dort auch ohne Probleme lauffähig.
+
+Für die Softwareentwicklung sind auf der UNIX Platform
+eine Vielzahl verschiedener Programmbibliotheken und Sprachumgebungen
+Verfügbar. Die Qualität variiert, doch der Wettbewerb selektiert
+schlussendlich immer die guten.
+
+Es wurde also ein UNIX Betriebssystem und zwar Debian GNU/Linux 6.0.4
+(codename "squeeze") verwendet.
+
+\textbf{Programmiersprache}
+
+Die Programmiersprache {\em Python}, für die im Jahre 1991 ein erster
+Interpreter publiziert wurde und die in den letzten Jahren sehr
+populär geworden ist, war schon gesetzt. Sie eignet sich besonders gut
+für die schnelle Entwicklung von spezialisierter Software, da der
+Quellcode nicht in einem separaten Schritt kompiliert werden muss und
+darum geänderter Code viel schneller getestet werden kann.
+
+\textbf{Testing}
+
+Das Testen einzelner Softwarekomponenten wird mit dem {\em unittest} modul,
+eines von unzähligen Modulen in der {\em Python Standard Library},
+orchestriert. Das {\em nosetest} Modul erweitert die Funktionalität
+des Standard Moduls noch. Es erzeugt in Zusamenarbeit mit dem {\em coverage}
+Programmpaket auf Befehl hin einen {\em Test Coverage Report}. Die
+Test-Coverage lässt sich als Prozentzahl angeben. Sie gibt Auskunft darüber,
+wie gross der Anteil der getesteten Code-Statements im Vergleich zur Gesamtzahl
+von Code-Statements ist.
+
+\textbf{weitere Bausteine}
+
+Bei der Auswahl der Technologien zur
+Implementation der vorliegende Software,
+habe ich versucht möglichst solche Bausteine und Bibliotheken
+zu verwenden, die gut dokumentiert sind, eine möglichst grosse Anwenderbasis
+haben und sich bereits möglichst lange im Wettbewerb behaupten konnten.
+
+\subsection{Systemdesing}
+%           ------------
+
+Das 
+
+\begin{figure}[h]\centering
+\fbox{\includegraphics[scale=0.26]{att/DomainModel}}
+\caption[Domai nModel]{
+	Foo
+}
+\label{fig:domainmodel}
+\end{figure}
+
+
+\begin{figure}[h]\centering
+\fbox{\includegraphics[scale=0.3]{att/UseCases}}
+\caption[Use Cases]{
+	Bar
+}
+\label{fig:usecases}
+\end{figure}
+
 \subsection{Komponenten}
 %           -----------
 
-\begin{figure}[h]
-\includegraphics{img/overview_architektur}
+\begin{figure}[h]\centering
+\fbox{\includegraphics{img/overview_architektur}}
 \caption[Applikationsarchitektur]{
 	Übersicht der Architektur der RNA-Seqlyze Applikation.
 	Zuunterst die Konfigurations- und Datenbank- Dateien.
@@ -120,64 +193,66 @@ dadurch verschiedene Studien auch sehr gut miteinander vergleichbar.
 \label{fig:arch}
 \end{figure}
 
-\subsection{Technologie-Umfeld}
-%           ------------------
 
 \subsection{Erfahrungsbericht}
 %           -----------------
 
-\section{Die Software}
-%        ============
-
-\subsection{Screenshots}
-%           -----------
-
-\begin{figure}[h]
-	\includegraphics{img/screen1}
-	\label{fig:screen1}
-	\caption[Screenshot 1]{
+\begin{figure}[h]\centering
+\fbox{\includegraphics{img/screen1}}
+\caption[Screenshot 1]{
 	Darstellung einer bereits beendeten Analyse. Der graue Hintergrund
 	der Log-Ausgaben des letzten Analyseschrittes zeigt an, dass die
 	Analyse beendet ist. Unter der Überschrift "Results" finden sich
 	ein Link zum UCSC Genom Browser, wo die Resultate angezeigt werden
 	können und ein Link zu einer Genbank Datei, in der die gefundenen
 	Operons annotiert wurden.
-	}
+}
+\label{fig:screen1}
 \end{figure}
 
-\begin{figure}[h]
-\includegraphics{img/screen2}
-\label{fig:screen2}
+\begin{figure}[h]\centering
+\fbox{\includegraphics{img/screen2}}
 \caption[Screenshot 2]{
 	Starten einer neuen Analyse. Benötigt werden Short Read Daten und
 	die Referenzsequenz. Für beide Inputs kann entweder die NCBI
 	Identifikationsnummer angegeben oder eine Datei direkt
 	hochgeladen werden werden.
 }
+\label{fig:screen2}
 \end{figure}
 
-\section{Ausblick}
-%        ========
+\begin{figure}[h]\centering
+\fbox{\includegraphics{img/screen3}}
+\caption[Screenshot 3]{
+	UCSC Browser...
+}
+\label{fig:screen3}
+\end{figure}
 
-\subsection{Komplettierung}
-%           --------------
 
-\subsection{Inbetriebnahme}
-%           --------------
+
+
+% --------------------------------------------------------------------------
+
+
 
 \newpage
 \section{Anhang}
 %        ======
-
-\subsection{Quellcode}
-%           ---------
-
 \renewcommand\stctitle{Inhalt}
 \secttoc
-
-
+\subsection{Quellcode}
+%           ---------
 \input{sourcecode}
 \paragraphmark{}
+\subsection{Software Requirement Specification}
+%           ----------------------------------
+\hbox{\hskip -1.28cm\fbox{\includegraphics[scale=0.8,page=1]{att/SRS03}}}\break
+\hbox{\hskip -1.28cm\fbox{\includegraphics[scale=0.8,page=2]{att/SRS03}}}\break
+\hbox{\hskip -1.28cm\fbox{\includegraphics[scale=0.8,page=3]{att/SRS03}}}\break
+\hbox{\hskip -1.28cm\fbox{\includegraphics[scale=0.8,page=4]{att/SRS03}}}\break
+\hbox{\hskip -1.28cm\fbox{\includegraphics[scale=0.8,page=5]{att/SRS03}}}\break
+\hbox{\hskip -1.28cm\fbox{\includegraphics[scale=0.8,page=6]{att/SRS03}}}\break
 
 \subsection{Glossar}
 %           -------

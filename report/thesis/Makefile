@@ -10,7 +10,6 @@ BachelorThesis-$(VERSION).pdf: main.tex $(wildcard *.tex *.cls *.bib) $(patsubst
 	xelatex -halt-on-error $<
 	bibtex $(patsubst %.tex,%,$<)
 	xelatex -interaction batchmode $<
-	sed -i /{subsection}/d main.stc5
 	xelatex -interaction batchmode $<
 	mv main.pdf $@
 	touch $@ # nudge evince
