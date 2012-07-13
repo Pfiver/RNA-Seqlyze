@@ -1,7 +1,6 @@
 % provide the "thesis" documentclass class
 \ProvidesClass{thesis}[2012/07/09 Bachelor Thesis]
 
-
 % declare some options
 \newif\ifdraft
 \draftfalse
@@ -38,6 +37,7 @@
 \usepackage{booktabs}
 \usepackage{colortbl}
 \usepackage{tabularx}
+\usepackage{longtable}
 
 \usepackage{hyperref}		% hyperlinks & -references
 \hypersetup{
@@ -151,14 +151,13 @@
 
 \usepackage[section]{placeins}
 
-\usepackage{minitoc}
-%\usepackage[undotted]{minitoc}
+\usepackage[undotted]{minitoc}
 \setcounter{secttocdepth}{4}
 %\stcsetoffset{secttoc}{-4em}
 %\stcsetformat{secttoc}{tocrightmargin}{0pt}
 %\undottedmtctrue
 %\ktightmtctrue
-%\tightmtctrue
+\tightmtctrue
 %\stcindent=0pt
 %\nostcrule
 \dosecttoc
@@ -167,5 +166,5 @@
 \renewcommand{\stcSSSfont}{\scriptsize\rmfamily\upshape\bfseries}
 \renewcommand{\stcPfont}{\scriptsize\rmfamily\upshape\bfseries}
 
+%\usepackage[final]{pdfpages}
 
-\usepackage[final]{pdfpages}
