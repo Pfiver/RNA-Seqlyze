@@ -2,5 +2,4 @@ SHELL=/bin/bash
 HOME=/home/pfeifer
 
 # m  h   dom mon dow command
-  0  0   *   *   *   $HOME/.local/bin/ma_dayshift
  12  *   *   *   *   . $HOME/data/rna-seqlyze/bash-env; cron-hourly
