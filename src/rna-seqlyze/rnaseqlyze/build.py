@@ -51,7 +51,7 @@ class Part(object):
         print("# executing %s '%s' phase" % (self.name, phase))
         print("#")
         dev_null = file("/dev/null")
-        logdir = "report/buildlogs"
+        logdir = "doc/buildlogs"
         if not os.path.isdir(logdir): os.mkdir(logdir)
         logpath = logdir + "/%s-%s.log" % (self.name, phase)
         T = subprocess.Popen(["tee", logpath], stdin=subprocess.PIPE)

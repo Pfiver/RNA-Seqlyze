@@ -38,10 +38,10 @@ cron-hourly ()
 
         # update list of authors
         cd $rnas_topdir
-        git list-authors >| report/authors.html
-        git diff --quiet HEAD report/authors.html ||
-            git commit report/authors.html \
-                -m 'auto-commit report/authors.html'
+        git list-authors >| doc/authors.html
+        git diff --quiet HEAD doc/authors.html ||
+            git commit doc/authors.html \
+                -m 'auto-commit doc/authors.html'
 
         # other things
         re-install
@@ -147,7 +147,7 @@ auto-sigint ()
 
 re-apidoc ()
 (
-    cd $rnas_topdir/report/apidoc
+    cd $rnas_topdir/doc/apidoc
     rm -rf _build/{doctrees,html} rnaseqlyze*.rst
     rnas-apidoc ${rnas_pkgdirs[0]}
     make html
@@ -174,7 +174,7 @@ re-cover ()
         --cover-inclusive           \
         --cover-package rnaseqlyze  \
         --cover-html                \
-        --cover-html-dir=report/coverage    "${rnas_pkgdirs[@]}"
+        --cover-html-dir=doc/coverage    "${rnas_pkgdirs[@]}"
     rm -f .coverage
 )
 
