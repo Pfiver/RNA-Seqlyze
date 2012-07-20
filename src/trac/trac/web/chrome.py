@@ -613,7 +613,7 @@ class Chrome(Component):
 
     def process_request(self, req):
         prefix = req.args['prefix']
-        filename = req.args['filename']
+        filename = req.args['filename'].encode('utf-8')
 
         dirs = []
         for provider in self.template_providers:

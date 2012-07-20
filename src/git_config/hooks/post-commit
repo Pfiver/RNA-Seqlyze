@@ -2,3 +2,5 @@
 
 ~/.local/bin/trac-admin src/trac_env \
 	changeset added "(default)" $(git rev-parse HEAD)
+
+# http://trac.edgewall.org/wiki/TracRepositoryAdmin#ExplicitSync
