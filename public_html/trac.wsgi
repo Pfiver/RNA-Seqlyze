@@ -5,6 +5,9 @@ trac_env = '/home/pfeifer/data/rna-seqlyze/src/trac_env'
 import site
 site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
 
+import os
+os.umask(0002)
+
 import trac.web.main
 def application(environ, start_request):
     # strip the ".wsgi" ending
