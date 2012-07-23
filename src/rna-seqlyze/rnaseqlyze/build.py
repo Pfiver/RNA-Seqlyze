@@ -138,7 +138,7 @@ class samtools(Part):
         'make -j$NCPUS_ONLN -C bcftools',
         'make -j2 SUBDIRS=.'
             ' LIBPATH=-L$PREFIX/lib LIBCURSES=-lncurses'
-            ' CFLAGS="$(echo -I$PREFIX/include{,/ncurses})"'
+            ' CFLAGS="-I$PREFIX/include -I$PREFIX/include/ncurses"'
     )
     install = "cp samtools $PREFIX/bin"
 

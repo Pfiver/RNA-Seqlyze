@@ -1,7 +1,8 @@
 <tal:block metal:use-macro="base">
 
   <tal:block metal:fill-slot="menu-items">
-    <li><a href="#features">Features</a></li>
+    <li><a href="../trac">Project Homepage</a></li>
+    <li><a href="../trac/wiki/Analyses">Existing Analyses</a></li>
   </tal:block>
 
   <tal:block metal:fill-slot="content">
