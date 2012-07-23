@@ -36,7 +36,7 @@ RewriteRule ^trac.wsgi/login$ /biopython/traclogin [R,L]
 RewriteRule ^traclogin.wsgi/logout$ /biopython/trac [R,L]
 
 <Files 'traclogin'>
-        AuthUserFile /home/pfeifer/public_html/.htpasswd.trac
+        AuthUserFile @@WEBDIR@@/.htpasswd.trac
         AuthName "Enter Password"
         AuthType Basic
         Require valid-user

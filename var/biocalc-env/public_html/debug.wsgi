@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import site
-site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
+site.addsitedir("@@PREFIX@@/lib/python2.6/site-packages")
 
 def application(env, start_response):
     def flt(n):

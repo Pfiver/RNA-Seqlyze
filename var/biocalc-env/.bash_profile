@@ -1,31 +1,12 @@
 # tmux
 ######
 
-tmux="$HOME/.local/bin/tmux -S /tmp/tmux-pfeifer"
+tmux="$HOME/.local/bin/tmux -S /tmp/tmux-$USER"
 
 if ! [ $TMUX ]
 then
 	$tmux display 2> /dev/null && TERM=xterm-256color exec $tmux attach
 	TERM=xterm-256color exec $tmux
-fi
-
-# history
-#########
-
-histfile=~/.pbh
-if [ -d $(dirname $histfile) -a "$HISTFILE" != $histfile ]
-then
-	HISTSIZE=1000000
-        HISTFILE=$histfile
-        HISTIGNORE="&:sync"
-        HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S  "
-        shopt -s histappend
-
-        if [ -f "$HISTFILE" ] && [ $(wc -l < $HISTFILE) -ge $HISTSIZE ]
-        then
-                echo "warning: HISTFILE ('$HISTFILE') \
-			reached size limit of $HISTSIZE lines"
-        fi
 fi
 
 # other stuff
@@ -50,8 +31,6 @@ alias ls='ls --color=auto --show-control-chars --group-directories-first'
 
 alias gd='git diff'
 alias gs='git status'
-
-alias egit="git --git-dir=/home/pfeifer/.git --work-tree=/home/pfeifer"
 
 eval "$(lesspipe)"
 eval "$(dircolors -b)"
@@ -94,55 +73,14 @@ viall ()
     ) 
 }
 
-
-# fix pushd
-###########
-pushd() {
-	if [ $# = 0 ]
-	then
-		if [ ${#DIRSTACK[@]} -le 2 ]
-		then
-			command pushd "$PWD" > /dev/null
-		else
-			cd ~-0
-			command pushd -n -0 > /dev/null
-		fi
-	elif [ -d "$1" ]
-	then
-		command pushd -n "$(readlink -f "${1%/}")" > /dev/null
-		cd ~1
-	else
-		echo no such directory: "'$1'" >&2
-	fi
-}
-popd() {
-	command popd "$@" > /dev/null
-
-}
-RED=$'\033[01;31m'
-BOLD=$'\033[01;1m'
-NORM=$'\033[0m'
-
-PROMPT_COMMAND+='; [ "0${#DIRSTACK[@]}" -gt 1 ] && \
-			{ echo -e " $RED--$NORM"; dirs -v | tail -n+2; }'
-
 # rna-seqlyze
 #############
 
 bt() {
-	. ~/data/rna-seqlyze/bash-env
-
-	dirs -c
-	for ((i=${#rnas_pkgdirs[@]}-1; i>0; i--))
-	do
-		pkg=${rnas_pkgdirs[i]##*-}
-		pushd "${rnas_pkgdirs[i]}/rnaseqlyze/$pkg"
-	done
-	pushd "${rnas_pkgdirs[0]}/rnaseqlyze/core"
-	pushd "${rnas_pkgdirs[0]}/rnaseqlyze"
-
 	bt=$rnas_topdir
 	wd=$rnas_workdir
+
+	. ~/data/rna-seqlyze/bash-env
 
 	cd "$rnas_topdir"
 }

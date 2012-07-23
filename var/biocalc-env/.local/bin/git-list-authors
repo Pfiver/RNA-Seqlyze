@@ -107,7 +107,7 @@ def main(argv=sys.argv):
                 font-size: 8pt;
                 font-family: Monospace;
             }
-            #patrick-pfeifer {
+            #your-name-here {
                 background-color: #CCE;
                 box-shadow: 0 0 4px 2px #55F;
             }

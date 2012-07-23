@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-trac_env = '/home/pfeifer/data/rna-seqlyze/src/trac_env'
+trac_env = '@@TOPDIR@@/src/trac_env'
 
 import site
-site.addsitedir("/home/pfeifer/.local/lib/python2.6/site-packages")
+site.addsitedir("@@PREFIX@@/lib/python2.6/site-packages")
 
 import os
 os.umask(0002)
