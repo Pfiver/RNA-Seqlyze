@@ -5,8 +5,8 @@
 #       - move this file to /var/www/.../rna-seqlyze.wsgi
 #       - configure apache to execute the file with mod_wsgi
 
-prefix = "/home/biopython/.local"
-workdir = "/home/biopython/data/rna-seqlyze-workdir"
+prefix = "@@PREFIX@@"
+workdir = "@@WORKDIR_DEV@@"
 
 import site, glob
 site.addsitedir(glob.glob(prefix + "/lib/python2*/site-packages")[-1])

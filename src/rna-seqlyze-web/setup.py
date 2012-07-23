@@ -17,7 +17,6 @@ setup(
     include_package_data=True,
     zip_safe=False,
     data_files=[('', [
-        'rna-seqlyze.wsgi',
         'development.ini',
         'production.ini',
     ])],
