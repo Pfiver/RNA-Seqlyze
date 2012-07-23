@@ -13,10 +13,6 @@ cron-hourly ()
 {
     _cron-hourly ()
     {
-        # push home directory repository to 'biocalc-env' branch
-        cd ~
-        git push $rnas_topdir master:biocalc-env
-
         # push all branches to 'fhnw' remote for backup
         cd $rnas_topdir
         git push fhnw
