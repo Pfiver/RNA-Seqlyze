@@ -1,0 +1,22 @@
+[user]
+	name = Patrick Pfeifer
+	email = patrick.pfeifer@students.fhnw.ch
+[color]
+	ui = true
+[merge]
+	tool = vimdiff
+[alias]
+	lg = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)%cr%C(reset)'
+	lgm = log --graph --pretty=format:'%C(red)%h%C(reset) -%C(yellow)%d%C(reset) %ce: %s %C(green)%cr%C(reset)'
+	llg = log --decorate --oneline --graph
+	ls = ls-tree --full-tree -rl HEAD
+	cat = "!sh -c 'git cat-file blob :$1' --"
+	treelog = log --diff-filter=AR -M --summary --oneline
+	expunge = "!git reflog expire --expire=now --all && git gc --prune=now #"
+
+	ls-assume-unchaged = "!git ls-files -v | sed -n 's/^h //p' #"
+	diff-assume-unchaged = "!bash -c 'for f in $(git ls-assume-unchaged); do diff -u <(git cat $f) $f; done' #"
+
+	ssh = "!ssh -R 9418:localhost:9418"
+	servethis = "!git daemon --detach --pid-file=git-daemon.pid --syslog --verbose --export-all --base-path=$PWD #"
+	stopserving = "!kill $(cat git-daemon.pid); rm git-daemon.pid #"

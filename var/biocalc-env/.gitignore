@@ -1,0 +1,11 @@
+/data
+/.local
+/.pbh*
+/.viminfo
+/.htoprc
+/.mysql_history
+/.lesshst
+/mbox
+/buildbot-virtualenv
+/webapps-virtualenv
+/.s3cfg

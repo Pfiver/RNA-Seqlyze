@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+
+import urlparse
+from trac.env import Environment 
+
+trac_db = Environment(".").config.get("trac", "database")
+url_parts = urlparse.urlsplit(trac_db)
+database = url_parts.path[1:]
+my_conf = "\n".join((
+    "[client]",
+    "host=" + url_parts.hostname,
+    "user=" + url_parts.username,
+    "password=" + url_parts.password
+))
+
+import os, sys
+from subprocess import call
+from tempfile import mkstemp
+
+my_conf_fd, my_conf_path = mkstemp()
+os.write(my_conf_fd, my_conf)
+os.close(my_conf_fd)
+
+dump_path = "mysql-db-backup.sql"
+new_dump_path = "mysql-db-backup.new.sql"
+
+mysqldump = ("mysqldump",
+                "--defaults-file=" + my_conf_path,
+                "--result-file=" + new_dump_path, database)
+
+if call(mysqldump) != 0:
+    raise Exception("command failed: '%s'" % " ".join(mysqldump))
+
+dump_differs = call(["diff", "-q",
+            "-I", "^INSERT INTO `session",
+            "-I", "^-- Dump completed on", dump_path, new_dump_path])
+
+if dump_differs:
+    os.rename(new_dump_path, dump_path)
+else:
+    os.unlink(new_dump_path)
+
+os.unlink(my_conf_path)
+
+sys.exit(not dump_differs) # normal exit (0) if new dump differes, failure (1) if it doesn't
