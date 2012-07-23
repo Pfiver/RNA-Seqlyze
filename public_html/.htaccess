@@ -4,6 +4,13 @@ RedirectMatch ^/biopython/$ /biopython/trac
 # auto-rewrites file to file.wsgi if file.wsgi exists
 AddHandler wsgi-script .wsgi
 
+# set the (default) mod_wsgi.process_group
+SetEnv WSGI_PGRP biopython-dev
+
+# set a different mod_wsgi.process_group for the production app only
+RewriteCond $0 ^rna-seqlyze.wsgi
+RewriteRule .* - [E=WSGI_PGRP:biopython]
+
 # turn on mod_rewrite features
 RewriteEngine on
 
@@ -14,20 +21,13 @@ RewriteCond $0 !^$
 RewriteCond $0 !^trac.wsgi
 RewriteCond $0 !^traclogin.wsgi
 RewriteCond $0 !^rna-seqlyze.wsgi
-# FIXME: delete the next 3 lines in production environment
+# FIXME: delete the next 2 lines in a production environment
 RewriteCond $0 !^debug.wsgi
-RewriteCond $0 !^pyramid-webapp.wsgi
 RewriteCond $0 !^rna-seqlyze-dev.wsgi
-RewriteCond %{REQUEST_URI} !^/~pfeifer/static/
 RewriteRule .* - [R=404]
 
+# pass-through requests for buildbot/* paths to the buildbot server
 RewriteRule ^buildbot/(.*) http://localhost:8010/$1 [QSA,P]
-
-# rewrite (hidden redirect) requests for
-# non-existant files to pyramid-webapp.wsgi
-# FIXME: delete the next 2 lines in production environment
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^[^/]*(.*) /biopython/pyramid-webapp.wsgi$1
 
 # handle trac login / logount
 #  [R] -> issue a real 302 redirect
