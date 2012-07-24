@@ -76,11 +76,7 @@ viall ()
 # rna-seqlyze
 #############
 
-bt() {
-	bt=$rnas_topdir
-	wd=$rnas_workdir
+. ~/rna-seqlyze/bash-env
 
-	. ~/data/rna-seqlyze/bash-env
-
-	cd "$rnas_topdir"
-}
+alias bt="cd $rnas_topdir"
+alias wd="cd $rnas_workdir"

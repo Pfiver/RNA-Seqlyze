@@ -1,4 +1,0 @@
-track name="BED" description="BED Test Track" visibility=2 itemRgb="on" 
-chr	1	100	Foo	500	+	10	90	255,0,0
-chr	200	250	Bar	900	+	205	245	0,255,0
-chr	400	425	Baz	800	-	405	420	0,0,255

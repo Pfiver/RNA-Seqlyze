@@ -1,6 +1,6 @@
 #!/bin/bash
 
-~/.local/bin/trac-admin src/trac_env \
+@@PREFIX@@/bin/trac-admin @@TOPDIR@@/var/trac-env \
 	changeset added "(default)" $(git rev-parse HEAD)
 
 # http://trac.edgewall.org/wiki/TracRepositoryAdmin#ExplicitSync

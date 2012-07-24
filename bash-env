@@ -1,5 +1,8 @@
 # This file should be kept in TOPDIR
 
+# variables
+###########
+
 : ${rnas_topdir:=$(dirname $(readlink -f $BASH_SOURCE))}
 : ${rnas_workdir:=${rnas_topdir}-workdir-dev}
 
@@ -8,6 +11,9 @@ rnas_pkgs=("${rnas_pkgs[@]/#/rna-seqlyze}")
 rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
 
 [[ $PATH =~ (^|:)$HOME/.local/bin(:|$) ]] || PATH=$HOME/.local/bin:$PATH
+
+# cron script
+#############
 
 cron-hourly ()
 {
@@ -75,6 +81,9 @@ cron-hourly ()
     return $ret
 }
 
+# core functions
+################
+
 update_available_list ()
 {
     local base select
@@ -121,26 +130,6 @@ buildbot ()
     esac
 )
 
-sigint ()
-{
-    curl localhost/biopython/debug?{sig_int,sig_int}
-}
-
-auto-sigint ()
-{
-    inotifywait --monitor --recursive \
-        -e modify -e moved_to --format "%e %f" "${rnas_pkgdirs[@]}" |
-    while read event arg
-    do
-        if [[ "$arg" = *.py ]]
-        then
-            echo $event on $arg
-            sigint
-        fi
-    done
-
-}
-
 re-apidoc ()
 (
     cd $rnas_topdir/doc/apidocs
@@ -174,6 +163,29 @@ re-cover ()
     rm -f .coverage
 )
 
+# developper util commands
+##########################
+
+sigint ()
+{
+    curl localhost/biopython/debug?{sig_int,sig_int}
+}
+
+auto-sigint ()
+{
+    inotifywait --monitor --recursive \
+        -e modify -e moved_to --format "%e %f" "${rnas_pkgdirs[@]}" |
+    while read event arg
+    do
+        if [[ "$arg" = *.py ]]
+        then
+            echo $event on $arg
+            sigint
+        fi
+    done
+
+}
+
 logtail-developall ()
 {
     logfiles=(/var/log/apache2/{access,error}.log \
@@ -189,5 +201,27 @@ logtail-developall ()
     done &
     tail -f ${logfiles[@]}
 }
+
+# install-commands for 3rd-party developper tools
+#################################################
+
+install-inotify ()
+(
+	cd $rnas_topdir/src/inotify-tools &&
+		./configure --prefix=$HOME/.local && make all install
+)
+
+install-tmux ()
+(
+	cd $rnas_topdir/src/libevent &&
+		./configure --prefix=$HOME/.local && make all install &&
+
+	cd $rnas_topdir/src/tmux &&
+		LIBEVENT_CFLAGS= LIBEVENT_LIBS=-levent \
+		PKG_CONFIG=true LDFLAGS=-L$HOME/.local/lib \
+		CFLAGS=$(echo -I$HOME/.local/include{,/ncurses}) \
+		./configure --prefix=$HOME/.local &&
+			LD_RUN_PATH=$HOME/.local/lib make all install
+)
 
 # vim: ft=sh:sw=4:ts=4:et
