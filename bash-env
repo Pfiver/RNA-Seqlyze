@@ -4,7 +4,9 @@
 ###########
 
 : ${rnas_topdir:=$(dirname $(readlink -f $BASH_SOURCE))}
-: ${rnas_workdir:=${rnas_topdir}-workdir-dev}
+: ${rnas_workdir:=$HOME/rna-seqlyze-workdir-dev}
+: ${rnas_bibodir:=$HOME/buildbot}
+: ${rnas_wwwbase:=/rna-seqlyze/}
 
 rnas_pkgs=("" -cli -web -worker)
 rnas_pkgs=("${rnas_pkgs[@]/#/rna-seqlyze}")
@@ -19,6 +21,10 @@ cron-hourly ()
 {
     _cron-hourly ()
     {
+        # push config repository to '$HOSTNAME-env' branch
+        cd ~
+        git push $rnas_topdir master:$HOSTNAME-env
+
         # push all branches to 'fhnw' remote for backup
         cd $rnas_topdir
         git push fhnw
@@ -27,15 +33,15 @@ cron-hourly ()
         buildbot sendchange
 
         # update list of available analyses
-        update_available_list
+        update-available-list
     }
 
     _cron-daily ()
     {
         # backup the wiki database
         cd $rnas_topdir/src/trac_env
-        trac-mysqlbackup && # only if it contains changes
-            git commit mysql-db-backup.sql \
+        trac-sqlite-backup && # only if it contains changes
+            git commit sqlite-db-backup.sql \
                 -m 'automatic nightly wiki backup'
 
         # update list of authors
@@ -84,13 +90,13 @@ cron-hourly ()
 # core functions
 ################
 
-update_available_list ()
+update-available-list ()
 {
     local base select
     {
         echo '{{{#!html'
         echo '<table>'
-        base=/biopython/rna-seqlyze/analyses/
+        base=${rnas_wwwbase}rna-seqlyze/analyses/
         select="select"
         select+=" '<tr><td>'||'<a href=\"$base'||id||'\">'||id||'</a>',"
         select+="   org_accession,title,rnaseq_run_srr,error||'</td></tr>'"
@@ -100,12 +106,12 @@ update_available_list ()
                         $rnas_workdir/rnaseqlyze.db "$select"
         echo '</table>'
         echo '}}}'
-    } | trac-admin $rnas_topdir/src/trac_env wiki import Analyses
+    } | trac-admin $rnas_topdir/var/trac-env wiki import Analyses
 }
 
 buildbot ()
 (
-    cd ~/buildbot-virtualenv
+    cd $rnas_bibodir
     . bin/activate
     case "$1"
     in
@@ -168,7 +174,7 @@ re-cover ()
 
 sigint ()
 {
-    curl localhost/biopython/debug?{sig_int,sig_int}
+    curl localhost${rnas_wwwbase}debug?{sig_int,sig_int}
 }
 
 auto-sigint ()

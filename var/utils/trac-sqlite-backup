@@ -1,0 +1,14 @@
+#!/bin/bash
+
+db=$(trac-admin . config get trac database)
+db_path=${db#sqlite:///}
+
+sqlite3 "$db_path" .dump > sqlite-db-backup.new.sql
+if diff -I '^INSERT INTO `session' sqlite-db-backup{,.new}.sql
+then
+    mv sqlite-db-backup{.new,}.sql
+    exit 0 # normal exit if new dump differes
+else
+    rm sqlite-db-backup.new.sql
+    exit 1 # exit failure if new dump does NOT differ
+fi

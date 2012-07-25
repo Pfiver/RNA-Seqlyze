@@ -1,5 +1,5 @@
 # set the default url for the directory
-RedirectMatch ^/biopython/$ /biopython/trac
+RedirectMatch ^@@WWWBASE@@$ @@WWWBASE@@trac
 
 # auto-rewrites file to file.wsgi if file.wsgi exists
 AddHandler wsgi-script .wsgi
@@ -32,11 +32,11 @@ RewriteRule ^buildbot/(.*) http://localhost:8010/$1 [QSA,P]
 # handle trac login / logount
 #  [R] -> issue a real 302 redirect
 #  [L] -> stop processing RewriteRules
-RewriteRule ^trac.wsgi/login$ /biopython/traclogin [R,L]
-RewriteRule ^traclogin.wsgi/logout$ /biopython/trac [R,L]
+RewriteRule ^trac.wsgi/login$ @@WWWBASE@@traclogin [R,L]
+RewriteRule ^traclogin.wsgi/logout$ @@WWWBASE@@trac [R,L]
 
 <Files 'traclogin'>
-        AuthUserFile @@WEBDIR@@/.htpasswd.trac
+        AuthUserFile @@WWWDIR@@/.htpasswd.trac
         AuthName "Enter Password"
         AuthType Basic
         Require valid-user

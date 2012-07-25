@@ -12,13 +12,13 @@
 
 # Usage:
 #	- configure the two directories below
-#       - copy this file to /etc/init.d/rnaseqlyze.sh
-#	- enable it with `insserv /etc/init.d/rnaseqlyze.sh`
+#       - copy this file to /etc/init.d/rna-seqlyze.sh
+#	- enable it with `insserv /etc/init.d/rna-seqlyze.sh`
 
 ###
 
-PREFIX=/home/biopython/.local		# the <prefix> passed to `rnas-build`
-WORKDIR=/home/biopython/rnas-workdir	# the <workdir> passed to `rnas-init`
+PREFIX=@@PREFIX@@	# the <prefix> passed to `rnas-install`
+WORKDIR=@@WORKDIR@@	# the <workdir> passed to `rnas-init`
 
 ###
 
@@ -35,7 +35,7 @@ case "$1" in
         log_end_msg $?
     ;;
     *)
-        echo "Usage: /etc/init.d/rnaseqlyze.sh {start|stop|restart}"
+        echo "Usage: /etc/init.d/rna-seqlyze.sh {start|stop|restart}"
         exit 1
     ;;
 esac

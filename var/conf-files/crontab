@@ -1,4 +1,0 @@
-SHELL=/bin/bash
-
-# m  h   dom mon dow command
- 12  *   *   *   *   . $HOME/data/rna-seqlyze/bash-env; cron-hourly
