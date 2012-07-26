@@ -65,6 +65,15 @@ doc_TRAC_DB='
    for example `sqlite:///$WORKDIR-dev/trac.db`.
 '
 
+# os check
+Debian= Ubuntu=
+eval $(lsb_release -is)=true
+if [ "$Debian$Ubuntu" != true ]
+then
+    echo Only Debian and Ubuntu OSs are supported so far.
+    exit 1
+fi
+
 # if not already manually configured at the top of the script,
 # print the documentation for and ask for the value of each variable
 if [ -z "$ADMIN_EMAIL" ]
@@ -225,74 +234,62 @@ then
     )
 fi
 
-# worker service, apache
+# apache, worker service
 cd $CURDIR
-subcat $TOPDIR/src/rna-seqlyze-worker/rna-seqlyze.sh > rna-seqlyze.sh
+subcat $TOPDIR/src/rna-seqlyze-worker/rna-seqlyze-service > rna-seqlyze-service
+subcat $TOPDIR/var/conf-files/rna-seqlyze-a2conf > rna-seqlyze-a2conf
 
 # as root
-cat << END_OF_COMMANDS
+apache_conf='
+mv rna-seqlyze-a2conf /etc/apache2/conf.d/rna-seqlyze
+a2enmod proxy rewrite wsgi
+service apache2 restart
+'
+service_conf='
+mv rna-seqlyze-service /etc/init.d/rna-seqlyze
+insserv rna-seqlyze
+service rna-seqlyze start
+'
+cat << END_OF_ROOT
 
 Almost done!
 
-There are only a few steps left
+There are two things left to be done
 that need to be carried out with _root permissions_:
 
-1. A file called rna-seqlyze.sh has been created in the current directory.
-   Move it to /etc/init.d and activate it by issuing the following commands:
--------
-mv rna-seqlyze.sh /etc/init.d/rna-seqlyze.sh
-insserv /etc/init.d/rna-seqlyze.sh
--------
+1. To configure the apache webserver, the file 'rna-seqlyze-a2conf',
+   that has just been created in the current directory, must be moved to
+   '/etc/apache2/conf.d'. Then all required modules must be activated and
+   the apache daemon needs to be restarted by issuing the following commands:
 
-2. Eddt '/etc/apache2/sites-available/default' and add the following lines:
--------
-  <VirtualHost *:80>
-        ...
-        <Directory $WWWDIR>
-                WSGIProcessGroup %{ENV:WSGI_PGRP}
-                WSGIRestrictProcess rnaseqlyze rnaseqlyze-dev
-                Options ExecCGI Indexes FollowSymLinks MultiViews
-                MultiviewsMatch Handlers
-                AllowOverride all
-                Order deny,allow
-                Allow from all
-        </Directory>
-        WSGIScriptAlias $WWWBASE $WWWDIR
-        WSGIDaemonProcess rnaseqlyze threads=2 maximum-requests=500
-        WSGIDaemonProcess rnaseqlyze-dev threads=2 maximum-requests=500
-        ...
-  </VirtualHost>
--------
+----
+$apache_conf
+----
 
-3. Enable the 'proxy', 'rewrite' and 'wsgi' apache modules like so:
--------
-cd /etc/apache2/mods-enabled
-root ln -s ../mods-available/{proxy,rewrite,wsgi}.* .
--------
+2. To configure the rna-seqlyze-worker daemon (service), the file
+   'rna-seqlyze-service', that has just been created in the current
+   directory, must be moved to '/etc/init.d'. Then the service must be
+   activated and started by issuing the following commands:
 
-END_OF_COMMANDS
+----
+$service_conf
+----
+
+Enter ${Debian:+the root}${Ubuntu:+your} password to issue those commands now.
+
+END_OF_ROOT
+if ! eval ${Debian:+su -c}${Ubuntu:+sudo sh -c} "$apache_conf$service_conf"
+then
+    echo "$apache_conf$service_conf" > finish-installation
+    echo "An error happend trying to issue the mentioned commands."
+    echo "They have been written to a file called 'finish-installation'."
+fi
 
 # done
 cat << END_OF_DONE
 
-Done!
+ RNA-Seqlyze installed in $PREFIX
 
-Now, the following urls should be accessible:
-
- - http://$HOSTNAME/$WWWBASE/trac
- - http://$HOSTNAME/$WWWBASE/rna-seqlyze
- - http://$HOSTNAME/$WWWBASE/rna-seqlyze-dev
-
-It might be helpful to add the following lines to your ~/.bash_profile:
--------
-rnas_topdir=$TOPDIR
-rnas_workdir=$WORKDIR
-rnas_bibodir=$BIBODIR
-rnas_wwwbase=$WWWBASE
-
-. $TOPDIR/bash-env
-
-alias bt="cd $rnas_topdir"
--------
+ WORKDIR=$WORKDIR
 
 END_OF_DONE

@@ -19,7 +19,7 @@ setup(
     data_files=[('', [
         'development.ini',
         'production.ini',
-        'rnaseqlyze.sh',
+        'rna-seqlyze-service',
     ])],
     setup_requires=[
         "psutil",

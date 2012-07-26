@@ -1,0 +1,12 @@
+WSGIScriptAlias @@WWWBASE@@ @@WWWDIR@@
+WSGIDaemonProcess rnaseqlyze threads=2 maximum-requests=500
+WSGIDaemonProcess rnaseqlyze-dev threads=2 maximum-requests=500
+<Directory @@WWWDIR@@>
+	WSGIProcessGroup %{ENV:WSGI_PGRP}
+	WSGIRestrictProcess rnaseqlyze rnaseqlyze-dev
+	Options ExecCGI FollowSymLinks MultiViews
+	MultiviewsMatch Handlers
+	AllowOverride all
+	Order deny,allow
+	Allow from all
+</Directory>

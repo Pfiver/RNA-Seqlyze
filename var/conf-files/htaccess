@@ -21,7 +21,7 @@ RewriteCond $0 !^$
 RewriteCond $0 !^trac.wsgi
 RewriteCond $0 !^traclogin.wsgi
 RewriteCond $0 !^rna-seqlyze.wsgi
-# FIXME: delete the next 2 lines in a production environment
+# FIXME: comment out the next 2(!) lines in a production environment
 RewriteCond $0 !^debug.wsgi
 RewriteCond $0 !^rna-seqlyze-dev.wsgi
 RewriteRule .* - [R=404]
