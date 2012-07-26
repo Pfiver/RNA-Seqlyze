@@ -1,99 +1,102 @@
 #!/bin/bash -e
 
-unset UNIXUSER
-#UNIXUSER=$USER
-
-TOPDIR=/home/$UNIXUSER/rna-seqlyze
-PREFIX=/home/$UNIXUSER/.local
-WORKDIR=/home/$UNIXUSER/rna-seqlyze-workdir
-WWWDIR=/home/$UNIXUSER/public_html
+TOPDIR=/home/$USER/rna-seqlyze
+PREFIX=/home/$USER/.local
+WORKDIR=/home/$USER/rna-seqlyze-workdir
+WWWDIR=/home/$USER/public_html
 WWWBASE=/rna-seqlyze/
-BIBODIR=/home/$UNIXUSER/buildbot
+BIBODIR=/home/$USER/buildbot
 
-HOSTNAME=$(hostname)
+HOSTNAME=$(hostname -f)
 GROUP=www-data
 WORKER_USER=www-data
-ADMIN_EMAIL=admin@$HOSTNAME
+ADMIN_EMAIL=
 TRAC_DB=sqlite:///$WORKDIR-dev/trac.db
 
-# WARNING:
-#  The variables _must_not_contain_any_ \ (backslash) or | (bar) characters.
-
-if [ $TOPDIR = /home//rna-seqlyze ]; then cat << 'END_OF_DOC'
-
-To install rna-seqlyze, edit the variables on top of this script:
-
- `TOPDIR`:
+# config variables documentation,
+# copied from the 'Deployment' wiki page
+doc_TOPDIR='
    The root of the project source tree cloned from
    https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
    for example `/home/user/rna-seqlyze`.
-
- `PREFIX`:
+'
+doc_PREFIX='
    The project installation directory on the server;
    for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
-
- `WORKDIR`:
+'
+doc_WORKDIR='
    A directory on the server where lots of space should be available;
    for example`/home/user/rna-seqlyze-workdir`.
-
- `WWWDIR`:
+'
+doc_WWWDIR='
    The directory on the server containing the
    .htaccess file and the .wsgi scripts;
    for example `/home/user/public_html`.
-
- `WWWBASE`:
+'
+doc_WWWBASE='
    The path under which `WWWDIR` is accessible on the server
    ''from outside'' (e.g. with HTTP on port 80);
    for example `/rna-seqlyze/`.
-
- `BIBODIR`:
+'
+doc_BIBODIR='
    A directory to hold one buildbot "master" and one buildbot
    "slave" base directory;
    for example `/home/user/buildbot`.
+'
 
- `HOSTNAME`:
+doc_HOSTNAME='
    The hostname under which the server is accessible from outside;
    for example `www.rna-seqlyze.com`.
-
- `GROUP`:
+'
+doc_GROUP='
    The unix group that the web application and the worker run as;
    for example `www-data`.
-
- `WORKER_USER`:
+'
+doc_WORKER_USER='
    The unix user that the worker runs as;
    for example `www-data`.
-
- `ADMIN_EMAIL`:
+'
+doc_ADMIN_EMAIL='
    The email address of the application administrator;
    for example `admin@rna-seqlyze.com`.
-
- `TRAC_DB`:
+'
+doc_TRAC_DB='
    A database url for a database where trac will keep its data;
    for example `sqlite:///$WORKDIR-dev/trac.db`.
+'
 
-(copied from trac/wiki/Deployment)
-
-END_OF_DOC
-exit 1
+# if not already manually configured at the top of the script,
+# print the documentation for and ask for the value of each variable
+if [ -z "$ADMIN_EMAIL" ]
+then
+    echo "You need to specify some configuration values."
+    echo
+    echo "To use the defaults, shown [in brackets], just hit return."
+    for doc in ${!doc_*}
+    do
+        var=${doc#doc_}
+        echo
+        echo "${!doc}"
+        while true
+        do
+            read -p "$var = [${!var}] " val || exit
+            [ -n "$val" ] && eval $var=\$val
+            [ -n "${!var}" ] && break
+            echo "$var can't be empty."
+        done
+    done
+    echo
 fi
 
 # helper function
-subcat()
-{
-    sed "
-        s|@@TOPDIR@@|$TOPDIR|;
-        s|@@PREFIX@@|$PREFIX|;
-        s|@@WORKDIR@@|$WORKDIR|;
-        s|@@WWWDIR@@|$WWWDIR|;
-        s|@@WWWBASE@@|$WWWBASE|;
-        s|@@BIBODIR@@|$BIBODIR|;
-        s|@@HOSTNAME@@|$HOSTNAME|;
-        s|@@GROUP@@|$GROUP|;
-        s|@@WORKER_USER@@|$WORKER_USER|;
-        s|@@ADMIN_EMAIL@@|$ADMIN_EMAIL|;
-        s|@@TRAC_DB@@|$TRAC_DB|;
-    " $1
-}
+confsub=$(
+    for doc in ${!doc_*}
+    do
+        var=${doc#doc_}
+        echo -n "s|@@$var@@|${!var//|/\\|}|g;"
+    done
+)
+subcat() { sed "$confsub" "$1"; }
 
 # remember the current directory
 CURDIR=$PWD
@@ -226,6 +229,7 @@ fi
 cd $CURDIR
 subcat $TOPDIR/src/rna-seqlyze-worker/rna-seqlyze.sh > rna-seqlyze.sh
 
+# as root
 cat << END_OF_COMMANDS
 
 Almost done!
