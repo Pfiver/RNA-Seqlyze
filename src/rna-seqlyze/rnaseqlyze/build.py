@@ -125,7 +125,8 @@ class pysam(Part):
     install = "python setup.py install --prefix=$PREFIX"
 
 class biopython(Part):
-    build = "python setup.py build"
+    build = ("easy_install --prefix=$PREFIX numpy",
+             "python setup.py build")
     # save some time
     #test = "python setup.py test"
     install = "python setup.py install --prefix=$PREFIX"
