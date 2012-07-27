@@ -119,6 +119,7 @@ then
 import distribute_setup
 _install(download_setuptools(), '--prefix', '$PREFIX')
 END_OF_PYTHON
+    rm distribute_setup.py distribute-*.tar.gz
 fi
 
 # docopt
@@ -200,7 +201,7 @@ subcat rnaseqlyze.ini > $WORKDIR-dev/rnaseqlyze.ini
 if [ -n "$TRAC_DB" ]
 then
     # create trac.ini
-    cd $PREFIX/var/trac-env
+    cd $TOPDIR/var/trac-env
     mkdir -p $WORKDIR-dev
     ti=$WORKDIR-dev/trac.ini
     subcat conf/trac.ini.tpl > $ti
@@ -259,11 +260,14 @@ subcat $TOPDIR/var/conf-files/rna-seqlyze-a2conf > rna-seqlyze-a2conf
 
 # as root
 apache_conf='
+chown root. rna-seqlyze-a2conf
 mv rna-seqlyze-a2conf /etc/apache2/conf.d/rna-seqlyze
 a2enmod proxy rewrite wsgi
 service apache2 restart
 '
 service_conf='
+chown root. rna-seqlyze-service
+chmod 755 rna-seqlyze-service
 mv rna-seqlyze-service /etc/init.d/rna-seqlyze
 insserv rna-seqlyze
 service rna-seqlyze start
@@ -296,7 +300,7 @@ $service_conf
 Enter ${Debian:+the root}${Ubuntu:+your} password to issue those commands now.
 
 END_OF_ROOT
-if ! eval ${Debian:+su -c}${Ubuntu:+sudo sh -c} "$apache_conf$service_conf"
+if ! ${Debian:+su -c}${Ubuntu:+sudo sh -c} "$apache_conf$service_conf"
 then
     echo "$apache_conf$service_conf" > finish-installation
     echo "An error happend trying to issue the mentioned commands."
