@@ -212,11 +212,6 @@ then
     chmod 664 $ti
     chgrp $GROUP $ti
 
-    # adjust 'files' directory permissions
-    mkdir -p files
-    chmod 775 files
-    chgrp $GROUP files
-
     # set up user accounts
     hp=$WWWDIR/.htpasswd.trac
     touch $hp
@@ -236,9 +231,22 @@ then
     # initialize databse
     if [[ $TRAC_DB = sqlite:///* ]]
     then
-        sqlite3 ${TRAC_DB#sqlite:///} < \
-            $TOPDIR/var/trac-env/sqlite-db-backup.sql
+        dbfile=${TRAC_DB#sqlite:///}
+        sqlite3 $dbfile < $TOPDIR/var/trac-env/sqlite-db-backup.sql
+        chmod 664 $dbfile
+        chgrp $GROUP $dbfile
     fi
+
+    # adjust log file permissions
+    logfile=$WORKDIR-dev/trac.log
+    touch $logfile
+    chmod 664 $logfile
+    chgrp $GROUP $logfile
+
+    # adjust 'files' directory permissions
+    mkdir -p files
+    chmod 775 files
+    chgrp $GROUP files
 fi
 
 # buildbot
