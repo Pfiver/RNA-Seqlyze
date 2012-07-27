@@ -215,28 +215,6 @@ class trac(Part):
     #test = "python setup.py test"
     install = "python setup.py install --prefix=$PREFIX"
 
-class trac_env(Part):
-    def install(self):
-        # need to discuss server
-        # configuration with admin
-        #destdir = "%(PREFIX)s/var/trac_env" % env
-        #basedir = os.path.dirname(destdir)
-        #if not os.path.isdir(basedir):
-        #    os.mkdir(basedir)
-        #shutil.copytree(".", destdir, symlinks=True)
-        #print("Copied %s to %s\n" % (os.getcwd(), destdir))
-        print("\n".join((
-"""\
-The following still needs to be done manually:
- 1) Set up a database
- 2) Restore the backup:
-    $ cd """ + os.getcwd() + """
-    $ mysql -uUSERNAME -pPASSWORD DATABASE < mysql-db-backup.sql
- 4) Adjust the 'database' variable in the [trac] section in 'conf/trac.ini':
-    database = mysql://USERNAME:PASSWORD@localhost/DATABSE
-"""
-        )))
-
 class transterm_hp(Part):
     build = "make"
     def install(self):
