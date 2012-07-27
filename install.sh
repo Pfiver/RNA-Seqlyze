@@ -190,8 +190,8 @@ do
 done
 
 # workdirs
-rnas-init $WORKDIR
-rnas-init $WORKDIR-dev
+rnas-init --group=$GROUP $WORKDIR
+rnas-init --group=$GROUP $WORKDIR-dev
 cd $TOPDIR/src/rna-seqlyze
 subcat rnaseqlyze.ini > $WORKDIR/rnaseqlyze.ini
 subcat rnaseqlyze.ini > $WORKDIR-dev/rnaseqlyze.ini

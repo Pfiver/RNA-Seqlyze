@@ -4,12 +4,16 @@ RNA-Seqlyze Init
 (Re-)initialize an rnaseqlyze 'workdir'.
 
 Usage:
-    rnas-init <workdir>
-    rnas-init --recreatedb <workdir>
-    rnas-init --development <workdir>
+    rnas-init [--group=<group>] [--recreatedb] <workdir>
+    rnas-init [--group=<group>] [--recreatedb] --development <workdir>
     rnas-init -h|--help
 
 Options:
+    --group=<group>
+                    The unix user group to that the directory and the
+                    database and log-files within should belong to.
+                    Defaults to the current processes user group.
+
     --recreatedb
                     Remove and re-initialize the database if it exists.
 
@@ -50,7 +54,7 @@ Documentation:
     "[rnaseqlyze]" section in 'rnaseqlyze.ini'.  It is expected to be an sqlite
     database.  If the command creates the sqlite database file, it changes it's
     unix access mode to (octal) 0664 and the group membership is changed to
-    <group>.  <group> can be confgured in 'rnaseqlyze.ini'.  If the command
+    <group>.  <group> will be confgured in 'rnaseqlyze.ini'.  If the command
     creates the <workdir>, it changes it's unix access mode to (octal) 0775 and
     the group membership is also changed to <group>.  The command changes the
     unix access mode and group membership of all .log files inside the workdir
@@ -60,7 +64,7 @@ Documentation:
 import logging
 log = logging.getLogger(__name__)
 
-import os, sys, grp, shutil
+import os, sys, grp
 
 import pkg_resources
 from sqlalchemy import create_engine
@@ -111,8 +115,15 @@ def main():
         # if the distribution if installed as a zipped .egg
         req = pkg_resources.Requirement.parse(pkg.project_name)
         res = pkg_resources.resource_stream(req, ini)
+        conf = res.read()
+        if pkg.__name__ == "rnaseqlyze":
+            # expand the @@GROUP@@ placeholder so rnaseqlyze.group is valid
+            group = opts['--group'] if opts['--group'] else 'www-data'
+            conf = conf.replace("@@GROUP@@", group)
         log.info("creating config file '%s'" % conf_name)
-        shutil.copyfileobj(res, open(conf_path, "w"))
+        conf_file = open(conf_path, "w")
+        conf_file.write(conf)
+        conf_file.close()
 
     # init rnaseqlyze configuration -- creates all .log files
     rnaseqlyze.configure(workdir)
