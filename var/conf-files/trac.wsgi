@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-trac_env = '@@TOPDIR@@/src/trac_env'
+trac_env = '@@TOPDIR@@/var/trac-env'
 
 import site
 site.addsitedir("@@PREFIX@@/lib/python2.6/site-packages")
