@@ -163,13 +163,6 @@ do
     subcat $util > $PREFIX/bin/$util
 done
 
-# buildbot
-if [ -n "$BIBODIR" ]
-then
-    cd $TOPDIR/var/conf-files
-    subcat buildbot-master.cfg > $BIBODIR/buildmaster/master.cfg
-fi
-
 # crontab
 {
     cat << END_OF_CRONTAB 
@@ -255,6 +248,8 @@ then
         buildbot create-master -r buildmaster
         buildslave create-slave buildslave localhost:9989 biopython-slave pass
     )
+    cd $TOPDIR/var/conf-files
+    subcat buildbot-master.cfg > $BIBODIR/buildmaster/master.cfg
 fi
 
 # apache, worker service
