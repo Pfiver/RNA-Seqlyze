@@ -102,17 +102,40 @@ class Part(object):
 parts = []
 phases = 'build', 'test', 'install'
 
-class bcbb(Part):
-    srcdir = "bcbb/nextgen"
+class ncurses(Part):
+    build = "./configure --prefix $HOME/.local && make"
+    install = "make install"
+
+class samtools(Part):
+    depends = ncurses
+    build = (
+        'make -j$NCPUS_ONLN -C bcftools',
+        'make -j2 SUBDIRS=.'
+            ' LIBPATH=-L$PREFIX/lib LIBCURSES=-lncurses'
+            ' CFLAGS="-I$PREFIX/include -I$PREFIX/include/ncurses"'
+    )
+    install = "cp samtools $PREFIX/bin"
+
+class pysam(Part):
+    depends = samtools
     build = "python setup.py build"
-    # save some time
-    #test = "nosetests"
+    # tests failing...
+    #test = "cd tests; nosetests --exe"
+    #test = "cd tests; ./pysam_test.py"
     install = "python setup.py install --prefix=$PREFIX"
 
 class biopython(Part):
     build = "python setup.py build"
     # save some time
     #test = "python setup.py test"
+    install = "python setup.py install --prefix=$PREFIX"
+
+class bcbb(Part):
+    depends = biopython, pysam
+    srcdir = "bcbb/nextgen"
+    build = "python setup.py build"
+    # save some time
+    #test = "nosetests"
     install = "python setup.py install --prefix=$PREFIX"
 
 class bowtie2(Part):
@@ -127,20 +150,6 @@ class bowtie2(Part):
         for f in ("bowtie2" + x for x in ("", "-align", "-build", "-inspect")):
             shutil.copy(f, env["BINDIR"])
             os.chmod(env["BINDIR"] + "/" + f, 0775)
-
-class ncurses(Part):
-    build = "./configure --prefix $HOME/.local && make"
-    install = "make install"
-
-class samtools(Part):
-    depends = ncurses
-    build = (
-        'make -j$NCPUS_ONLN -C bcftools',
-        'make -j2 SUBDIRS=.'
-            ' LIBPATH=-L$PREFIX/lib LIBCURSES=-lncurses'
-            ' CFLAGS="-I$PREFIX/include -I$PREFIX/include/ncurses"'
-    )
-    install = "cp samtools $PREFIX/bin"
 
 class cufflinks(Part):
     depends = samtools
@@ -160,13 +169,6 @@ class kent(Part):
         for util in "wigToBigWig bedToBigBed".split(" "):
             if subprocess.call("make -C src/utils/" + util, shell=True) != 0:
                 raise Exception("kent.install(): couldn't install '%s'" % util)
-
-class pysam(Part):
-    build = "python setup.py build"
-    # tests failing...
-    #test = "cd tests; nosetests --exe"
-    #test = "cd tests; ./pysam_test.py"
-    install = "python setup.py install --prefix=$PREFIX"
 
 class rna_seqlyze_cli(Part):
     srcdir = "rna-seqlyze-cli"
