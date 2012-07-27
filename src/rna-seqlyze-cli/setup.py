@@ -15,6 +15,7 @@ setup(
     namespace_packages = ['rnaseqlyze'],
     test_suite='nose.collector',
     setup_requires=[
+        "SQLAlchemy",
         "nose >= 1.1.2",
         "docopt > 0.4.1",
         "pyinotify >= 0.9",

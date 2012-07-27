@@ -48,8 +48,11 @@ setup(
         "distribute >= 0.6.14",     # unsure if really required, but won't harm
     ],
     install_requires=[
+        "psutil",                   # req to build -cli
         "sphinx",                   # Apidoc
         "pyflakes",                 # Style checker
+        "SQLAlchemy",
+        "zope.sqlalchemy",          # req to build -web
         "docopt > 0.4.1",
         "pyramid >= 1.3.2",         # Web framework
         "MarkupSafe >= 0.15",       # Syntax highlighting in Trac
