@@ -53,6 +53,5 @@ setup(
         "docopt > 0.4.1",
         "pyramid >= 1.3.2",         # Web framework
         "MarkupSafe >= 0.15",       # Syntax highlighting in Trac
-        "MySQL-python >= 1.2.2",    # Trac database backend
     ],
 )
