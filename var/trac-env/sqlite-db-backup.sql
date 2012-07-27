@@ -165,7 +165,13 @@ CREATE TABLE "report" (
   PRIMARY KEY ("id")
 );
 INSERT INTO "report" VALUES(2,NULL,'RNA-Seqlyze Tickets by Milestone','SELECT p.value AS __color__,
-   IF(length(t.milestone),concat(from_unixtime(m.due/1000000), " | ", t.milestone),"No Milestone") AS __group__,
+
+-- MySQL:
+--   IF(length(t.milestone),concat(from_unixtime(m.due/1000000), " | ", t.milestone),"No Milestone") AS __group__,
+
+-- SQLite:
+   (CASE length(t.milestone) WHEN 0 THEN "No Milestone" ELSE datetime(m.due/1000000, ''unixepoch'')|" | "|t.milestone END) AS __group__,
+
    (CASE status 
       WHEN ''closed'' THEN ''text-decoration: line-through; color: #777; background: #ddd; border-color: #ccc;''
     END) AS __style__,
@@ -181,7 +187,7 @@ INSERT INTO "report" VALUES(2,NULL,'RNA-Seqlyze Tickets by Milestone','SELECT p.
   FROM ticket t
   LEFT JOIN milestone m ON m.name = t.milestone
   LEFT JOIN enum p ON p.name = t.priority AND p.type = ''priority''
-#  WHERE component = "Software"
+--  WHERE component = "Software"
   WHERE (status != ''closed'')
   ORDER BY (t.milestone IS NULL), m.due, (status = ''closed''), 
         (CASE status WHEN ''closed'' THEN changetime ELSE (-1) * CAST(p.value AS signed) END) DESC
@@ -216,7 +222,13 @@ report=1
 &
 order=priority','');
 INSERT INTO "report" VALUES(3,NULL,'RNA-Seqlyze Tickets by Milestone (including closed)','SELECT p.value AS __color__,
-   IF(length(t.milestone),concat(from_unixtime(m.due/1000000), " | ", t.milestone),"No Milestone") AS __group__,
+
+-- MySQL
+--   IF(length(t.milestone),concat(from_unixtime(m.due/1000000), " | ", t.milestone),"No Milestone") AS __group__,
+
+-- SQLite
+-- (CASE length(t.milestone) WHEN 0 THEN "No Milestone" ELSE datetime(m.due/1000000, ''unixepoch'')|" | "|t.milestone END) AS __group__,
+
    (CASE status 
       WHEN ''closed'' THEN ''text-decoration: line-through; color: #777; background: #ddd; border-color: #ccc;''
     END) AS __style__,
@@ -232,8 +244,10 @@ INSERT INTO "report" VALUES(3,NULL,'RNA-Seqlyze Tickets by Milestone (including 
   FROM ticket t
   LEFT JOIN milestone m ON m.name = t.milestone
   LEFT JOIN enum p ON p.name = t.priority AND p.type = ''priority''
-#  WHERE component = "Software"
-#  WHERE (status != ''closed'')
+
+--  WHERE component = "Software"
+--  WHERE (status != ''closed'')
+
   ORDER BY (t.milestone IS NULL), m.due, (status = ''closed''), 
         (CASE status WHEN ''closed'' THEN changetime ELSE (-1) * CAST(p.value AS signed) END) DESC
 ','');
@@ -260,11 +274,11 @@ CREATE TABLE "session" (
   "last_visit" int(11) DEFAULT NULL,
   PRIMARY KEY ("sid","authenticated")
 );
-INSERT INTO "session" VALUES('patrick',1,1343230793);
+INSERT INTO "session" VALUES('patrick',1,1343318693);
 INSERT INTO "session" VALUES('bf2abaa1a69e9b222ed0932b',0,1336181625);
 INSERT INTO "session" VALUES('guest',1,1335378183);
 INSERT INTO "session" VALUES('04e86ef88c81f89b8383735a',0,1335974753);
-INSERT INTO "session" VALUES('ac606c55507bd743d82741f0',0,1343133191);
+INSERT INTO "session" VALUES('ac606c55507bd743d82741f0',0,1343297112);
 INSERT INTO "session" VALUES('d44ab04ac33a6dc52757a3b1',0,1341996189);
 CREATE TABLE "session_attribute" (
   "sid" text  NOT NULL,
@@ -284,24 +298,26 @@ INSERT INTO "session_attribute" VALUES('bf2abaa1a69e9b222ed0932b',0,'timeline.au
 INSERT INTO "session_attribute" VALUES('04e86ef88c81f89b8383735a',0,'timeline.nextlastvisit','1335722736312898');
 INSERT INTO "session_attribute" VALUES('bf2abaa1a69e9b222ed0932b',0,'timeline.nextlastvisit','1335911972000000');
 INSERT INTO "session_attribute" VALUES('bf2abaa1a69e9b222ed0932b',0,'timeline.daysback','30');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_tickets','9 6 8');
 INSERT INTO "session_attribute" VALUES('d44ab04ac33a6dc52757a3b1',0,'timeline.daysback','30');
 INSERT INTO "session_attribute" VALUES('d44ab04ac33a6dc52757a3b1',0,'timeline.authors','');
 INSERT INTO "session_attribute" VALUES('d44ab04ac33a6dc52757a3b1',0,'timeline.nextlastvisit','1341996156000000');
 INSERT INTO "session_attribute" VALUES('d44ab04ac33a6dc52757a3b1',0,'query_href','/biopython/trac/report/2?asc=1&page=1');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.lastvisit','1343115413575730');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.daysback','30');
 INSERT INTO "session_attribute" VALUES('d44ab04ac33a6dc52757a3b1',0,'query_tickets','7 5 9 6 8');
 INSERT INTO "session_attribute" VALUES('d44ab04ac33a6dc52757a3b1',0,'timeline.lastvisit','1341996319000000');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_time','1343297269');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.daysback','30');
 INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.authors','');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.nextlastvisit','1342040520000000');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_href','/biopython/trac/report/2?asc=1&page=1');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_constraints','[{u''status'': [u''!closed'']}]');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.nextlastvisit','1343296932444584');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_href','/biopython/trac/query?status=!closed&order=priority');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_tickets','9 6 8');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.lastvisit','1343296932444584');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.daysback','30');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.authors','');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.nextlastvisit','1343033446629506');
 INSERT INTO "session_attribute" VALUES('patrick',1,'wiki_editrows','8');
-INSERT INTO "session_attribute" VALUES('patrick',1,'query_href','/biopython/traclogin/report/2?asc=1&page=1');
-INSERT INTO "session_attribute" VALUES('patrick',1,'query_tickets','9 6 8');
+INSERT INTO "session_attribute" VALUES('patrick',1,'query_href','/biopython/traclogin/report/3?asc=1&page=1');
+INSERT INTO "session_attribute" VALUES('patrick',1,'query_tickets','1 2 3 4 9 6 8');
 INSERT INTO "session_attribute" VALUES('patrick',1,'wiki_sidebyside','1');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.lastvisit','1343225983602913');
 CREATE TABLE "system" (
@@ -34133,6 +34149,1860 @@ INSERT INTO "wiki" VALUES('Tools',13,1342779590625191,'patrick','10.194.165.118'
  * Python interface: http://code.google.com/p/pysam
 
 * [http://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software SRA Toolkit] (SRA => fastq data conversion & more)
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',28,1343292623584960,'patrick','10.194.165.119','[[PageOutline]]
+
+== Configuration Variables
+
+ `TOPDIR`:
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`:
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`:
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`:
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`:
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`:
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`:
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`:
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`:
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`:
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`:
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+== Some Random Remarks
+
+=== The ''''workdir''''
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Preparation
+
+=== Cloning the source code repository
+
+{{{#!sh
+TOPDIR=$HOME/rna-seqlyze
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config` :
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+=== Installing additional deb''s
+
+In addition to the standard debian server setup, the following ''''deb'''' packages need to be installed.
+{{{
+ntp
+ssh
+bzip2
+sqlite3
+deborphan
+python-lxml
+libapache2-mod-wsgi
+
+devscripts
+gcc-4.3-base
+cmake
+libbz2-dev
+libpng12-dev
+python-all-dev
+python3-all-dev
+libboost1.49-all-dev
+}}}
+
+To install all packages, run
+{{{#!sh
+sudo apt-get install $(cat)
+}}}
+and paste the above list, then press Ctrl-D.
+
+ The list of packages was created using ''''deborphan'''', like so:
+{{{#!sh
+deborphan -ap optional --no-show-section
+}}}
+
+=== Installing `libboost1.49-all-dev`
+* If version 1.49 is not available in the debian repository build, download the source deb package (two tar.gz and one .dsc files) from a repository where it is available and build it locally using `debuild` that gets installed with the ''''devscripts'''' package (listed above).
+* Run `dpkg -i *.deb` in the parent build directory to install all created packages.
+
+== Installation
+
+There is a script called `install.sh` in the top-level project diretory. It does most of the work of figuring out configuration values, setting the corresponding variables and placing configuration files into various location on the system. Run is like so:
+
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+After the script is finished, do the following with ''''root permissions'''':
+
+1. A file called rna-seqlyze.sh has been created in the current directory.
+   Move it to /etc/init.d and activate it by issuing the following commands:
+{{{#!sh
+mv rna-seqlyze.sh /etc/init.d/rna-seqlyze.sh
+insserv /etc/init.d/rna-seqlyze.sh
+}}}
+
+2. Eddt ''/etc/apache2/sites-available/default'' and add the following lines:
+{{{
+<VirtualHost *:80>
+        ...
+        <Directory $WWWDIR>
+                WSGIProcessGroup %{ENV:WSGI_PGRP}
+                WSGIRestrictProcess rnaseqlyze rnaseqlyze-dev
+                Options ExecCGI Indexes FollowSymLinks MultiViews
+                MultiviewsMatch Handlers
+                AllowOverride all
+                Order deny,allow
+                Allow from all
+        </Directory>
+        WSGIScriptAlias $WWWBASE $WWWDIR
+        WSGIDaemonProcess rnaseqlyze threads=2 maximum-requests=500
+        WSGIDaemonProcess rnaseqlyze-dev threads=2 maximum-requests=500
+        ...
+</VirtualHost>
+}}}
+
+3. Enable the ''proxy'', ''rewrite'' and ''wsgi'' apache modules like so:
+{{{#!sh
+cd /etc/apache2/mods-enabled
+root ln -s ../mods-available/{proxy,rewrite,wsgi}.* .
+}}}
+
+== After installation
+
+The following urls should be accessible:
+
+ - Trac: http://$HOSTNAME/$WWWBASE/trac.
+ - The application configured in $WORKDIR: http://$HOSTNAME/$WWWBASE/rna-seqlyze
+ - The application configured in $WORKDIR-dev: http://$HOSTNAME/$WWWBASE/rna-seqlyze-dev
+
+It might be helpful to add the following lines to your ~/.bash_profile:
+
+{{{
+rnas_topdir=$TOPDIR
+rnas_workdir=$WORKDIR
+rnas_bibodir=$BIBODIR
+rnas_wwwbase=$WWWBASE
+
+. $TOPDIR/bash-env
+
+alias bt="cd $rnas_topdir"
+}}}
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',29,1343293222892949,'patrick','10.194.165.119','[[PageOutline]]
+
+== Configuration Variables
+
+ `TOPDIR`:
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`:
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`:
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`:
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`:
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`:
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`:
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`:
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`:
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`:
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`:
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+== Some Random Remarks
+
+=== The ''''workdir''''
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Preparation
+
+=== Cloning the source code repository
+
+Clone the source code repository like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+=== Installing additional deb''s
+
+In addition to the standard debian server setup, the following ''''deb'''' packages need to be installed:
+{{{
+ntp
+ssh
+bzip2
+sqlite3
+deborphan
+python-lxml
+libapache2-mod-wsgi
+
+devscripts
+gcc-4.3-base
+cmake
+libbz2-dev
+libpng12-dev
+python-all-dev
+python3-all-dev
+libboost1.49-all-dev
+}}}
+
+To install all those packages, run
+{{{#!sh
+sudo apt-get install $(cat)
+}}}
+and paste the above list, then press Ctrl-D.
+
+ The list of packages was created using ''''deborphan'''', like so:
+{{{#!sh
+deborphan -ap optional --no-show-section
+}}}
+
+=== Installing `libboost1.49-all-dev`
+* If version 1.49 is not available in the debian repository build, download the source deb package (two tar.gz and one .dsc files) from a repository where it is available and build it locally using `debuild` that gets installed with the ''''devscripts'''' package (listed above).
+* Run `dpkg -i *.deb` in the parent build directory to install all created packages.
+
+== Installation
+
+There is a script called `install.sh` in the top-level project directory. It does most of the work of determining configuration values, setting the corresponding variables in various configuration files and placing those file into the right location in the operating system. Run is like so:
+
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+After the script is finished, the following additional commands need to be run '''' with root permissions'''':
+
+1. A file called rna-seqlyze.sh has been created in the current directory.
+   Move it to /etc/init.d and activate it by issuing the following commands:
+{{{#!sh
+mv rna-seqlyze.sh /etc/init.d
+insserv /etc/init.d/rna-seqlyze.sh
+}}}
+
+2. Edit ''/etc/apache2/sites-available/default'' and add the following lines:
+{{{
+<VirtualHost *:80>
+        ...
+        <Directory $WWWDIR>
+                WSGIProcessGroup %{ENV:WSGI_PGRP}
+                WSGIRestrictProcess rnaseqlyze rnaseqlyze-dev
+                Options ExecCGI Indexes FollowSymLinks MultiViews
+                MultiviewsMatch Handlers
+                AllowOverride all
+                Order deny,allow
+                Allow from all
+        </Directory>
+        WSGIScriptAlias $WWWBASE $WWWDIR
+        WSGIDaemonProcess rnaseqlyze threads=2 maximum-requests=500
+        WSGIDaemonProcess rnaseqlyze-dev threads=2 maximum-requests=500
+        ...
+</VirtualHost>
+}}}
+
+3. Enable the ''proxy'', ''rewrite'' and ''wsgi'' apache modules like so:
+{{{#!sh
+cd /etc/apache2/mods-enabled
+root ln -s ../mods-available/{proxy,rewrite,wsgi}.* .
+}}}
+
+== After installation
+
+The following URLs should be accessible:
+
+ - Trac: http://$HOSTNAME/$WWWBASE/trac.
+ - The application configured in $WORKDIR: http://$HOSTNAME/$WWWBASE/rna-seqlyze
+ - The application configured in $WORKDIR-dev: http://$HOSTNAME/$WWWBASE/rna-seqlyze-dev
+
+It might be helpful to add the following lines to your ~/.bash_profile:
+
+{{{
+rnas_topdir=$TOPDIR
+rnas_workdir=$WORKDIR
+rnas_bibodir=$BIBODIR
+rnas_wwwbase=$WWWBASE
+
+. $TOPDIR/bash-env
+
+alias bt="cd $rnas_topdir"
+}}}
+','',0);
+INSERT INTO "wiki" VALUES('Tools',14,1343296134603942,'patrick','10.194.165.119','Not all of the listed projects are actually used at the moment.
+
+== General
+
+ * [http://biopython.org/ Biopython]\\
+   the bioinformatics swiss army knive
+
+ * [https://main.g2.bx.psu.edu/ Galaxy]\\
+   a great python project to learn from\\
+  * [http://wiki.g2.bx.psu.edu/Learn Learn Galaxy]
+  * [https://main.g2.bx.psu.edu/u/dcgdftvcdv/h/bam-view Public History]
+  * [https://main.g2.bx.psu.edu/u/dcgdftvcdv/v/bam-view Public Visualization]
+
+ * [http://archaea.ucsc.edu/cgi-bin/hgGateway UCSC Genome Browser]\\
+   the popular genome browser developed by the University of California, Santa Cruz
+  * [https://lists.soe.ucsc.edu/pipermail/genome/ Mailing List]
+  * [http://genomewiki.ucsc.edu/index.php/Learn_about_the_Browser Wiki / Source Code]
+  * Kent tree
+   * [http://genome-source.cse.ucsc.edu/ git server]
+   * [http://genome-source.cse.ucsc.edu/gitweb/?p=kent.git;a=summary gitweb browser]
+
+ * [http://www.ncbi.nlm.nih.gov/nuccore/15896971?report=graph NCBI Graphical Sequence Viewer]\\
+   the not so popular NCBI genome browser
+
+== Data Formats
+
+* BED / Wiggle
+ * Tools
+  * [http://packages.python.org/pybedtools/ PyBEDTools]
+  * [http://xapple.github.com/track/ Python `track`]
+ * Specification
+  * [http://archaea.ucsc.edu/goldenPath/help/customTrack.html UCSC Genome Browser data formats]
+
+* GFF
+ * [http://gmod.org/wiki/GFF2#The_GFF2_File_Format GMOD Wiki | GFF2]
+ * [http://www.sanger.ac.uk/resources/software/gff/spec.html#t_2 Sanger Institute (UK) | GFF2]
+
+* SAM / BAM
+ * [http://samtools.sourceforge.net/ SAMtools] (SAM <=> BAM data convesion & more)
+  * Source code: https://github.com/samtools/samtools
+  * Python interface: http://code.google.com/p/pysam
+ * [http://www.biostars.org/post/show/2699/how-can-i-convert-bamsam-to-wiggle/#2700 bam_to_wiggle.py]
+  * https://github.com/chapmanb/bcbb
+
+== Gene Expression Analysis
+
+* [http://bowtie.cbcb.umd.edu/ BowTie] /
+  [http://tophat.cbcb.umd.edu/ TopHat] /
+  [http://cufflinks.cbcb.umd.edu/ CuffLinks]
+
+* [http://samscope.dna.bio.keio.ac.jp/wiki/index.php/Samscope Samscope] (BAM/SAM viewer desktop app)
+ * available for ubuntu in a [https://launchpad.net/~cryptickrisp/+archive/samscope launchpad ppa]
+
+
+* [http://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software SRA Toolkit] (SRA => fastq data conversion & more)
+','',0);
+INSERT INTO "wiki" VALUES('Develop',41,1343296672248909,'patrick','10.194.165.119','[[PageOutline]]
+
+= Where to start
+The first thing to do, is reading the [/export/master/doc/srs/SRS-0.2.pdf   Software Requirement Specification]. It provides an overview of what the software is and isn''t supposed to do.
+
+Afterwards, go through the links below, under [#software_used_in_this_project Software used in this project], and get acquainted with the components used in the part of the application that you want to write code for.
+
+Links to those components ''''apidocs'''' etc. are collected on the [wiki:WorkSpace Workspace] page. The [wiki:WorkSpace Workspace] is the developers ''notepad'' where all kinds of things needed when developing the application are located.
+
+= Software used in this project
+
+== Command Line Interface
+
+* [http://docopt.org/ docopt]
+
+== Web Frontend
+
+=== Server Side
+* [http://www.pylonsproject.org/ Pyramid]\\
+  an excellent wsgi-based web framework with great documentation
+ * [http://docs.pylonsproject.org/projects/pyramid/en/latest/narr/project.html Creating a Pyramid Project]
+ * [http://docs.pylonsproject.org/projects/pyramid_tutorials/en/latest/humans/index.html Tutorial: Pyramid for Humans]
+ * uses the [http://pagetemplates.org/ Chameleon] template engine
+ * to render zope page templates [http://pagetemplates.org/docs/latest/reference.html language reference]
+* [http://code.google.com/p/modwsgi/ mod_wsgi]\\
+  connecting Pyramid to the apache web-server
+ * [http://code.google.com/p/modwsgi/wiki/QuickInstallationGuide QuickInstallationGuide]
+ * [http://code.google.com/p/modwsgi/wiki/QuickConfigurationGuide QuickConfigurationGuide]
+  * [http://code.google.com/p/modwsgi/wiki/QuickConfigurationGuide#WSGI_Application_Script_File Hello World]
+ * WSGI Background Info
+  * [http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface Wikipedia | Web Server Gateway Interface]
+  * [http://www.python.org/dev/peps/pep-0333/ PEP 333 -- Python Web Server Gateway Interface v1.0]
+* [http://webtest.pythonpaste.org/en/latest/index.html Webtest]\\
+  by Ian Biking
+
+=== Client Side
+* [http://twitter.github.com/bootstrap/index.html Twitter Bootstrap]\\
+  Simple and flexible HTML, CSS, and Javascript for popular user interface components and interactions.
+* [http://backbonejs.org/ backbone.js]
+* [http://documentcloud.github.com/underscore/ underscore.js]
+* [http://joestelmach.github.com/laconic/ "laconic" DOM library]
+* [http://labs.anthonygarand.com/sticky/ jQuery "Sticky" Plugin] for a little eye candy (currently not in use)
+
+== Worker Daemon
+
+* Pyramid\\
+  as for the web frontend
+* [http://pythonpaste.org/deploy/ Paste Deploy]\\
+  used in combination with pyramid to provice a UNIX daemon (service)
+* various bioinformatics data processing tools\\
+  are listed on the [wiki:Tools Tools] page
+
+== Quality Assurance
+
+=== Testing
+
+* [http://readthedocs.org/docs/nose/en/latest/ nose]\\
+  is nicer testing for python
+ * extends the [http://docs.python.org/library/unittest.html unittest] python standard library module
+
+=== Documentation
+* [http://sphinx.pocoo.org/ Sphinx - Python Documentation Generator]
+ * based on [http://docutils.sourceforge.net/rst.html reST]
+  * [http://docutils.sourceforge.net/docs/user/rst/quickref.html cheat-sheet]
+ * [http://www.python.org/dev/peps/pep-0257/ PEP 257 | Docstring Conventions]
+
+=== Coding Style
+
+==== Python
+* [http://python.org/dev/peps/pep-0008/ PEP 8 | Style Guide for Python Code]\\
+  is not really adhered to in a very strict way
+ * [http://pypi.python.org/pypi/pep8 pep8 - Python style guide checker]
+ * [http://www.vim.org/scripts/script.php?script_id=3160 pep8 - Vim filetype plugin for running PEP8 on Python files]
+ * [http://python.net/~goodger/projects/pycon/2007/idiomatic/handout.html Goodger - Code Like a Pythonista: Idiomatic Python]
+* [http://www.youtube.com/watch?v=ANhTacigaf8 youtube: Luke Sneeringer - Introduction to Metaclasses]
+* [http://python-3-patterns-idioms-test.readthedocs.org/en/latest/Metaprogramming.html#example-self-registration-of-subclasses Python 3 Patterns, Recipes and Idioms - Metaprogramming]
+
+==== Javascript
+* [http://www.jshint.com/ JSHint]
+ * is an improved [http://www.jslint.com/ JSLint] ("!JavaScript Code Quality Tool")
+
+=== Build System
+* [http://peak.telecommunity.com/DevCenter/setuptools Building and Distributing Packages with setuptools]
+ * [http://packages.python.org/distribute/setuptools.html Building and Distributing Packages with Distribute]\\
+   distribute = improved setuptools = improved improved distutils
+ * [http://guide.python-distribute.org/introduction.html#current-state-of-packaging The Hitchhiker''s Guide to Packaging : The Current State of Packaging]
+ * [http://docs.activestate.com/activepython/3.2/diveintopython3/html/packaging.html Dive into Python 3 | Packaging Python Libraries]
+
+=== Continuous Integration ===
+* running [http://buildbot.net/ Buildbot]
+ * in a Python [http://www.virtualenv.org/ Virtualenv]
+
+=== Versioning
+* [http://semver.org/ Semantic Versioning]
+ * [https://github.com/twitter/bootstrap/blob/master/README.md#versioning ... quickly explained]
+
+
+
+{{{#!html
+<hr style="margin:100px;"/>
+}}}
+
+* Why python is better ;-) :\\
+  [http://www.youtube.com/watch?v=dVRhRzE_AkQ youtube: Python eats Alligator 02, Time Lapse Speed x6]
+','',0);
+INSERT INTO "wiki" VALUES('WikiStart',78,1343296792813048,'patrick','10.194.165.119','{{{#!html
+<br style="clear:both"/>
+}}}
+
+{{{#!div style="width:420px; float: left;"
+
+=== Updates
+
+''''''2012-07-11''''''
+ - [wiki:TestDatasets Test Datasets]
+ - [wiki:Analyses List of Analyses]
+
+''''''2012-06-20''''''
+ - [htdocs:files/apidoc/index.html ApiDocs] generated
+
+''''''2012-06-09''''''
+ - [/tractab/TestCoverage Test coverage report] page created
+ - [/tractab/BuildBot Buildbot waterfall report] page created
+
+''''''2012-05-28''''''
+ - WorkSpace created
+ - [wiki:Deployment Deployment] created
+
+''''''2012-05-25''''''
+ - [ProjectSchedule Project plan] available
+
+}}}
+
+{{{#!div style="border-left:1px solid black; padding-left:3em; margin-left:420px;"
+
+=== Content
+
+==== Manuals
+ * [wiki:Deployment                      Administrator Manual] (Step-by-step guide to deploying the application)
+ * [wiki:Develop                         Developer Manual] (Introduction to the applications architecture, coding style, etc.)
+
+==== Links
+ * [wiki:AuxiliaryData                   Auxiliary Data Acquisition] (sources for auxiliary data; Promoters, Terminators, Operons & RBS Prediction)
+ * [wiki:DataSources                     Data Sources] (DNA & RNA sequence databases, studies, etc.)
+ * [wiki:Tools                           Tools] (genome browser, data processing tools, etc.)
+ * [wiki:Links                           Various] (publications, blogs, etc.)
+
+==== Info
+* [wiki:Analyses                        List of Analyses] (list of past analyses) [[FootNote(''''auto-generated'''', updated hourly)]]
+* [wiki:SpecialisedKnowledge            Specialized Knowledge] (Bioinformatics Encyclopedia)
+* [wiki:ProjectSchedule                 Project Schedule] (overwiew of project-status related sites)
+* [htdocs:files/authors.html            List of Authors] (list of (co-)authors of all files in the project''s git source tree) [[FootNote(''''auto-generated'''', updated nightly)]]
+
+{{{#!div style="padding-top: 100px;"
+}}}
+
+=== Buildbot Status
+[[BuildbotStatus]]
+
+
+{{{#!div style="padding-top: 100px;"
+}}}
+
+[[FootNote]]
+Logo based on [https://en.wikipedia.org/wiki/File:TRNA-Phe_yeast_1ehz.png TRNA-Phe_yeast_1ehz] by [https://commons.wikimedia.org/wiki/User:Yikrazuul Yikrazuul]
+
+}}}
+
+{{{
+#!html
+<br style="clear:both"/>
+}}}
+','',0);
+INSERT INTO "wiki" VALUES('WikiStart',79,1343296810371468,'patrick','10.194.165.119','{{{#!html
+<br style="clear:both"/>
+}}}
+
+{{{#!div style="width:420px; float: left;"
+
+=== Updates
+
+''''''2012-07-11''''''
+ - [wiki:TestDatasets Test Datasets]
+ - [wiki:Analyses List of Analyses]
+
+''''''2012-06-20''''''
+ - [htdocs:files/apidoc/index.html ApiDocs] generated
+
+''''''2012-06-09''''''
+ - [/tractab/TestCoverage Test coverage report] page created
+ - [/tractab/BuildBot Buildbot waterfall report] page created
+
+''''''2012-05-28''''''
+ - WorkSpace created
+ - [wiki:Deployment Deployment] created
+
+''''''2012-05-25''''''
+ - [ProjectSchedule Project plan] available
+
+}}}
+
+{{{#!div style="border-left:1px solid black; padding-left:3em; margin-left:420px;"
+
+=== Content
+
+==== Manuals
+ * [wiki:Deployment                      Administrator Manual] (step-by-step guide to deploying the application)
+ * [wiki:Develop                         Developer Manual] (introduction to the applications architecture, coding style, etc.)
+
+==== Links
+ * [wiki:AuxiliaryData                   Auxiliary Data Acquisition] (sources for auxiliary data; Promoters, Terminators, Operons & RBS Prediction)
+ * [wiki:DataSources                     Data Sources] (DNA & RNA sequence databases, studies, etc.)
+ * [wiki:Tools                           Tools] (genome browser, data processing tools, etc.)
+ * [wiki:Links                           Various] (publications, blogs, etc.)
+
+==== Info
+* [wiki:Analyses                        List of Analyses] (list of past analyses) [[FootNote(''''auto-generated'''', updated hourly)]]
+* [wiki:SpecialisedKnowledge            Specialized Knowledge] (Bioinformatics Encyclopedia)
+* [wiki:ProjectSchedule                 Project Schedule] (overwiew of project-status related sites)
+* [htdocs:files/authors.html            List of Authors] (list of (co-)authors of all files in the project''s git source tree) [[FootNote(''''auto-generated'''', updated nightly)]]
+
+{{{#!div style="padding-top: 100px;"
+}}}
+
+=== Buildbot Status
+[[BuildbotStatus]]
+
+
+{{{#!div style="padding-top: 100px;"
+}}}
+
+[[FootNote]]
+Logo based on [https://en.wikipedia.org/wiki/File:TRNA-Phe_yeast_1ehz.png TRNA-Phe_yeast_1ehz] by [https://commons.wikimedia.org/wiki/User:Yikrazuul Yikrazuul]
+
+}}}
+
+{{{
+#!html
+<br style="clear:both"/>
+}}}
+','',0);
+INSERT INTO "wiki" VALUES('WikiStart',80,1343296932444584,'patrick','10.194.165.119','{{{#!html
+<br style="clear:both"/>
+}}}
+
+{{{#!div style="width:420px; float: left;"
+
+=== Updates
+
+''''''2012-07-11''''''
+ - [wiki:TestDatasets Test Datasets]
+ - [wiki:Analyses List of Analyses]
+
+''''''2012-06-20''''''
+ - [htdocs:files/apidoc/index.html ApiDocs] generated
+
+''''''2012-06-09''''''
+ - [/tractab/TestCoverage Test coverage report] page created
+ - [/tractab/BuildBot Buildbot waterfall report] page created
+
+''''''2012-05-28''''''
+ - WorkSpace created
+ - [wiki:Deployment Deployment] created
+
+''''''2012-05-25''''''
+ - [ProjectSchedule Project plan] available
+
+}}}
+
+{{{#!div style="border-left:1px solid black; padding-left:3em; margin-left:420px;"
+
+=== Content
+
+==== Manuals
+ * [wiki:Deployment                      Administrator Manual] (step-by-step guide to deploying the application)
+ * [wiki:Develop                         Developer Manual] (introduction to the applications architecture, coding style, etc.)
+
+==== Links
+ * [wiki:AuxiliaryData                   Auxiliary Data Acquisition] (sources for auxiliary data; Promoters, Terminators, Operons & RBS Prediction)
+ * [wiki:DataSources                     Data Sources] (DNA & RNA sequence databases, studies, etc.)
+ * [wiki:Tools                           Tools] (genome browser, data processing tools, etc.)
+ * [wiki:Links                           Various] (publications, blogs, etc.)
+
+==== Info
+* [wiki:Analyses                        List of Analyses] (list of past analyses) [[FootNote(''''auto-generated'''', updated hourly)]]
+* [wiki:SpecialisedKnowledge            Specialized Knowledge] (Bioinformatics Encyclopedia)
+* [wiki:ProjectSchedule                 Project Schedule] (overwiew of project-status related sites)
+* [htdocs:files/authors.html            List of Authors] (list of (co-)authors of all files in the project''s git source tree) [[FootNote(''''auto-generated'''', updated nightly)]]
+
+{{{#!div style="padding-top: 100px;"
+}}}
+
+=== Buildbot Status
+[[BuildbotStatus]]
+
+
+{{{#!div style="padding-top: 100px;"
+}}}
+
+[[FootNote]]
+Logo based on [https://en.wikipedia.org/wiki/File:TRNA-Phe_yeast_1ehz.png TRNA-Phe_yeast_1ehz] by [https://commons.wikimedia.org/wiki/User:Yikrazuul Yikrazuul]
+
+Suggestings for a better title and logo are most welcome!
+
+}}}
+
+{{{
+#!html
+<br style="clear:both"/>
+}}}
+','',0);
+INSERT INTO "wiki" VALUES('WikiStart',81,1343298169683334,'patrick','10.194.165.119','{{{#!html
+<br style="clear:both"/>
+}}}
+
+{{{#!div style="width:420px; float: left;"
+
+=== Updates
+
+''''''2012-07-11''''''
+ - [wiki:TestDatasets Test Datasets]
+ - [wiki:Analyses List of Analyses]
+
+''''''2012-06-20''''''
+ - [htdocs:files/apidoc/index.html ApiDocs] generated
+
+''''''2012-06-09''''''
+ - [/tractab/TestCoverage Test coverage report] page created
+ - [/tractab/BuildBot Buildbot waterfall report] page created
+
+''''''2012-05-28''''''
+ - WorkSpace created
+ - [wiki:Deployment Deployment] created
+
+''''''2012-05-25''''''
+ - [ProjectSchedule Project plan] available
+
+}}}
+
+{{{#!div style="border-left:1px solid black; padding-left:3em; margin-left:420px;"
+
+=== Content
+
+==== Manuals
+ * [wiki:Deployment                      Administrator Manual] (step-by-step guide to deploying the application)
+ * [wiki:Develop                         Developer Manual] (introduction to the applications architecture, coding style, etc.)
+
+==== Links
+ * [wiki:AuxiliaryData                   Auxiliary Data Acquisition] (sources for auxiliary data; Promoters, Terminators, Operons & RBS Prediction)
+ * [wiki:DataSources                     Data Sources] (DNA & RNA sequence databases, studies, etc.)
+ * [wiki:Tools                           Tools] (genome browser, data processing tools, etc.)
+ * [wiki:Links                           Various] (publications, blogs, etc.)
+
+==== Info
+* [wiki:Analyses                        List of Analyses] (list of past analyses) [[FootNote(''''auto-generated'''', updated hourly)]]
+* [wiki:SpecialisedKnowledge            Specialized Knowledge] (Bioinformatics Encyclopedia)
+* [wiki:ProjectSchedule                 Project Schedule] (overwiew of project-status related sites)
+* [htdocs:files/authors.html            List of Authors] (list of (co-)authors of all files in the project''s git source tree) [[FootNote(''''auto-generated'''', updated nightly)]]
+
+{{{#!div style="padding-top: 100px;"
+}}}
+
+=== Buildbot Status
+[[BuildbotStatus]]
+
+
+{{{#!div style="padding-top: 100px;"
+}}}
+
+[[FootNote]]
+* Logo based on [https://en.wikipedia.org/wiki/File:TRNA-Phe_yeast_1ehz.png TRNA-Phe_yeast_1ehz] by [https://commons.wikimedia.org/wiki/User:Yikrazuul Yikrazuul]
+* Suggestings for a better title and logo are most welcome!
+
+}}}
+
+{{{
+#!html
+<br style="clear:both"/>
+}}}
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',30,1343315138121917,'patrick','10.194.165.119','[[PageOutline]]
+
+== Configuration Variables
+
+ `TOPDIR`:
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`:
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`:
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`:
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`:
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`:
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`:
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`:
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`:
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`:
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`:
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+== Some Random Remarks
+
+=== The ''''workdir''''
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Preparation
+
+=== Cloning the source code repository
+
+Clone the source code repository like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+=== Installing additional deb''s
+
+In addition to the standard debian server setup, the following ''''deb'''' packages need to be installed:
+{{{
+ntp
+ssh
+bzip2
+sqlite3
+deborphan
+python-lxml
+libapache2-mod-wsgi
+
+devscripts
+gcc-4.3-base
+cmake
+libbz2-dev
+libpng12-dev
+python-all-dev
+python3-all-dev
+libboost1.49-all-dev
+}}}
+
+To install all those packages, run
+{{{#!sh
+sudo apt-get install $(cat)
+}}}
+and paste the above list, then press Ctrl-D.
+
+ The list of packages was created using ''''deborphan'''', like so:
+{{{#!sh
+deborphan -ap optional --no-show-section
+}}}
+
+=== Installing `libboost1.49-all-dev`
+* If version 1.49 is not available in the debian repository build, download the source deb package (two tar.gz and one .dsc files) from a repository where it is available and build it locally using `debuild` that gets installed with the ''''devscripts'''' package (listed above).
+* Run `dpkg -i *.deb` in the parent build directory to install all created packages.
+
+== Installation
+
+There is a script called `install.sh` in the top-level project directory. It does most of the work of determining configuration values, setting the corresponding variables in various configuration files and placing those file into the right location in the operating system.
+
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+After the install script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',31,1343318693779231,'patrick','10.194.165.119','[[PageOutline]]
+
+== Configuration Variables
+
+ `TOPDIR`:
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`:
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`:
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`:
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`:
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`:
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`:
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`:
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`:
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`:
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`:
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+== Some Random Remarks
+
+=== The ''''workdir''''
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Preparation
+
+=== Cloning the source code repository
+
+Clone the source code repository like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+=== Installing additional deb''s
+
+In addition to the standard debian server setup, the following ''''deb'''' packages need to be installed:
+{{{
+ntp
+ssh
+curl
+bzip2
+sqlite3
+deborphan
+python-lxml
+libapache2-mod-wsgi
+
+devscripts
+gcc-4.3-base
+cmake
+libbz2-dev
+libpng12-dev
+python-all-dev
+python3-all-dev
+libboost1.49-all-dev
+}}}
+
+To install all those packages, as root, run
+{{{#!sh
+apt-get install $(cat)
+}}}
+and paste the above list, then press Ctrl-D.
+
+==== `libboost1.49-all-dev`
+ If the package is not available in the default debian repository, download the source deb package (orig.tar.gz, debian.tar.gz and .dsc files) from a repository where it is available (e.g. [http://packages.debian.org/source/wheezy/boost1.49#pdownload debian wheezy]) and build it locally, like so:
+{{{#!sh
+cd $(mktemp -d)
+base_url=http://ftp.ch.debian.org/debian/pool/main/b/boost1.49
+curl -JLOOO $base_url/boost1.49_1.49.0{.orig.tar.bz2,-3.1.{dsc,debian.tar.gz}}
+cd -
+rm -rf $OLDPWD
+}}}
+
+== Installation
+
+There is a script called `install.sh` in the top-level project directory. It does most of the work of determining configuration values, setting the corresponding variables in various configuration files and placing those file into the right location in the operating system.
+
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+After the install script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',32,1343318812343738,'patrick','10.194.165.119','[[PageOutline]]
+
+== Configuration Variables
+
+ `TOPDIR`::
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`::
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`::
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`::
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`::
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`::
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`::
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`::
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`::
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`::
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`::
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+   
+== Some Random Remarks
+
+=== The ''''workdir''''
+
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Preparation
+
+=== Cloning the source code repository
+
+Clone the source code repository like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+=== Installing additional deb''s
+
+In addition to the standard debian server setup, the following ''''deb'''' packages need to be installed:
+{{{
+ntp
+ssh
+curl
+bzip2
+sqlite3
+deborphan
+python-lxml
+libapache2-mod-wsgi
+
+devscripts
+gcc-4.3-base
+cmake
+libbz2-dev
+libpng12-dev
+python-all-dev
+python3-all-dev
+libboost1.49-all-dev
+}}}
+
+To install all those packages, as root, run
+{{{#!sh
+apt-get install $(cat)
+}}}
+and paste the above list, then press Ctrl-D.
+
+==== `libboost1.49-all-dev`
+
+ If the package is not available in the default debian repository, download the source deb package (orig.tar.gz, debian.tar.gz and .dsc files) from a repository where it is available (e.g. [http://packages.debian.org/source/wheezy/boost1.49#pdownload debian wheezy]) and build it locally, like so:
+{{{#!sh
+cd $(mktemp -d)
+base_url=http://ftp.ch.debian.org/debian/pool/main/b/boost1.49
+curl -JLOOO $base_url/boost1.49_1.49.0{.orig.tar.bz2,-3.1.{dsc,debian.tar.gz}}
+cd -
+rm -rf $OLDPWD
+}}}
+
+== Installation
+
+There is a script called `install.sh` in the top-level project directory. It does most of the work of determining configuration values, setting the corresponding variables in various configuration files and placing those file into the right location in the operating system.
+
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+After the install script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',33,1343321337667627,'patrick','10.194.165.119','[[PageOutline]]
+
+== Configuration Variables
+
+ `TOPDIR`::
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`::
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`::
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`::
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`::
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`::
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`::
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`::
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`::
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`::
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`::
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+   
+== Some Random Remarks
+
+=== The ''''workdir''''
+
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Preparation
+
+=== Cloning the source code repository
+
+Clone the source code repository like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+=== Installing additional deb''s
+
+In addition to the standard debian server setup, the following ''''deb'''' packages need to be installed:
+{{{
+ntp
+ssh
+curl
+bzip2
+sqlite3
+deborphan
+python-lxml
+libapache2-mod-wsgi
+
+devscripts
+gcc-4.3-base
+cmake
+libbz2-dev
+libpng12-dev
+python-all-dev
+python3-all-dev
+libboost1.49-all-dev
+}}}
+
+To install all those packages, as root, run
+{{{#!sh
+apt-get install $(cat)
+}}}
+and paste the above list, then press Ctrl-D.
+
+==== `libboost1.49-all-dev`
+
+ If the package is not available in the default debian repository, download the source deb package (orig.tar.gz, debian.tar.gz and .dsc files) from a repository where it is available (e.g. [http://packages.debian.org/source/wheezy/boost1.49#pdownload debian wheezy]) and build it locally, like so:
+{{{#!sh
+cd $(mktemp -d)
+base_url=http://ftp.ch.debian.org/debian/pool/main/b/boost1.49
+curl -JLOOO $base_url/boost1.49_1.49.0{.orig.tar.bz2,-3.1.{dsc,debian.tar.gz}}
+dpkg-source -x boost1.49*.dsc
+
+cd boost_1_49_0
+dpkg-buildpackage -b
+
+cd ..
+su -c "dpkg -i *.deb"
+
+cd
+rm -rf $OLDPWD
+}}}
+
+== Installation
+
+There is a script called `install.sh` in the top-level project directory. It does most of the work of determining configuration values, setting the corresponding variables in various configuration files and placing those file into the right location in the operating system.
+
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+After the install script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',34,1343321388106295,'patrick','10.194.165.119','[[PageOutline]]
+
+== Configuration Variables
+
+ `TOPDIR`::
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`::
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`::
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`::
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`::
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`::
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`::
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`::
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`::
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`::
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`::
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+   
+== Some Random Remarks
+
+=== The ''''workdir''''
+
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Preparation
+
+=== Cloning the source code repository
+
+Clone the source code repository like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+=== Installing additional deb''s
+
+In addition to the standard debian server setup, the following ''''deb'''' packages need to be installed:
+{{{
+ntp
+ssh
+curl
+bzip2
+sqlite3
+deborphan
+python-lxml
+libapache2-mod-wsgi
+
+devscripts
+gcc-4.3-base
+cmake
+libbz2-dev
+libpng12-dev
+python-all-dev
+python3-all-dev
+libboost1.49-all-dev
+}}}
+
+To install all those packages, as root, run
+{{{#!sh
+apt-get install $(cat)
+}}}
+and paste the above list, then press Ctrl-D.
+
+==== `libboost1.49-all-dev`
+
+ If this package is not available in the default debian repository, download the source deb package (orig.tar.gz, debian.tar.gz and .dsc files) from a repository where it is available (e.g. [http://packages.debian.org/source/wheezy/boost1.49#pdownload debian wheezy]) and build it locally, like so:
+{{{#!sh
+cd $(mktemp -d)
+base_url=http://ftp.ch.debian.org/debian/pool/main/b/boost1.49
+curl -JLOOO $base_url/boost1.49_1.49.0{.orig.tar.bz2,-3.1.{dsc,debian.tar.gz}}
+dpkg-source -x boost1.49*.dsc
+
+cd boost_1_49_0
+dpkg-buildpackage -b
+
+cd ..
+su -c "dpkg -i *.deb"
+
+cd
+rm -rf $OLDPWD
+}}}
+
+== Installation
+
+There is a script called `install.sh` in the top-level project directory. It does most of the work of determining configuration values, setting the corresponding variables in various configuration files and placing those file into the right location in the operating system.
+
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+After the install script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',35,1343379169887220,'patrick','10.194.165.119','[[PageOutline]]
+
+== Configuration Variables
+
+ `TOPDIR`::
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`::
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`::
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`::
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`::
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`::
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`::
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`::
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`::
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`::
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`::
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+   
+== Some Random Remarks
+
+=== The ''''workdir''''
+
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Preparation
+
+=== Cloning the source code repository
+
+Clone the source code repository like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+=== Installing additional deb''s
+
+In addition to the standard debian server setup, the following ''''deb'''' packages need to be installed:
+{{{
+ntp
+ssh
+curl
+bzip2
+sqlite3
+deborphan
+python-lxml
+libapache2-mod-wsgi
+
+devscripts
+gcc-4.3-base
+cmake
+libbz2-dev
+libpng12-dev
+python-all-dev
+python3-all-dev
+libboost1.49-all-dev
+}}}
+
+To install all those packages, as root, run
+{{{#!sh
+apt-get install $(cat)
+}}}
+and paste the above list, then press Ctrl-D.
+
+==== `libboost1.49-all-dev`
+
+ If this package is not available in the default debian repository, download the source deb package (orig.tar.gz, debian.tar.gz and .dsc files) from a repository where it is available (e.g. [http://packages.debian.org/source/wheezy/boost1.49#pdownload debian wheezy]) and build it locally, like so:
+{{{#!sh
+cd $(mktemp -d)
+base_url=http://ftp.ch.debian.org/debian/pool/main/b/boost1.49
+curl -JLOOO $base_url/boost1.49_1.49.0{.orig.tar.bz2,-3.1.{dsc,debian.tar.gz}}
+su -c "apt-get install libicu-dev mpi-default-dev bison flex docbook-to-man help2man xsltproc doxygen"
+
+dpkg-source -x boost1.49*.dsc
+
+cd boost1.49*
+dpkg-buildpackage -b
+
+cd ..
+su -c "dpkg -i *.deb"
+
+cd
+rm -rf $OLDPWD
+}}}
+
+== Installation
+
+There is a script called `install.sh` in the top-level project directory. It does most of the work of determining configuration values, setting the corresponding variables in various configuration files and placing those file into the right location in the operating system.
+
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+After the install script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',36,1343396186165335,'patrick','10.194.165.119','[[PageOutline]]
+
+== Configuration Variables
+
+ `TOPDIR`::
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`::
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`::
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`::
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`::
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`::
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`::
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`::
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`::
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`::
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`::
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+   
+== Some Random Remarks
+
+=== The ''''workdir''''
+
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Preparation
+
+=== Cloning the source code repository
+
+Clone the source code repository like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+=== Installing additional deb''s
+
+In addition to the standard debian server setup, the following ''''deb'''' packages need to be installed:
+{{{
+ntp
+ssh
+curl
+bzip2
+sqlite3
+deborphan
+python-lxml
+libapache2-mod-wsgi
+
+devscripts
+gcc-4.3-base
+cmake
+libbz2-dev
+libpng12-dev
+python-all-dev
+python3-all-dev
+libboost1.49-all-dev
+}}}
+
+To install all those packages, as root, run
+{{{#!sh
+apt-get install $(cat)
+}}}
+and paste the above list, then press Ctrl-D.
+
+==== `libboost1.49-all-dev`
+
+ If this package is not available in the default debian repository, download the source deb package (orig.tar.gz, debian.tar.gz and .dsc files) from a repository where it is available (e.g. [http://packages.debian.org/source/wheezy/boost1.49#pdownload debian wheezy]) and build it locally, like so:
+{{{#!sh
+cd $(mktemp -d)
+base_url=http://ftp.ch.debian.org/debian/pool/main/b/boost1.49
+curl -JLOOO $base_url/boost1.49_1.49.0{.orig.tar.bz2,-3.1.{dsc,debian.tar.gz}}
+su -c "apt-get install libicu-dev mpi-default-dev bison flex docbook-to-man help2man xsltproc doxygen gccxml"
+
+dpkg-source -x boost1.49*.dsc
+
+cd boost1.49*
+dpkg-buildpackage -b
+
+cd ..
+su -c "dpkg -i *.deb"
+
+cd
+rm -rf $OLDPWD
+}}}
+
+== Installation
+
+There is a script called `install.sh` in the top-level project directory. It does most of the work of determining configuration values, setting the corresponding variables in various configuration files and placing those file into the right location in the operating system.
+
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+After the install script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
 ','',0);
 CREATE INDEX "node_change_node_change_repos_rev_idx" ON "node_change" ("repos","rev");
 CREATE INDEX "ticket_ticket_time_idx" ON "ticket" ("time");
