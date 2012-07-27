@@ -24,7 +24,8 @@ WORKDIR=@@WORKDIR@@	# the <workdir> passed to `rnas-init`
 
 test -x $PREFIX/bin/rnas-worker || exit 0
 
-PATH=$PREFIX/bin:/bin:/usr/bin
+export PATH=$PREFIX/bin:/bin:/usr/bin
+export PYTHONUSERBASE=$PREFIX
 
 . /lib/lsb/init-functions
 
