@@ -36,8 +36,14 @@ setup(
     test_suite='nose.collector',
     packages=find_packages(),
     data_files=[('', [
-        'rnaseqlyze.ini'
+        'rnaseqlyze.ini',
     ])],
+    package_data={
+        'rnaseqlyze': [
+            'refseq-data/*',
+            'ucscbrowser-data/*',
+        ],
+    },
     entry_points={
         'console_scripts': [
             'rnas-install = rnaseqlyze.install:main',
