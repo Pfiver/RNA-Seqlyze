@@ -5,11 +5,11 @@ RedirectMatch ^@@WWWBASE@@$ @@WWWBASE@@trac
 AddHandler wsgi-script .wsgi
 
 # set the (default) mod_wsgi.process_group
-SetEnv WSGI_PGRP biopython-dev
+SetEnv WSGI_PGRP rnaseqlyze-dev
 
 # set a different mod_wsgi.process_group for the production app only
 RewriteCond $0 ^rna-seqlyze.wsgi
-RewriteRule .* - [E=WSGI_PGRP:biopython]
+RewriteRule .* - [E=WSGI_PGRP:rnaseqlyze]
 
 # turn on mod_rewrite features
 RewriteEngine on

@@ -1,4 +1,4 @@
-WSGIScriptAlias @@WWWBASE@@ @@WWWDIR@@
+WSGIScriptAlias @@WWWBASE@@ @@WWWDIR@@/
 WSGIDaemonProcess rnaseqlyze threads=2 maximum-requests=500
 WSGIDaemonProcess rnaseqlyze-dev threads=2 maximum-requests=500
 <Directory @@WWWDIR@@>
