@@ -109,6 +109,7 @@ subcat() { sed "$confsub" "$1"; }
 
 # remember the current directory
 CURDIR=$PWD
+PATH=$PATH:$PREFIX/bin
 
 # distribute
 if ! python -c 'import setuptools' 2> /dev/null
@@ -118,6 +119,18 @@ then
 import distribute_setup
 _install(download_setuptools(), '--prefix', '$PREFIX')
 END_OF_PYTHON
+fi
+
+# docopt
+if ! easy_install --prefix $PREFIX "docopt>0.4.1"
+then
+    tmpdir=$(mktemp -d)
+    git clone https://github.com/docopt/docopt.git $tmpdir
+    cd $tmpdir
+    sed -i 's/version = "0.4.1/&.post1/' setup.py
+    python setup.py install --prefix $PREFIX
+    cd
+    rm -rf $tmpdir
 fi
 
 # rna-seqlyze
