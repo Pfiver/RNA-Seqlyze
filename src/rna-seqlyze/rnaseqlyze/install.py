@@ -57,7 +57,11 @@ def main():
         for phase in phases:
             part.execute(phase)
 
-    print "RNA-Seqlyze sucessfully installed."
-    print
-    print "   PREFIX=%s" % prefix
-    print
+    print """\
+
+ All 3rd-party software has been sucessfully installed under
+
+    PREFIX=%s
+
+""" % prefix
+

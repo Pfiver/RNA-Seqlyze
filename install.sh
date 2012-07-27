@@ -116,8 +116,11 @@ if ! python -c 'import setuptools' 2> /dev/null
 then
     curl -O http://python-distribute.org/distribute_setup.py
     python << END_OF_PYTHON
-import distribute_setup
-_install(download_setuptools(), '--prefix', '$PREFIX')
+import os, sys
+os.makedirs(os.path.join('$PREFIX', 'lib',
+    'python%d.%d' % sys.version_info[:2], 'site-packages'))
+import distribute_setup as ds
+ds._install(ds.download_setuptools(), ('--prefix', '$PREFIX'))
 END_OF_PYTHON
     rm distribute_setup.py distribute-*.tar.gz
 fi
@@ -223,7 +226,11 @@ then
     do
         read -p "Username: " u
         [ -z "$u" ] && break
-        htpasswd -b $hp $u
+        while ! htpasswd $hp $u
+        do
+            echo try again
+        done
+        echo "added '$u'"
     done
 
     # initialize databse
