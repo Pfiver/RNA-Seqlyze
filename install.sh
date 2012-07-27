@@ -110,6 +110,16 @@ subcat() { sed "$confsub" "$1"; }
 # remember the current directory
 CURDIR=$PWD
 
+# distribute
+if ! python -c 'import setuptools' 2> /dev/null
+then
+    curl -O http://python-distribute.org/distribute_setup.py
+    python << END_OF_PYTHON
+import distribute_setup
+_install(download_setuptools(), '--prefix', '$PREFIX')
+END_OF_PYTHON
+fi
+
 # rna-seqlyze
 cd $TOPDIR/src/rna-seqlyze
 python setup.py install --prefix=$PREFIX
