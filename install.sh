@@ -177,7 +177,7 @@ os.makedirs(os.path.join('$PREFIX', 'lib',
 import distribute_setup as ds
 ds._install(ds.download_setuptools(), ('--prefix', '$PREFIX'))
 END_OF_PYTHON
-    rm distribute_setup.py distribute-*.tar.gz
+    rm distribute_setup.py* distribute-*.tar.gz
 fi
 
 # docopt
@@ -319,7 +319,7 @@ then
         pip install buildbot
         pip install buildbot-slave
         buildbot create-master -r buildmaster
-        buildslave create-slave buildslave localhost:9989 biopython-slave pass
+        buildslave create-slave buildslave localhost:9989 $HOSTNAME pass
     )
     cd $TOPDIR/var/conf-files
     subcat buildbot-master.cfg > $BIBODIR/buildmaster/master.cfg
