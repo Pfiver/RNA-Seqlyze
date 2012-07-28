@@ -1,68 +1,76 @@
 #!/bin/bash -e
 
-TOPDIR=/home/$USER/rna-seqlyze
+ADMIN_EMAIL=
+
+TOPDIR=$PWD
 PREFIX=/home/$USER/.local
 WORKDIR=/home/$USER/rna-seqlyze-workdir
+WORKDIR_DEV=$WORKDIR-dev
+
 WWWDIR=/home/$USER/public_html
 WWWBASE=/rna-seqlyze/
-BIBODIR=/home/$USER/buildbot
-
 HOSTNAME=$(hostname -f)
 GROUP=www-data
 WORKER_USER=www-data
-ADMIN_EMAIL=
-TRAC_DB=sqlite:///$WORKDIR-dev/trac.db
+BIBODIR=$WORKDIR_DEV/buildbot
+TRAC_DB=sqlite:///$WORKDIR_DEV/trac.db
 
 # config variables documentation,
 # copied from the 'Deployment' wiki page
-doc_aTOPDIR='
+doc_aADMIN_EMAIL='
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+'
+
+doc_bTOPDIR='
    The root of the project source tree cloned from
    https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
    for example `/home/user/rna-seqlyze`.
 '
-doc_bPREFIX='
+doc_cPREFIX='
    The project installation directory on the server;
    for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
 '
-doc_cWORKDIR='
+doc_dWORKDIR='
    A directory on the server where lots of space should be available;
    for example`/home/user/rna-seqlyze-workdir`.
 '
-doc_dWWWDIR='
+doc_eWORKDIR_DEV='
+   A directory on the server where a second application instance
+   along with a virtualenv in which it is run, is hosted;
+   for example`/home/user/rna-seqlyze-workdir-dev`.
+'
+
+doc_fWWWDIR='
    The directory on the server containing the
    .htaccess file and the .wsgi scripts;
    for example `/home/user/public_html`.
 '
-doc_eWWWBASE='
+doc_gWWWBASE='
    The path under which `WWWDIR` is accessible on the server
    ''from outside'' (e.g. with HTTP on port 80);
    for example `/rna-seqlyze/`.
 '
-doc_fBIBODIR='
-   A directory to hold one buildbot "master" and one buildbot
-   "slave" base directory;
-   for example `/home/user/buildbot`.
-'
-
-doc_gHOSTNAME='
+doc_hHOSTNAME='
    The hostname under which the server is accessible from outside;
    for example `www.rna-seqlyze.com`.
 '
-doc_hGROUP='
+doc_iGROUP='
    The unix group that the web application and the worker run as;
    for example `www-data`.
 '
-doc_iWORKER_USER='
+doc_jWORKER_USER='
    The unix user that the worker runs as;
    for example `www-data`.
 '
-doc_jADMIN_EMAIL='
-   The email address of the application administrator;
-   for example `admin@rna-seqlyze.com`.
-'
 doc_kTRAC_DB='
    A database url for a database where trac will keep its data;
-   for example `sqlite:///$WORKDIR-dev/trac.db`.
+   for example `sqlite:///$WORKDIR_DEV/trac.db`.
+'
+doc_lBIBODIR='
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
 '
 
 # os check
@@ -72,6 +80,26 @@ if [ "$Debian$Ubuntu" != true ]
 then
     echo Only Debian and Ubuntu OSs are supported so far.
     exit 1
+fi
+
+# dev check
+if [ -n "$WORKDIR_DEV" ]
+then
+    echo "Do you want to install a development instance"
+    read -p "in parallel with the production instance ? [Yes] " dev
+    if ! [[ -z "$dev" -o "$dev" = [Yy]* ]]
+    then
+        unset WORKDIR_DEV TRAC_DB BIBODIR
+        for doc in ${!doc_*}
+        do
+            var=${doc#doc_?}
+            case $var in WORKDIR_DEV|TRAC_DB|BIBODIR)
+                unset $doc
+                break
+                ;;
+            esac
+        done
+    fi
 fi
 
 # if not manually configured at the top of the script,
@@ -96,6 +124,10 @@ then
     done
     echo
 fi
+
+# WWWBASE: strip slashes
+WWWBASE=${WWWBASE%/}
+WWWBASE=${WWWBASE#/}
 
 # helper functions
 confsub=$(
@@ -203,15 +235,13 @@ rnas-install --prefix=$PREFIX
 # apache/mod_wsgi environment
 mkdir -p $WWWDIR
 cd $TOPDIR/var/conf-files
-subcat htaccess > $WWWDIR/.htaccess
-for wsgi in *.wsgi
-do
-    subcat $wsgi > $WWWDIR/$wsgi
-done
-if [ -n "$TRAC_DB" ]
+subcat rna-seqlyze.wsgi > $WWWDIR/rna-seqlyze.wsgi
+if [ -z "$WORKDIR_DEV" ]
 then
-    ln -s trac.wsgi $WWWDIR/traclogin.wsgi
-    sed "s|@@WORKDIR@@|$WORKDIR-dev|;" \
+    subcat htaccess > $WWWDIR/.htaccess
+else
+    subcat htaccess-dev >> $WWWDIR/.htaccess
+    sed "s|@@WORKDIR@@|${WORKDIR_DEV//|/\\|}|;" \
         rna-seqlyze.wsgi > $WWWDIR/rna-seqlyze-dev.wsgi
 fi
 
@@ -223,41 +253,38 @@ do
 done
 
 # crontab
-{
-    cat << END_OF_CRONTAB 
-SHELL=/bin/bash
-
-rnas_workdir=$WORKDIR
-rnas_bibodir=$BIBODIR
-rnas_wwwbase=$WWWBASE
-
-# m  h   dom mon dow command
- 12  *   *   *   *   . $TOPDIR/bash-env; update-available-list
-END_OF_CRONTAB
-    if [ -n "$TRAC_DB" ]
-    then
-        echo " 13  *   *   *   *  " \
-                "rnas_workdir=$WORKDIR-dev . $TOPDIR/bash-env; cron-hourly"
-    fi
-} | crontab 
-
-# git hooks
-cd $TOPDIR/.git
-for hook in post-commit post-merge
-do
-    ln -vnfs $PREFIX/bin/trac-repo-sync hooks/$hook
-done
+cd $TOPDIR/var/conf-files
+subcat crontab${WORKDIR_DEV:+-dev} | crontab
 
 # workdirs
-rnas-init --group=$GROUP $WORKDIR
-rnas-init --group=$GROUP $WORKDIR-dev
 cd $TOPDIR/src/rna-seqlyze
+rnas-init --group=$GROUP $WORKDIR
 subcat rnaseqlyze.ini > $WORKDIR/rnaseqlyze.ini
-subcat rnaseqlyze.ini > $WORKDIR-dev/rnaseqlyze.ini
+if [ -n "$WORKDIR_DEV" ]
+then
+    rnas-init --group=$GROUP $WORKDIR_DEV
+    ln -s $WORKDIR/shared_data $WORKDIR_DEV
+    subcat rnaseqlyze.ini > $WORKDIR_DEV/rnaseqlyze.ini
+fi
 
 # trac
 if [ -n "$TRAC_DB" ]
 then
+    # apache/mod_wsgi script
+    cd $TOPDIR/var/conf-files
+    for wsgi in {trac,debug}.wsgi
+    do
+        subcat $wsgi > $WWWDIR/$wsgi
+    done
+    ln -s trac.wsgi $WWWDIR/traclogin.wsgi
+
+    # repo sync git hook
+    cd $TOPDIR/.git
+    for hook in post-commit post-merge
+    do
+        ln -vnfs $PREFIX/bin/trac-repo-sync hooks/$hook
+    done
+
     # create trac.ini
     cd $TOPDIR/var/trac-env
     mkdir -p $WORKDIR-dev
@@ -327,7 +354,8 @@ fi
 
 # apache and -worker daemon (su)
 cd $CURDIR
-subcat $TOPDIR/var/conf-files/rna-seqlyze-a2conf > rna-seqlyze-a2conf
+a2conf=rna-seqlyze-a2conf${WORKDIR_DEV:+-dev}
+subcat $TOPDIR/var/conf-files/$a2conf > rna-seqlyze-a2conf
 apache_conf='
 chown root. rna-seqlyze-a2conf
 mv rna-seqlyze-a2conf /etc/apache2/conf.d/rna-seqlyze
@@ -382,6 +410,7 @@ cat << END_OF_DONE
 
  RNA-Seqlyze installed in $PREFIX
 
- WORKDIR=$WORKDIR
+ WORKDIR=$WORKDIR${WORKDIR_DEV:+
+ WORKDIR_DEV=$WORKDIR_DEV}
 
 END_OF_DONE

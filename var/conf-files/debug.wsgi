@@ -1,8 +1,5 @@
 #!/usr/bin/python
 
-import site
-site.addsitedir("@@PREFIX@@/lib/python2.6/site-packages")
-
 def application(env, start_response):
     def flt(n):
          return not n.startswith("__") and n != "application"

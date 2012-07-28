@@ -7,7 +7,7 @@
 : ${rnas_topdir:=$(dirname $(readlink -f $BASH_SOURCE))}
 : ${rnas_workdir:=$HOME/rna-seqlyze-workdir-dev}
 : ${rnas_bibodir:=$HOME/buildbot}
-: ${rnas_wwwbase:=/rna-seqlyze/}
+: ${rnas_wwwbase:=rna-seqlyze/}
 : ${rnas_prefix:=$HOME/.local}
 
 rnas_pkgs=("" -cli -web -worker)
@@ -98,7 +98,7 @@ update-available-list ()
     {
         echo '{{{#!html'
         echo '<table>'
-        base=${rnas_wwwbase}rna-seqlyze/analyses/
+        base=/${rnas_wwwbase}rna-seqlyze/analyses/
         select="select"
         select+=" '<tr><td>'||'<a href=\"$base'||id||'\">'||id||'</a>',"
         select+="   org_accession,title,rnaseq_run_srr,error||'</td></tr>'"
@@ -176,7 +176,7 @@ re-cover ()
 
 sigint ()
 {
-    curl localhost${rnas_wwwbase}debug?{sig_int,sig_int}
+    curl localhost/${rnas_wwwbase}debug?{sig_int,sig_int}
 }
 
 auto-sigint ()

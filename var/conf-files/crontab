@@ -1,0 +1,8 @@
+SHELL=/bin/bash
+
+rnas_workdir=@@WORKDIR@@
+rnas_bibodir=@@BIBODIR@@
+rnas_wwwbase=@@WWWBASE@@
+
+# m  h   dom mon dow command
+ 12  *   *   *   *   . @@TOPDIR@@/bash-env; update-available-list
