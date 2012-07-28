@@ -250,6 +250,7 @@ cd $TOPDIR/var/utils
 for util in *
 do
     subcat $util > $PREFIX/bin/$util
+    chmod 755 $PREFIX/bin/$util
 done
 
 # crontab
