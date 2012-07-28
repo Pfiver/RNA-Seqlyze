@@ -3,16 +3,18 @@
 # variables
 ###########
 
+# not changed if already set
 : ${rnas_topdir:=$(dirname $(readlink -f $BASH_SOURCE))}
 : ${rnas_workdir:=$HOME/rna-seqlyze-workdir-dev}
 : ${rnas_bibodir:=$HOME/buildbot}
 : ${rnas_wwwbase:=/rna-seqlyze/}
+: ${rnas_prefix:=$HOME/.local}
 
 rnas_pkgs=("" -cli -web -worker)
 rnas_pkgs=("${rnas_pkgs[@]/#/rna-seqlyze}")
 rnas_pkgdirs=("${rnas_pkgs[@]/#/$rnas_topdir/src/}")
 
-[[ $PATH =~ (^|:)$HOME/.local/bin(:|$) ]] || PATH=$HOME/.local/bin:$PATH
+[[ $PATH =~ (^|:)$rnas_prefix/bin(:|$) ]] || PATH=$rnas_prefix/bin:$PATH
 
 # cron script
 #############

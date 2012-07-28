@@ -47,7 +47,7 @@ tracopt.versioncontrol.git.* = enabled
 alt = Header Logo
 height = -1
 link = /
-src = site/RNA-Seqlyze.png
+src = site/img/RNA-Seqlyze.png
 width = -1
 
 [inherit]
@@ -112,7 +112,7 @@ admin =
 admin_trac_url = .
 descr = 
 footer = Visit the Trac open source project at<br /><a href="http://trac.edgewall.org/">http://trac.edgewall.org/</a>
-icon = site/RNA-Seqlyze-icon.ico
+icon = site/img/RNA-Seqlyze-icon.ico
 name = RNA-seqlyze
 url = 
 
