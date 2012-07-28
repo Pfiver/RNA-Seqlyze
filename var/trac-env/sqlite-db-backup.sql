@@ -274,12 +274,13 @@ CREATE TABLE "session" (
   "last_visit" int(11) DEFAULT NULL,
   PRIMARY KEY ("sid","authenticated")
 );
-INSERT INTO "session" VALUES('patrick',1,1343318693);
+INSERT INTO "session" VALUES('patrick',1,1343438290);
 INSERT INTO "session" VALUES('bf2abaa1a69e9b222ed0932b',0,1336181625);
 INSERT INTO "session" VALUES('guest',1,1335378183);
 INSERT INTO "session" VALUES('04e86ef88c81f89b8383735a',0,1335974753);
 INSERT INTO "session" VALUES('ac606c55507bd743d82741f0',0,1343297112);
 INSERT INTO "session" VALUES('d44ab04ac33a6dc52757a3b1',0,1341996189);
+INSERT INTO "session" VALUES('21056989e5bda76d1148ff1d',0,1343445213);
 CREATE TABLE "session_attribute" (
   "sid" text  NOT NULL,
   "authenticated" int(11) NOT NULL DEFAULT '0',
@@ -312,6 +313,12 @@ INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.ne
 INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_href','/biopython/trac/query?status=!closed&order=priority');
 INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_tickets','9 6 8');
 INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.lastvisit','1343296932444584');
+INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'timeline.daysback','30');
+INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'timeline.authors','');
+INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'timeline.nextlastvisit','0');
+INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'query_href','/rna-seqlyze/trac/report/2?asc=1&page=1');
+INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'query_tickets','9 6 8');
+INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'timeline.lastvisit','1343440654000000');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.daysback','30');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.authors','');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.nextlastvisit','1343033446629506');
@@ -1659,7 +1666,7 @@ INSERT INTO "wiki" VALUES('TracWiki',1,1335217245847264,'trac','127.0.0.1','= Th
 Trac has a built-in wiki system which you can use for organizing knowledge and information in a very flexible way by [WikiNewPage creating pages] containing an intuitive and easy to learn textual markup. This text markup is also used in all other parts of the system, not only in [wiki:TitleIndex wiki pages], but also in [wiki:TracTickets ticket] description and comments, [wiki:TracChangeset check-in log messages], [wiki:TracRoadmap milestone] descriptions and [wiki:TracReports report] descriptions, even in third-party extensions.
 It allows for formatted text and hyperlinks in and between all Trac modules.
 
-Editing wiki text is easy, using any web browser and a simple [WikiFormatting formatting system], rather than more complex markup languages like HTML.  The reasoning behind its design is that HTML, with its large collection of nestable tags, is too complicated to allow fast-paced editing, and distracts from the actual content of the pages. Note though that Trac also supports [WikiHtml HTML], [WikiRestructuredText reStructuredText] and [http://www.textism.com/tools/textile/ Textile] as alternative markup formats, which can eventually be used in parts of a page (so called wiki “blocks”).
+Editing wiki text is easy, using any web browser and a simple [WikiFormatting formatting system], rather than more complex markup languages like HTML.  The reasoning behind its design is that HTML, with its large collection of nestable tags, is too complicated to allow fast-paced editing, and distracts from the actual content of the pages. Note though that Trac also supports [WikiHtml HTML], [WikiRestructuredText reStructuredText] and [http://www.textism.com/tools/textile/ Textile] as alternative markup formats, which can eventually be used in parts of a page (so called wiki Â“blocksÂ”).
 
 The main goal of the wiki is to make editing text easier and ''''encourage'''' people to contribute and annotate text content for a project. Trac also provides a simple toolbar to make formatting text even easier, and supports the [http://universaleditbutton.org/Universal_Edit_Button universal edit button] of your browser.
 
@@ -1668,7 +1675,7 @@ As contributing to a wiki is essentially building an hypertext,
 general advice regarding HTML authoring apply here as well.
 For example, the ''''[http://www.w3.org/Provider/Style Style Guide for online hypertext]'''' explains how to think about the
 [http://www.w3.org/Provider/Style/Structure.html overall structure of a work] 
-and how to organize information [http://www.w3.org/Provider/Style/WithinDocument.html within each document]. One of the most important tip is “make your HTML page such that you can read it even if you don''t follow any links.”
+and how to organize information [http://www.w3.org/Provider/Style/WithinDocument.html within each document]. One of the most important tip is Â“make your HTML page such that you can read it even if you don''t follow any links.Â”
 
 Learn more about:
  * WikiFormatting rules, including advanced topics like WikiMacros and WikiProcessors
@@ -1686,6 +1693,7 @@ Some more information about wikis on the web:
 
 ----
 See also: TracGuide
+
 ',NULL,NULL);
 INSERT INTO "wiki" VALUES('WikiFormatting',1,1335217245848624,'trac','127.0.0.1','= WikiFormatting =
 [[TracGuideToc]]
@@ -1850,10 +1858,10 @@ Second paragraph.
 || #1 (ticket), [1] (changeset), {1} (report) ||
 || `ticket:1, ticket:1#comment:1` ||\
 || ticket:1, ticket:1#comment:1 ||
-|| `Ticket [ticket:1]`, `[ticket:1 ticket one]` ||\
-|| Ticket [ticket:1], [ticket:1 ticket one] ||
-|| `Ticket [[ticket:1]]`, `[[ticket:1|ticket one]]` ||\
-|| Ticket [[ticket:1]], [[ticket:1|ticket one]] ||
+|| `Ticket [ticket:1]`, `[ticket:1Â ticketÂ one]` ||\
+|| Ticket [ticket:1], [ticket:1 ticketÂ one] ||
+|| `Ticket [[ticket:1]]`, `[[ticket:1|ticketÂ one]]` ||\
+|| Ticket [[ticket:1]], [[ticket:1|ticketÂ one]] ||
 |-----------------------------------------------------------
 {{{#!th rowspan=2 
 [#SettingAnchors Setting Anchors]
@@ -2693,6 +2701,7 @@ See?
 {{{#!td
 !WikiCreole style \\ line\\break
 }}}
+
 
 ',NULL,NULL);
 INSERT INTO "wiki" VALUES('TracNotification',1,1335217245851399,'trac','127.0.0.1','= Email Notification of Ticket Changes =
@@ -35999,6 +36008,568 @@ cd $TOPDIR
 }}}
 
 After the install script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
+','',0);
+INSERT INTO "wiki" VALUES('Analyses',18,1343437922411908,'trac','127.0.0.1','{{{#!html
+<table>
+</table>
+}}}
+',NULL,NULL);
+INSERT INTO "wiki" VALUES('Deployment',37,1343438290407092,'patrick','127.0.0.1','[[PageOutline]]
+
+== Cloning the source code repository
+
+Clone the source code repository like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+== Configuration Variables
+
+ `TOPDIR`::
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`::
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`::
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`::
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`::
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`::
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`::
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`::
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`::
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`::
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`::
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+
+=== The ''''workdir''''
+
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Installation
+
+There is a script called `install.sh` in the top-level project directory.
+
+When executed, it will ask for the values of the configuration variables listed above. You can keep the defaults for most of them.
+
+Then it installs the rna-seqlyze (core), -cli, -web and -worker python packages and the various third-party software packages.
+
+Finally a few custom configuration files are created and put into the right places on the host:
+||=Configuration File                        ||=Description                                 ||
+||`WORKDIR/rnaseqlyze.ini`                   ||the main configuration file                  ||
+||`WORKDIR/web.ini` and `WORKDIR/worker.ini` ||-web and -worker packages configuration      ||
+||`WORKDIR/trac.ini`                         ||the configuration file used by trac          ||
+||`WEBDIR/.htaccess`                         ||part of the apache/mod_wsgi configuration    ||
+||`WEBDIR/.htpasswd.trac`                    ||where trac account credentials are stored    ||
+||`WEBDIR/*.wsgi`                            ||he wsgi modules executed by mod_wsgi         ||
+||`/etc/init.d/rna-seqlyze`                  ||the -worker daemon''s SysV init script        ||
+||`/etc/apache2/conf.d/rna-seqlyze`          ||the apache/mod_wsgi configuration file       ||
+
+After the install script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',38,1343438778764247,'patrick','127.0.0.1','[[PageOutline]]
+
+== Cloning the source code repository
+
+Clone the source code repository (~600MB) like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+== Configuration Variables
+
+Some configuration settings must be specified when running the installer script. The same settings can later on be changed by editing the .ini files created in the work-directory. Here is a short description what each setting means:
+
+ `TOPDIR`::
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`::
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`::
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`::
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`::
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`::
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`::
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`::
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`::
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`::
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`::
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+
+=== The ''''workdir''''
+
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Installation
+
+Execute the installation script in the top-level project directory:
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+First, the script will ask for the values of the configuration variables listed above. You can keep the defaults for most of them.
+
+Then it installs the rna-seqlyze (core), -cli, -web and -worker python packages and the various third-party software packages.
+
+Finally a few custom configuration files are created and put into the right places on the host:
+||=Configuration File                        ||=Description                                 ||
+||`WORKDIR/rnaseqlyze.ini`                   ||the main configuration file                  ||
+||`WORKDIR/web.ini` and `WORKDIR/worker.ini` ||-web and -worker packages configuration      ||
+||`WORKDIR/trac.ini`                         ||the configuration file used by trac          ||
+||`WEBDIR/.htaccess`                         ||part of the apache/mod_wsgi configuration    ||
+||`WEBDIR/.htpasswd.trac`                    ||where trac account credentials are stored    ||
+||`WEBDIR/*.wsgi`                            ||he wsgi modules executed by mod_wsgi         ||
+||`/etc/init.d/rna-seqlyze`                  ||the -worker daemon''s SysV init script        ||
+||`/etc/apache2/conf.d/rna-seqlyze`          ||the apache/mod_wsgi configuration file       ||
+
+After the script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',39,1343438833274570,'patrick','127.0.0.1','[[PageOutline]]
+
+== Cloning the source code repository
+
+Clone the source code repository (~600MB) like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+== Configuration Variables
+
+Some configuration settings must be specified when running the installer script. The same settings can later on be changed by editing the .ini files created in the work-directory. Here is a short description what each setting means:
+
+ `TOPDIR`::
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`::
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`::
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WWWDIR`::
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`::
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`::
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`::
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`::
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`::
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`::
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`::
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR-dev/trac.db`.
+
+=== The ''''workdir''''
+
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Installation
+
+Execute the installation script in the top-level project directory:
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+First, the script will ask for the values of the configuration variables listed above. You can keep the defaults for most of them.
+
+Then it installs the rna-seqlyze (core), -cli, -web and -worker python packages and the various third-party software packages.
+
+Finally a few custom configuration files are created and put into the right places on the host:
+||=Configuration File                        ||=Description                                 ||
+||`WORKDIR/rnaseqlyze.ini`                   ||the main configuration file                  ||
+||`WORKDIR/web.ini` and `WORKDIR/worker.ini` ||-web and -worker packages configuration      ||
+||`WORKDIR/trac.ini`                         ||the configuration file used by trac          ||
+||`WEBDIR/.htaccess`                         ||part of the apache/mod_wsgi configuration    ||
+||`WEBDIR/.htpasswd.trac`                    ||where trac account credentials are stored    ||
+||`WEBDIR/*.wsgi`                            ||the wsgi modules executed by mod_wsgi        ||
+||`/etc/init.d/rna-seqlyze`                  ||the -worker daemon''s SysV init script        ||
+||`/etc/apache2/conf.d/rna-seqlyze`          ||the apache/mod_wsgi configuration file       ||
+
+After the script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',40,1343446886818036,'patrick','127.0.0.1','[[PageOutline]]
+
+== Cloning the source code repository
+
+Clone the source code repository (~600MB) like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+== Configuration Variables
+
+Some configuration settings must be specified when running the installer script. The same settings can later on be changed by editing the .ini files created in the work-directory. Here is a short description what each setting means:
+
+ `TOPDIR`::
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`::
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`::
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WORKDIR_DEV`::
+   A directory on the server where a second application instance is hosted;
+   for example`/home/user/rna-seqlyze-workdir-dev`.
+   - data linked by default
+   - trac
+   - virtualenv
+   - buildbot
+
+ `WWWDIR`::
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`::
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `BIBODIR`::
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+ `HOSTNAME`::
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`::
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`::
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `ADMIN_EMAIL`::
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+
+ `TRAC_DB`::
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR_DEV/trac.db`.
+
+=== The ''''workdir''''
+
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Installation
+
+Execute the installation script in the top-level project directory:
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+First, the script will ask for the values of the configuration variables listed above. You can keep the defaults for most of them.
+
+Then it installs the rna-seqlyze (core), -cli, -web and -worker python packages and the various third-party software packages.
+
+Finally a few custom configuration files are created and put into the right places on the host:
+||=Configuration File                        ||=Description                                 ||
+||`WORKDIR/rnaseqlyze.ini`                   ||the main configuration file                  ||
+||`WORKDIR/web.ini` and `WORKDIR/worker.ini` ||-web and -worker packages configuration      ||
+||`WORKDIR/trac.ini`                         ||the configuration file used by trac          ||
+||`WEBDIR/.htaccess`                         ||part of the apache/mod_wsgi configuration    ||
+||`WEBDIR/.htpasswd.trac`                    ||where trac account credentials are stored    ||
+||`WEBDIR/*.wsgi`                            ||the wsgi modules executed by mod_wsgi        ||
+||`/etc/init.d/rna-seqlyze`                  ||the -worker daemon''s SysV init script        ||
+||`/etc/apache2/conf.d/rna-seqlyze`          ||the apache/mod_wsgi configuration file       ||
+
+After the script has finished, the following URLs should be accessible:
+
+ - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
+ - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+ - The application configured in ${WORKDIR}-dev: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze-dev
+','',0);
+INSERT INTO "wiki" VALUES('Deployment',41,1343447221727366,'patrick','127.0.0.1','[[PageOutline]]
+
+== Cloning the source code repository
+
+Clone the source code repository (~600MB) like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+== Configuration Variables
+
+Some configuration settings must be specified when running the installer script. The same settings can later on be changed by editing the .ini files created in the work-directory. Here is a short description what each setting means:
+
+ `ADMIN_EMAIL`::
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+\\
+
+ `TOPDIR`::
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`::
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`::
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WORKDIR_DEV`::
+   A directory on the server where a second application instance is hosted;
+   for example`/home/user/rna-seqlyze-workdir-dev`.
+   - data linked by default
+   - trac
+   - virtualenv
+   - buildbot
+\\
+
+ `WWWDIR`::
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`::
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `HOSTNAME`::
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`::
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`::
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `TRAC_DB`::
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR_DEV/trac.db`.
+
+ `BIBODIR`::
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+=== The ''''workdir''''
+
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $TOPDIR/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Installation
+
+Execute the installation script in the top-level project directory:
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+First, the script will ask for the values of the configuration variables listed above. You can keep the defaults for most of them.
+
+Then it installs the rna-seqlyze (core), -cli, -web and -worker python packages and the various third-party software packages.
+
+Finally a few custom configuration files are created and put into the right places on the host:
+||=Configuration File                        ||=Description                                 ||
+||`WORKDIR/rnaseqlyze.ini`                   ||the main configuration file                  ||
+||`WORKDIR/web.ini` and `WORKDIR/worker.ini` ||-web and -worker packages configuration      ||
+||`WORKDIR/trac.ini`                         ||the configuration file used by trac          ||
+||`WEBDIR/.htaccess`                         ||part of the apache/mod_wsgi configuration    ||
+||`WEBDIR/.htpasswd.trac`                    ||where trac account credentials are stored    ||
+||`WEBDIR/*.wsgi`                            ||the wsgi modules executed by mod_wsgi        ||
+||`/etc/init.d/rna-seqlyze`                  ||the -worker daemon''s SysV init script        ||
+||`/etc/apache2/conf.d/rna-seqlyze`          ||the apache/mod_wsgi configuration file       ||
+
+After the script has finished, the following URLs should be accessible:
 
  - Trac: http://${HOSTNAME}/${WWWBASE}/trac.
  - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
