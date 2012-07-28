@@ -16,14 +16,11 @@ setup(
     test_suite='nose.collector',
     include_package_data=True,
     zip_safe=False,
-    data_files=[('', [
-        'development.ini',
-        'production.ini',
-    ])],
     setup_requires=[
         "nose >= 1.1.2",
         "rna-seqlyze >= 0.1",
         "distribute >= 0.6.14",
+        "setuptools_git >= 0.3",
     ],
     install_requires=[
         'pyramid',
