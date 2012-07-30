@@ -331,7 +331,7 @@ then
     {
         crontab -l
         echo
-        echo --- added by $0 on $(date) ---
+        echo \# --- added by $0 on $(date) ---
         $confsub crontab
     } |
         crontab
