@@ -313,7 +313,13 @@ done
 if $devinst
 then
     cd $TOPDIR/var/conf-files
-    $confsub crontab | crontab
+    {
+        crontab -l
+        echo
+        echo --- added by $0 on $(date) ---
+        $confsub crontab
+    } |
+        crontab
 fi
 
 # workdirs
