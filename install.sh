@@ -364,7 +364,7 @@ then
     mkdir -p $WORKDIR_DEV
     ti=$WORKDIR_DEV/trac.ini
     $confsub conf/trac.ini.tpl > $ti
-    ln -s $ti conf/trac.ini
+    ln -vnsf $ti conf/trac.ini
     chmod 664 $ti
     chgrp $GROUP $ti
 
