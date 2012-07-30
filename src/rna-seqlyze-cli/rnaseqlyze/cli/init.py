@@ -120,7 +120,7 @@ def main():
         req = pkg_resources.Requirement.parse(project_name)
         res = pkg_resources.resource_stream(req, ini)
         conf = res.read()
-        if ini = "rnaseqlyze.ini"
+        if ini == "rnaseqlyze.ini":
             # expand the @@GROUP@@ placeholder so rnaseqlyze.group is valid
             group = opts['--group'] if opts['--group'] else 'www-data'
             conf = conf.replace("@@GROUP@@", group)
