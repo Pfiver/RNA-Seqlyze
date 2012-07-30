@@ -343,7 +343,7 @@ if $devinst
 then
     cd $TOPDIR/var/conf-files
     {
-        crontab -l
+        crontab -l 2> /dev/null || true
         echo
         echo \# --- added by $0 on $(date) ---
         $confsub crontab
