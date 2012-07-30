@@ -174,7 +174,7 @@ PATH=$PREFIX/bin:$PATH
 
 # use modules in and create directory
 # $PREFIX/lib/python$PYVER/lib/site-packages
-PYTHONPATH=$PREFIX/lib/python$PYVER/lib/site-packages
+PYTHONPATH=$PREFIX/lib/python$PYVER/site-packages
 mkdir -p $PYTHONPATH
 
 # @@PYTHON_PATH@@ confsub
@@ -354,13 +354,24 @@ then
 
     # devinst virtualenv
     virtualenv --system-site-packages --distribute $WORKDIR_DEV
-    (
-        . $WORKDIR_DEV/bin/activate
-        for dir in $TOPDIR/src/rna-seqlyze*
-        do
-            (cd $dir && python setup.py develop)
-        done
-    ) 
+# doesn't work as intended
+#    (
+#        . $WORKDIR_DEV/bin/activate
+#        for dir in $TOPDIR/src/rna-seqlyze*
+#        do
+#            (cd $dir && python setup.py develop)
+#        done
+#    )
+# doing it by hand instead
+    cd $WORKDIR_DEV/lib/python$PYVER/site-packages
+    mv easy-install.pth{,~}
+    {
+        head -n-1 easy-install.pth~
+        ls -d1 $TOPDIR/src/rna-seqlyze*
+        tail -n-1 easy-install.pth~
+    } \
+        > easy-install.pth
+    rm easy-install.pth~
 fi
 
 # trac
