@@ -279,12 +279,14 @@ END_OF_PYTHON
 fi
 
 # rna-seqlyze
-cd $TOPDIR/src/rna-seqlyze
-python setup.py install --prefix=$PREFIX
+for dir in $TOPDIR/src/rna-seqlyze*
+do
+    (cd $dir && python setup.py install --prefix $PREFIX)
+done
 
 # 3rd-party software
 cd $TOPDIR
-rnas-install --prefix=$PREFIX
+rnas-setup --prefix $PREFIX
 
 # apache/mod_wsgi environment
 mkdir -p $WWWDIR
@@ -331,10 +333,9 @@ then
     virtualenv --system-site-packages --distribute $WORKDIR_DEV
     (
         . $WORKDIR_DEV/bin/activate
-        python $TOPDIR/src/rna-seqlyze/setup.py develop
-        for setup in $TOPDIR/src/rna-seqlyze-*/setup.py
+        for dir in $TOPDIR/src/rna-seqlyze*
         do
-            python $setup develop
+            (cd $dir && python setup.py develop)
         done
     ) 
 fi

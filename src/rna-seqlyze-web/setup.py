@@ -1,4 +1,3 @@
-import os
 from setuptools import setup, find_packages
 
 import rnaseqlyze
@@ -17,12 +16,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     setup_requires=[
-        "nose >= 1.1.2",
-        "rna-seqlyze >= 0.1",
-        "distribute >= 0.6.14",
-        "setuptools_git >= 0.3",
-    ],
-    install_requires=[
+        'nose >= 1.1.2',
+        'distribute >= 0.6.14',
+        'setuptools_git >= 0.3',
         'pyramid',
         'pyramid_tm',
         'pyramid_debugtoolbar',
@@ -30,6 +26,7 @@ setup(
         'transaction',
         'PasteScript',
         'zope.sqlalchemy',
+        'rna-seqlyze == ' + rnaseqlyze.__version__,
     ],
     entry_points={
         'paste.app_factory': [

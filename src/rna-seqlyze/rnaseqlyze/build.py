@@ -171,24 +171,6 @@ class kent(Part):
             if subprocess.call("make -C src/utils/" + util, shell=True) != 0:
                 raise Exception("kent.install(): couldn't install '%s'" % util)
 
-class rna_seqlyze_cli(Part):
-    srcdir = "rna-seqlyze-cli"
-    build = "python setup.py build"
-    test = "python setup.py test"
-    install = "python setup.py develop --prefix=$PREFIX"
-
-class rna_seqlyze_web(Part):
-    srcdir = "rna-seqlyze-web"
-    build = "python setup.py build"
-    test = "python setup.py test"
-    install = "python setup.py develop --prefix=$PREFIX"
-
-class rna_seqlyze_worker(Part):
-    srcdir = "rna-seqlyze-worker"
-    build = "python setup.py build"
-    test = "python setup.py test"
-    install = "python setup.py develop --prefix=$PREFIX"
-
 class sra_sdk(Part):
     # To get this to compile, I
     # 1) created a symlink src/sra_sdk/libxml2.so

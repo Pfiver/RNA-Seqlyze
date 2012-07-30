@@ -1,13 +1,13 @@
 """
-RNA-Seqlyze Install
+RNA-Seqlyze Setup
 
-This command builds and installs all software components
-included with and required by the RNA-Seqlyze web application.
+This command builds and installs all 3rd-party software
+components included with and required by the RNA-Seqlyze application.
 
 Usage:
-    rnas-install
-    rnas-install --prefix <dir>
-    rnas-install -h|--help
+    rnas-setup
+    rnas-setup --prefix <dir>
+    rnas-setup -h|--help
 
 Note:
     The command has must run from the top level RNA-Seqlyze source directory.
@@ -20,12 +20,6 @@ Options:
                     installed under the that directory.
 
                     If not specified, defaults to ``$HOME/.local``
-
-.. important::
-                    The `PREFIX` variable in the "/etc/init.d/rnaseqlyze.sh"
-                    worker daemon startup script and the `prefix` variable
-                    in the "/var/www/../rna-seqlyze.wsgi" script must both
-                    be set to the directory specified here!
 """
 
 import os, re

@@ -33,34 +33,26 @@ setup(
     long_description=
         "RNA-seq analysis & sequence annotation enhancement web-application",
     license="Mixed",
-    test_suite='nose.collector',
     packages=find_packages(),
-    data_files=[('', [
-        'rnaseqlyze.ini',
-    ])],
-    package_data={
-        'rnaseqlyze': [
-            'refseq-data/*',
-            'ucscbrowser-data/*',
-        ],
-    },
-    entry_points={
-        'console_scripts': [
-            'rnas-install = rnaseqlyze.install:main',
-        ],
-    },
+    test_suite='nose.collector',
+    include_package_data=True,
     setup_requires=[
-        "nose >= 1.1.2",            # Unit testing
-        "distribute >= 0.6.14",     # unsure if really required, but won't harm
+        'nose >= 1.1.2',            # Unit testing
+        'distribute >= 0.6.14',     # unsure if really required, but won't harm
     ],
     install_requires=[
-        "psutil",                   # req to build -cli
-        "sphinx",                   # Apidoc
-        "pyflakes",                 # Style checker
-        "SQLAlchemy",
-        "zope.sqlalchemy",          # req to build -web
-        "docopt > 0.4.1",
-        "pyramid >= 1.3.2",         # Web framework
-        "MarkupSafe >= 0.15",       # Syntax highlighting in Trac
+        'psutil',                   # req to build -cli
+        'zope.sqlalchemy',          # req to build -web
+        'sphinx',                   # Apidoc
+        'pyflakes',                 # Style checker
+        'SQLAlchemy',
+        'docopt > 0.4.1',
+        'pyramid >= 1.3.2',         # Web framework
+        'MarkupSafe >= 0.15',       # Syntax highlighting in Trac
     ],
+    entry_points={
+        'console_scripts': [
+            'rnas-setup = rnaseqlyze.setup:main',
+        ],
+    },
 )

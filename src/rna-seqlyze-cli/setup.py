@@ -14,13 +14,14 @@ setup(
     packages=find_packages(),
     namespace_packages = ['rnaseqlyze'],
     test_suite='nose.collector',
+    include_package_data=True,
     setup_requires=[
-        "SQLAlchemy",
-        "nose >= 1.1.2",
-        "docopt > 0.4.1",
-        "pyinotify >= 0.9",
-        "rna-seqlyze >= 0.1",
-        "distribute >= 0.6.14",
+        'nose >= 1.1.2',
+        'distribute >= 0.6.14',
+        'setuptools_git >= 0.3',
+        'docopt > 0.4.1',
+        'SQLAlchemy',
+        'rna-seqlyze == ' + rnaseqlyze.__version__,
     ],
     entry_points={
         'console_scripts': [
