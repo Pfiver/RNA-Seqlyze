@@ -11,20 +11,15 @@
 
 from setuptools import setup, find_packages
 
-import rnaseqlyze
-
-def get_version():
-    cmd = "git describe --tags"
-    from subprocess import Popen, PIPE
-    git_describe = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
-    version, error = git_describe.communicate()
-    if git_describe.returncode:
-        raise Exception("couldn't determine package version: " + error)
-    return version.strip()[1:]
+import os, subprocess as sp
+git_proc = sp.Popen("git describe --tags".split(), stdout=sp.PIPE)
+git_out = git_proc.communicate()[0]
+if git_proc.returncode:
+    raise Exception()
 
 setup(
-    name=rnaseqlyze.project_name,
-    version=get_version(),
+    name=os.getcwd().split(os.sep)[-1],
+    version=git_out.strip()[1:],
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
     url="http://biocalc.fhnw.ch/",
@@ -41,8 +36,6 @@ setup(
         'distribute >= 0.6.14',     # unsure if really required, but won't harm
     ],
     install_requires=[
-        'psutil',                   # req to build -cli
-        'zope.sqlalchemy',          # req to build -web
         'sphinx',                   # Apidoc
         'pyflakes',                 # Style checker
         'SQLAlchemy',

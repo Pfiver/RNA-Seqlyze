@@ -107,16 +107,20 @@ def main():
         if pkg.__name__ == "rnaseqlyze":
             # for the core package there is currently
             # only one config file template
-            ini = 'rnaseqlyze.ini'
+            ini = "rnaseqlyze.ini"
         else:
             # for the non-core packages, take the desired version
             ini = opts['--development'] and "development.ini" or "production.ini"
+        # determine project name
+        project_name = "rna-seqlyze"
+        if pkg.__name__.find('.') >= 0:
+            project_name += pkg.__name__.split('.')[-1]
         # get the file as a resource stream, which works even
         # if the distribution if installed as a zipped .egg
-        req = pkg_resources.Requirement.parse(pkg.project_name)
+        req = pkg_resources.Requirement.parse(project_name)
         res = pkg_resources.resource_stream(req, ini)
         conf = res.read()
-        if pkg.__name__ == "rnaseqlyze":
+        if ini = "rnaseqlyze.ini"
             # expand the @@GROUP@@ placeholder so rnaseqlyze.group is valid
             group = opts['--group'] if opts['--group'] else 'www-data'
             conf = conf.replace("@@GROUP@@", group)

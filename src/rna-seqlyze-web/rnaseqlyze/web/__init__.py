@@ -25,7 +25,6 @@ from zope.sqlalchemy import ZopeTransactionExtension
 
 import rnaseqlyze
 from rnaseqlyze.web.jsonx import jsonx
-project_name = rnaseqlyze.project_name + "-web"
 
 #: a session managed by
 #: ZopeTransactionExtension

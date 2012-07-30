@@ -158,8 +158,8 @@ def upload(fileobj, filename):
         # rnaseqlyze not .configure()d
         mail = os.getenv("USER") + "@" + os.uname()[1]
     rq_headers = {
-        'User-Agent': "%s (version:%s / admin:%s)" % (
-            rnaseqlyze.project_name, rnaseqlyze.__version__, mail),
+        'User-Agent': "RNA-Seqlyze (rv:%s; admin:%s)" % (
+                                    rnaseqlyze.__version__, mail),
     #    'User-Agent': "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:13.0)" \
     #                  " Gecko/20100101 Firefox/13.0.1",
     }

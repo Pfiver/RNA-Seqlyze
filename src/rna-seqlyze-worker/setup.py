@@ -1,11 +1,15 @@
 from setuptools import setup, find_packages
 
-import rnaseqlyze
-import rnaseqlyze.worker
+import os, subprocess as sp
+git_proc = sp.Popen("git describe --tags".split(), stdout=sp.PIPE)
+git_out = git_proc.communicate()[0]
+if git_proc.returncode:
+    raise Exception()
+version = git_out.strip()[1:]
 
 setup(
-    name=rnaseqlyze.worker.project_name,
-    version=rnaseqlyze.__version__,
+    name=os.getcwd().split(os.sep)[-1],
+    version=version,
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
     description="RNA-seq analysis | worker daemon",
@@ -18,6 +22,8 @@ setup(
         'nose >= 1.1.2',
         'distribute >= 0.6.14',
         'setuptools_git >= 0.3',
+    ],
+    install_requires=[
         'docopt > 0.4.1',
         'psutil',
         'pyramid',
@@ -25,7 +31,7 @@ setup(
         'waitress',
         'SQLAlchemy',
         'transaction',
-        'rna-seqlyze == ' + rnaseqlyze.__version__,
+        'rna-seqlyze == ' + version,
     ],
     entry_points={
         'console_scripts': [

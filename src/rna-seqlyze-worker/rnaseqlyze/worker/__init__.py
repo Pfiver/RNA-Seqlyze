@@ -60,8 +60,6 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from zope.sqlalchemy import ZopeTransactionExtension
 
 import rnaseqlyze
-project_name = rnaseqlyze.project_name + "-worker"
-
 from rnaseqlyze.core.entities import Analysis
 from rnaseqlyze.worker.core import (
         Manager,
