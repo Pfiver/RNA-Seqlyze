@@ -220,13 +220,13 @@ su -v -c "apt-get install ${deps[*]}"
 # boost 1.49 (su)
 if [ -z "$boost" ]
 then
-    tmpdir=$(mktemp -d)
-    base=http://ftp.ch.debian.org/debian/pool/main/b/boost1.49
-    curl -JLOOO $base/boost1.49_1.49.0{.orig.tar.bz2,-3.1.{dsc,debian.tar.gz}}
     echo "root permissions required to install 'boost' 1.49 build dependencies"
     su -v -c "apt-get install libicu-dev mpi-default-dev bison flex \
                               docbook-to-man help2man xsltproc doxygen"
+    tmpdir=$(mktemp -d)
     cd $tmpdir
+    base=http://ftp.ch.debian.org/debian/pool/main/b/boost1.49
+    curl -JLOOO $base/boost1.49_1.49.0{.orig.tar.bz2,-3.1.{dsc,debian.tar.gz}}
     dpkg-source -x boost1.49*.dsc
     cd boost1.49*
     dpkg-buildpackage -b
