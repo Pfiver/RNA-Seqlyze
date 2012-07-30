@@ -31,6 +31,9 @@ setup(
     packages=find_packages(),
     test_suite='nose.collector',
     include_package_data=True,
+    data_files=[('', [
+        'rnaseqlyze.ini',
+    ])],
     setup_requires=[
         'nose >= 1.1.2',            # Unit testing
         'distribute >= 0.6.14',     # Packaging (setuptools)

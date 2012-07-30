@@ -18,6 +18,10 @@ setup(
     namespace_packages = ['rnaseqlyze'],
     test_suite='nose.collector',
     include_package_data=True,
+    data_files=[('', [
+        'development.ini',
+        'production.ini',
+    ])],
     setup_requires=[
         'nose >= 1.1.2',
         'distribute >= 0.6.14',
