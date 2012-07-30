@@ -69,6 +69,19 @@ from rnaseqlyze.worker.core import (
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
+def _init():
+    from os.path import join
+    from ConfigParser import ConfigParser
+
+    config = ConfigParser(dict(here=rnaseqlyze.workdir))
+    config.read(join(rnaseqlyze.workdir, 'worker.ini'))
+
+    global port
+    port = config.getint("server:main", "port")
+
+_init()
+del _init
+
 def main(global_config, **settings):
     """
     Return a Pyramid(!) WSGI application.

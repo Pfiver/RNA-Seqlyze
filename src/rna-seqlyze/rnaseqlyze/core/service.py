@@ -5,8 +5,10 @@ import os
 import urllib2
 
 import rnaseqlyze
+import rnaseqlyze.worker
 from rnaseqlyze.core import security
 from rnaseqlyze.core.entities import Analysis, User, RNASeqRun, UploadSession
+
 def get_upload_session(db_session):
     sess = UploadSession()
     db_session.add(sess)
@@ -130,8 +132,9 @@ def get_analysis(db_session, attributes):
     return analysis
 
 def start_analysis(analysis):
-    url = "http://127.0.0.1:6543/analyses/%d"
-    rq = RNASWorkerSTARTRequest(url % analysis.id)
+    rq = RNASWorkerSTARTRequest(
+            "http://127.0.0.1:%d/analyses/%d" % (
+                rnaseqlyze.worker.port, analysis.id))
     opener = urllib2.build_opener(HTTRNASWorkerHandler())
     rsp = opener.open(rq)
     body = rsp.read()
