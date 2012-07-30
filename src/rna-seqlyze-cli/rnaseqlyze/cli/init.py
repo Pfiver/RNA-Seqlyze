@@ -114,7 +114,7 @@ def main():
         # determine project name
         project_name = "rna-seqlyze"
         if pkg.__name__.find('.') >= 0:
-            project_name += pkg.__name__.split('.')[-1]
+            project_name += "-" + pkg.__name__.split('.')[-1]
         # get the file as a resource stream, which works even
         # if the distribution if installed as a zipped .egg
         req = pkg_resources.Requirement.parse(project_name)
