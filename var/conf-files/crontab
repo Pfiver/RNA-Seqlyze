@@ -1,4 +1,4 @@
 SHELL=/bin/bash
 
 # m  h   dom mon dow command
- 12  *   *   *   *   . @@WORKDIR_DEV@@/bash-env; cron-hourly
+ 12  *   *   *   *   . @@WORKDIR_DEV@@/bash-env && cron-hourly

@@ -54,7 +54,7 @@ cron-hourly ()
     _cron ()
     (
         ly=$1
-        exec >> $rnas_workdir/cron-$ly.log
+        exec >> $rnas_workdir_dev/cron-$ly.log
         (
             set -e
             date
@@ -65,7 +65,7 @@ cron-hourly ()
         if [ $ret != 0 ]
         then
             echo cron-$ly: something went wrong - \
-                check the log file at $rnas_workdir/cron-$ly.log
+                check the log file at $rnas_workdir_dev/cron-$ly.log
         fi 1>&2
         echo
         date
@@ -189,14 +189,14 @@ auto-sigint ()
 logtail-developall ()
 {
     logfiles=(/var/log/apache2/{access,error}.log \
-                $rnas_workdir/rna-seqlyze-{web,worker}.log)
+                $rnas_workdir_dev/rna-seqlyze-{web,worker}.log)
     touch ${logfiles[@]}
     chmod 664 ${logfiles[@]}
     chgrp www-data ${logfiles[@]}
     auto-sigint &
     while true
     do
-        rnas-worker $rnas_workdir --development
+        rnas-worker $rnas_workdir_dev --development
         sleep 10
     done &
     tail -f ${logfiles[@]}
