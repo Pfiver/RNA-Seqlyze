@@ -322,7 +322,8 @@ rnas-init --group=$GROUP $WORKDIR
 $confsub rnaseqlyze.ini > $WORKDIR/rnaseqlyze.ini
 if $devinst
 then
-    rnas-init --group=$GROUP $WORKDIR_DEV
+    rnas-init --group=$GROUP \
+        --development $WORKDIR_DEV
     ln -s $WORKDIR/shared_data $WORKDIR_DEV
     $confsub rnaseqlyze.ini > $WORKDIR_DEV/rnaseqlyze.ini
 

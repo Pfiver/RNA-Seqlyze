@@ -35,7 +35,7 @@ export PYTHONUSERBASE=$PREFIX
 case "$1" in
     start|stop)
         log_daemon_msg "${1^} RNA-Seqlyze worker daemon" rna-seqlyze-worker
-        /sbin/start-stop-daemon \
+        /sbin/start-stop-daemon > /dev/null \
                     --chuid $WORKER_USER:$GROUP \
                     --pidfile $WORKDIR/worker-daemon.pid \
                     --startas $PREFIX/bin/rnas-worker --$1 -- $WORKDIR $1
