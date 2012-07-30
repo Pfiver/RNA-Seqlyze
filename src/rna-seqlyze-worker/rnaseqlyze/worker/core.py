@@ -19,7 +19,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 import rnaseqlyze
-from rnaseqlyze import efetch
 from rnaseqlyze.core.entities import Analysis, StageLog
 from rnaseqlyze.worker.stages import WorkerStages
 
