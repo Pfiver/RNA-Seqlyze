@@ -182,17 +182,17 @@ mkdir -p $PYTHONPATH
 
 # @@PYTHON_PATH@@ confsub
 #  required in rna-seqlyze-a2conf*
-echo "s|@@PYTHON_PATH@@|${PYTHONPATH//|/\\|}|" >> $confsub
+echo "s|@@PYTHON_PATH@@|${PYTHONPATH//|/\\|}|g" >> $confsub
 
 # @@WWWBASE_@@ confsub
 #  WWWBASE with trailing slash if not empty, used in trac.ini
-echo "s|@@WWWBASE_@@|${WWWBASE:+${WWWBASE//|/\\|}/}" >> $confsub
+echo "s|@@WWWBASE_@@|${WWWBASE:+${WWWBASE//|/\\|}/}|g" >> $confsub
 
 # devinst PYTHON_PATH
 if $devinst
 then
     PYTHONPATH_DEV=$WORKDIR_DEV/$PYSITE:$PYTHONPATH
-    echo "s|@@PYTHON_PATH_DEV@@|${PYTHONPATH_DEV//|/\\|}|" >> $confsub
+    echo "s|@@PYTHON_PATH_DEV@@|${PYTHONPATH_DEV//|/\\|}|g" >> $confsub
 fi
 
 # su/sudo helper
