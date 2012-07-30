@@ -33,16 +33,12 @@ export PYTHONUSERBASE=$PREFIX
 . /lib/lsb/init-functions
 
 case "$1" in
-    start)
-        log_daemon_msg "Start RNA-Seqlyze worker daemon" rna-seqlyze-worker
-	rnas-worker $WORKDIR $1
-        /sbin/start-stop-daemon --$1 --pidfile $WORKDIR/worker-daemon.pid --chuid $WORKER_USER:$GROUP rnas-worker $WORKDIR
-        log_end_msg $?
-    ;;
-    stop)
-        log_daemon_msg "Stop RNA-Seqlyze worker daemon" rna-seqlyze-worker
-	rnas-worker $WORKDIR stop
-        /sbin/start-stop-daemon --$1 --pidfile $WORKDIR/ --chuid $WORKER_USER:$GROUP rnas-worker $WORKDIR
+    start|stop)
+        log_daemon_msg "${^1} RNA-Seqlyze worker daemon" rna-seqlyze-worker
+        /sbin/start-stop-daemon \
+                    --chuid $WORKER_USER:$GROUP \
+                    --pidfile $WORKDIR/worker-daemon.pid \
+                    --startas $PREFIX/bin/rnas-worker --$1 -- $WORKDIR $1
         log_end_msg $?
     ;;
     *)
