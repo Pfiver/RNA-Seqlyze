@@ -45,12 +45,6 @@ def main(global_config, **settings):
     """
     log.debug("rnaseqlyze.web version %s : main()" % rnaseqlyze.__version__)
 
-    # make sure to be able to delete files created by webapp
-    # as user/group www-data/www-data from the command line
-    # (as user/group johndoe/www-data)
-    import os
-    os.umask(0002)
-
     engine = create_engine(rnaseqlyze.db_url)
     DBSession.configure(bind=engine)
     DBSession_unmanaged.configure(bind=engine)
