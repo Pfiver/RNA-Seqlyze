@@ -229,7 +229,7 @@ then
     curl -JLOOO $base/boost1.49_1.49.0{.orig.tar.bz2,-3.1.{dsc,debian.tar.gz}}
     dpkg-source -x boost1.49*.dsc
     cd boost1.49*
-    dpkg-buildpackage -b
+    dpkg-buildpackage -j $(getconf _NPROCESSORS_ONLN) -b
     cd ..
     echo "root permissions required to install locally built 'boost' 1.49"
     su -v -c "dpkg -i *.deb"
@@ -242,7 +242,7 @@ gid=$(getent group $GROUP | cut -d : -f 3)
 for user in $USER $WORKER_USER
 do
     found=false
-    for id in $(id -G)
+    for id in $(id -G $user)
     do
         if [ $id = $gid ]
         then
