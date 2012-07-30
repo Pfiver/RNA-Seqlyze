@@ -10,7 +10,7 @@ version = git_out.strip()[1:]
 
 setup(
     name=os.getcwd().split(os.sep)[-1],
-    version=vesion,
+    version=version,
     author="Patrick Pfeifer",
     author_email="patrick@patrickpfeifer.net",
     description="RNA-seq analysis | command-line interface",
