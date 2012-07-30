@@ -155,7 +155,7 @@ WWWBASE=${WWWBASE#/}
 # confsub script
 confsub=$(mktemp)
 chmod 755 $confsub
-echo '#!/usr/bin/sed -f' > $confsub
+echo '#!/bin/sed -f' > $confsub
 for doc in ${!doc_*}
 do
     var=${doc#doc_?}
@@ -325,7 +325,7 @@ then
     $confsub rnaseqlyze.ini > $WORKDIR_DEV/rnaseqlyze.ini
 
     cd $TOPDIR/var/conf-files
-    confsub bash-env > $WORKDIR_DEV/bash-env
+    $confsub bash-env > $WORKDIR_DEV/bash-env
 
     # devinst virtualenv
     virtualenv --system-site-packages --distribute $WORKDIR_DEV
