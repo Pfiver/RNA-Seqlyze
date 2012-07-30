@@ -11,7 +11,7 @@
 ### END INIT INFO
 
 # Usage:
-#	- configure the two directories below
+#	- configure the four variables below
 #       - copy this file to /etc/init.d/rna-seqlyze.sh
 #	- enable it with `insserv /etc/init.d/rna-seqlyze.sh`
 
@@ -19,6 +19,9 @@
 
 PREFIX=@@PREFIX@@	# the <prefix> passed to `rnas-install`
 WORKDIR=@@WORKDIR@@	# the <workdir> passed to `rnas-init`
+
+WORKER_USER=@@WORKER_USER@@
+GROUP=@@GROUP@@
 
 ###
 
@@ -30,13 +33,20 @@ export PYTHONUSERBASE=$PREFIX
 . /lib/lsb/init-functions
 
 case "$1" in
-    start|stop|restart)
-        log_daemon_msg "${1^} RNA-Seqlyze worker daemon" rna-seqlyze-worker
+    start)
+        log_daemon_msg "Start RNA-Seqlyze worker daemon" rna-seqlyze-worker
 	rnas-worker $WORKDIR $1
+        /sbin/start-stop-daemon --$1 --pidfile $WORKDIR/worker-daemon.pid --chuid $WORKER_USER:$GROUP rnas-worker $WORKDIR
+        log_end_msg $?
+    ;;
+    stop)
+        log_daemon_msg "Stop RNA-Seqlyze worker daemon" rna-seqlyze-worker
+	rnas-worker $WORKDIR stop
+        /sbin/start-stop-daemon --$1 --pidfile $WORKDIR/ --chuid $WORKER_USER:$GROUP rnas-worker $WORKDIR
         log_end_msg $?
     ;;
     *)
-        echo "Usage: /etc/init.d/rna-seqlyze.sh {start|stop|restart}"
+        echo "Usage: /etc/init.d/rna-seqlyze.sh {start|stop}"
         exit 1
     ;;
 esac

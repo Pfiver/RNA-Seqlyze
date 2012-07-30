@@ -151,7 +151,9 @@ su() {
 
 # remember the current directory
 CURDIR=$PWD
-PATH=$PATH:$PREFIX/bin
+
+# use binaries in $PREFIX/bin
+PATH=$PREFIX/bin:$PATH
 
 # dependencies (su)
 boost=libboost1.49-all-dev
@@ -159,24 +161,27 @@ boost=libboost1.49-all-dev
 deps=(
     ntp ssh vim
     curl bzip2 sqlite3 deborphan python-lxml libapache2-mod-wsgi
-    devscripts gcc-4.3-base
+    devscripts gcc-4.3-base gccxml
     cmake libbz2-dev libpng12-dev python-all-dev python3-all-dev $boost
 )
+echo root permissions required to install dependenceies:
 su -v -c "apt-get install ${deps[*]}"
 
 # boost 1.49 (su)
 if [ -z "$boost" ]
 then
     tmpdir=$(mktemp -d)
-    base_url=http://ftp.ch.debian.org/debian/pool/main/b/boost1.49
-    curl -JLOOO $base_url/boost1.49_1.49.0{.orig.tar.bz2,-3.1.{dsc,debian.tar.gz}}
-    su -c "apt-get install libicu-dev mpi-default-dev bison flex \
-                           docbook-to-man help2man xsltproc doxygen gccxml"
+    base=http://ftp.ch.debian.org/debian/pool/main/b/boost1.49
+    curl -JLOOO $base/boost1.49_1.49.0{.orig.tar.bz2,-3.1.{dsc,debian.tar.gz}}
+    echo "root permissions required to install 'boost' 1.49 build dependencies"
+    su -v -c "apt-get install libicu-dev mpi-default-dev bison flex \
+                              docbook-to-man help2man xsltproc doxygen"
     cd $tmpdir
     dpkg-source -x boost1.49*.dsc
     cd boost1.49*
     dpkg-buildpackage -b
     cd ..
+    echo "root permissions required to install locally built 'boost' 1.49"
     su -v -c "dpkg -i *.deb"
     cd
     rm -rf $tmpdir
@@ -195,7 +200,11 @@ do
             break
         fi
     done
-    $found || su -v -c "usermod -a -G $GROUP $user"
+    if $found
+    then
+        echo "root permissions required to add '$user' to '$GROUP' group"
+        su -v -c "usermod -a -G $GROUP $user"
+    fi
 done
 
 # distribute
@@ -213,7 +222,7 @@ END_OF_PYTHON
 fi
 
 # docopt
-if ! easy_install --prefix $PREFIX "docopt>0.4.1"
+if ! easy_install --prefix $PREFIX "docopt > 0.4.1"
 then
     tmpdir=$(mktemp -d)
     git clone https://github.com/docopt/docopt.git $tmpdir
@@ -243,6 +252,19 @@ else
     subcat htaccess-dev >> $WWWDIR/.htaccess
     sed "s|@@WORKDIR@@|${WORKDIR_DEV//|/\\|}|;" \
         rna-seqlyze.wsgi > $WWWDIR/rna-seqlyze-dev.wsgi
+fi
+
+# git-ls-authors dependencies
+#  (need GitPython version including commit 864cf1a4
+#   https://github.com/gitpython-developers/GitPython/commit/864cf1a4)
+if [ -z "$WORKDIR_DEV" ]
+then
+    tmpdir=$(mktemp -d)
+    git clone https://github.com/gitpython-developers/GitPython.git $tmpdir
+    cd $tmpdir
+    python setup.py install --prefix $PREFIX
+    cd
+    rm -rf $tmpdir
 fi
 
 # utils
@@ -358,16 +380,16 @@ cd $CURDIR
 a2conf=rna-seqlyze-a2conf${WORKDIR_DEV:+-dev}
 subcat $TOPDIR/var/conf-files/$a2conf > rna-seqlyze-a2conf
 apache_conf='
-chown root. rna-seqlyze-a2conf
 mv rna-seqlyze-a2conf /etc/apache2/conf.d/rna-seqlyze
+chown root. /etc/apache2/conf.d/rna-seqlyze
 a2enmod proxy rewrite wsgi
 service apache2 restart
 '
-subcat $TOPDIR/src/rna-seqlyze-worker/rna-seqlyze-service > rna-seqlyze-service
+subcat $TOPDIR/var/conf-files/rna-seqlyze-service > rna-seqlyze-service
 service_conf='
-chown root. rna-seqlyze-service
-chmod 755 rna-seqlyze-service
 mv rna-seqlyze-service /etc/init.d/rna-seqlyze
+chown root. /etc/init.d/rna-seqlyze
+chmod 755 /etc/init.d/rna-seqlyze
 insserv rna-seqlyze
 service rna-seqlyze start
 '
