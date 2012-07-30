@@ -33,7 +33,8 @@ setup(
     include_package_data=True,
     setup_requires=[
         'nose >= 1.1.2',            # Unit testing
-        'distribute >= 0.6.14',     # unsure if really required, but won't harm
+        'distribute >= 0.6.14',     # Packaging (setuptools)
+        'setuptools_git >= 0.3',    # Packaging (include_package_data)
     ],
     install_requires=[
         'sphinx',                   # Apidoc
