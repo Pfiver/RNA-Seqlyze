@@ -260,12 +260,22 @@ then
     #  - git-ls-authors dependency
     #  - need a version that includes commit 864cf1a4
     #    (https://github.com/gitpython-developers/GitPython/commit/864cf1a4)
-    tmpdir=$(mktemp -d)
-    git clone https://github.com/gitpython-developers/GitPython.git $tmpdir
-    cd $tmpdir
-    python setup.py install --prefix $PREFIX
-    cd
-    rm -rf $tmpdir
+    if ! python << 'END_OF_PYTHON'
+import sys, pkg_resources
+try: pkg_resources.require('GitPython > 0.3.1')
+except: sys.exit(1)
+END_OF_PYTHON
+    then
+        tmpdir=$(mktemp -d)
+        git clone https://github.com/gitpython-developers/GitPython.git $tmpdir
+        cd $tmpdir
+        git checkout 864cf1a4
+        echo 0.3.1.post1 > VERSION
+        rm -rf git/test/fixtures
+        python setup.py install --prefix $PREFIX
+        cd
+        rm -rf $tmpdir
+    fi
 fi
 
 # rna-seqlyze
