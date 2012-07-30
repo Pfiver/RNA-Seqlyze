@@ -99,13 +99,15 @@ then
     if [ -n "$WORKDIR_DEV" ]
     then
         cat << 'END_OF_QUESTION'
+
   Do you want to install a development instance
   in parallel with the production instance ?
   If you answer yes, a 'trac' and a 'buildbot' instance will
   be configured and installed under $WORKDIR_DEV as well.
+
 END_OF_QUESTION
         read -p "Yes/No [Yes] ? " dev
-        if ! [[ -z "$dev" -o "$dev" = [Yy]* ]]
+        if ! [[ -z "$dev" || "$dev" = [Yy]* ]]
         then
             unset WORKDIR_DEV TRAC_DB BIBODIR
             for doc in ${!doc_*}
@@ -121,9 +123,11 @@ END_OF_QUESTION
     fi
 
     # ask for config values
-    echo "You need to specify some configuration values."
-    echo
-    echo "To use the defaults, shown [in brackets], just hit return."
+    cat << 'END_OF_MESSAGE'
+
+  You need to specify some configuration values.
+  To use the defaults, shown [in brackets], just hit return.
+END_OF_MESSAGE
     for doc in ${!doc_*}
     do
         var=${doc#doc_?}
@@ -214,7 +218,7 @@ do
             break
         fi
     done
-    if $found
+    if ! $found
     then
         echo "root permissions required to add '$user' to '$GROUP' group"
         su -v -c "usermod -a -G $GROUP $user"
