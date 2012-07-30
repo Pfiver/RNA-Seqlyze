@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+# variable defaults
+#  if ADMIN_EMAIL is set as well the script will not ask for any values
+#  if WORKDIR_DEV is not set, no development instance will be installed
 ADMIN_EMAIL=
 
 TOPDIR=$PWD
@@ -15,8 +18,8 @@ WORKER_USER=www-data
 BIBODIR=$WORKDIR_DEV/buildbot
 TRAC_DB=sqlite:///$WORKDIR_DEV/trac.db
 
-# config variables documentation,
-# copied from the 'Deployment' wiki page
+# variables documentation
+#  copied from 'Deployment' wiki page
 doc_aADMIN_EMAIL='
    The email address of the application administrator;
    for example `admin@rna-seqlyze.com`.
@@ -73,6 +76,12 @@ doc_lBIBODIR='
    for example `/home/user/buildbot`.
 '
 
+# remember the current directory
+CURDIR=$PWD
+
+# use binaries in $PREFIX/bin
+PATH=$PREFIX/bin:$PATH
+
 # os check
 Debian= Ubuntu=
 eval $(lsb_release -is)=true
@@ -82,30 +91,36 @@ then
     exit 1
 fi
 
-# dev check
-if [ -n "$WORKDIR_DEV" ]
-then
-    echo "Do you want to install a development instance"
-    read -p "in parallel with the production instance ? [Yes] " dev
-    if ! [[ -z "$dev" -o "$dev" = [Yy]* ]]
-    then
-        unset WORKDIR_DEV TRAC_DB BIBODIR
-        for doc in ${!doc_*}
-        do
-            var=${doc#doc_?}
-            case $var in WORKDIR_DEV|TRAC_DB|BIBODIR)
-                unset $doc
-                break
-                ;;
-            esac
-        done
-    fi
-fi
-
 # if not manually configured at the top of the script,
 # print the documentation for and ask for the value of each variable
 if [ -z "$ADMIN_EMAIL" ]
 then
+    # dev check
+    if [ -n "$WORKDIR_DEV" ]
+    then
+        cat << 'END_OF_QUESTION'
+  Do you want to install a development instance
+  in parallel with the production instance ?
+  If you answer yes, a 'trac' and a 'buildbot' instance will
+  be configured and installed under $WORKDIR_DEV as well.
+END_OF_QUESTION
+        read -p "Yes/No [Yes] ? " dev
+        if ! [[ -z "$dev" -o "$dev" = [Yy]* ]]
+        then
+            unset WORKDIR_DEV TRAC_DB BIBODIR
+            for doc in ${!doc_*}
+            do
+                var=${doc#doc_?}
+                case $var in WORKDIR_DEV|TRAC_DB|BIBODIR)
+                    unset $doc
+                    break
+                    ;;
+                esac
+            done
+        fi
+    fi
+
+    # ask for config values
     echo "You need to specify some configuration values."
     echo
     echo "To use the defaults, shown [in brackets], just hit return."
@@ -125,21 +140,26 @@ then
     echo
 fi
 
+# install dev env ?
+devinst=${WORKDIR_DEV:+true}
+: ${devinst:=false}
+
 # WWWBASE: strip slashes
 WWWBASE=${WWWBASE%/}
 WWWBASE=${WWWBASE#/}
 
-# helper functions
-confsub=$(
-    for doc in ${!doc_*}
-    do
-        var=${doc#doc_?}
-        echo -n "s|@@$var@@|${!var//|/\\|}|g;"
-    done
-)
-subcat() {
-    sed "$confsub" "$1"
-}
+# confsub script
+confsub=$(mktemp)
+chmod 755 $confsub
+echo '#!/usr/bin/sed -f' > $confsub
+for doc in ${!doc_*}
+do
+    var=${doc#doc_?}
+    echo "s|@@$var@@|${!var//|/\\|}|g"
+done \
+    >> $confsub
+
+# su/sudo helper
 su() {
     if [ "$1" = -v ]
     then
@@ -148,12 +168,6 @@ su() {
     fi
     ${Debian:+command su}${Ubuntu:+sudo sh} -c "$2"
 }
-
-# remember the current directory
-CURDIR=$PWD
-
-# use binaries in $PREFIX/bin
-PATH=$PREFIX/bin:$PATH
 
 # dependencies (su)
 boost=libboost1.49-all-dev
@@ -233,6 +247,23 @@ then
     rm -rf $tmpdir
 fi
 
+if $devinst
+then
+    # virtualenv
+    easy_install --prefix $PREFIX virtualenv
+
+    # GitPython
+    #  - git-ls-authors dependency
+    #  - need a version that includes commit 864cf1a4
+    #    (https://github.com/gitpython-developers/GitPython/commit/864cf1a4)
+    tmpdir=$(mktemp -d)
+    git clone https://github.com/gitpython-developers/GitPython.git $tmpdir
+    cd $tmpdir
+    python setup.py install --prefix $PREFIX
+    cd
+    rm -rf $tmpdir
+fi
+
 # rna-seqlyze
 cd $TOPDIR/src/rna-seqlyze
 python setup.py install --prefix=$PREFIX
@@ -244,60 +275,64 @@ rnas-install --prefix=$PREFIX
 # apache/mod_wsgi environment
 mkdir -p $WWWDIR
 cd $TOPDIR/var/conf-files
-subcat rna-seqlyze.wsgi > $WWWDIR/rna-seqlyze.wsgi
-if [ -z "$WORKDIR_DEV" ]
+$confsub rna-seqlyze.wsgi > $WWWDIR/rna-seqlyze.wsgi
+if ! $devinst
 then
-    subcat htaccess > $WWWDIR/.htaccess
+    $confsub htaccess > $WWWDIR/.htaccess
 else
-    subcat htaccess-dev >> $WWWDIR/.htaccess
+    $confsub htaccess-dev >> $WWWDIR/.htaccess
     sed "s|@@WORKDIR@@|${WORKDIR_DEV//|/\\|}|;" \
         rna-seqlyze.wsgi > $WWWDIR/rna-seqlyze-dev.wsgi
-fi
-
-# git-ls-authors dependencies
-#  (need GitPython version including commit 864cf1a4
-#   https://github.com/gitpython-developers/GitPython/commit/864cf1a4)
-if [ -z "$WORKDIR_DEV" ]
-then
-    tmpdir=$(mktemp -d)
-    git clone https://github.com/gitpython-developers/GitPython.git $tmpdir
-    cd $tmpdir
-    python setup.py install --prefix $PREFIX
-    cd
-    rm -rf $tmpdir
 fi
 
 # utils
 cd $TOPDIR/var/utils
 for util in *
 do
-    subcat $util > $PREFIX/bin/$util
+    $confsub $util > $PREFIX/bin/$util
     chmod 755 $PREFIX/bin/$util
 done
 
 # crontab
-cd $TOPDIR/var/conf-files
-subcat crontab${WORKDIR_DEV:+-dev} | crontab
+if $devinst
+then
+    cd $TOPDIR/var/conf-files
+    $confsub crontab | crontab
+fi
 
 # workdirs
 cd $TOPDIR/src/rna-seqlyze
 rnas-init --group=$GROUP $WORKDIR
-subcat rnaseqlyze.ini > $WORKDIR/rnaseqlyze.ini
-if [ -n "$WORKDIR_DEV" ]
+$confsub rnaseqlyze.ini > $WORKDIR/rnaseqlyze.ini
+if $devinst
 then
     rnas-init --group=$GROUP $WORKDIR_DEV
     ln -s $WORKDIR/shared_data $WORKDIR_DEV
-    subcat rnaseqlyze.ini > $WORKDIR_DEV/rnaseqlyze.ini
+    $confsub rnaseqlyze.ini > $WORKDIR_DEV/rnaseqlyze.ini
+
+    cd $TOPDIR/var/conf-files
+    confsub bash-env > $WORKDIR_DEV/bash-env
+
+    # devinst virtualenv
+    virtualenv --system-site-packages --distribute $WORKDIR_DEV
+    (
+        . $WORKDIR_DEV/bin/activate
+        python $TOPDIR/src/rna-seqlyze/setup.py develop
+        for setup in $TOPDIR/src/rna-seqlyze-*/setup.py
+        do
+            python $setup develop
+        done
+    ) 
 fi
 
 # trac
-if [ -n "$TRAC_DB" ]
+if $devinst
 then
     # apache/mod_wsgi script
     cd $TOPDIR/var/conf-files
     for wsgi in {trac,debug}.wsgi
     do
-        subcat $wsgi > $WWWDIR/$wsgi
+        $confsub $wsgi > $WWWDIR/$wsgi
     done
     ln -s trac.wsgi $WWWDIR/traclogin.wsgi
 
@@ -310,9 +345,9 @@ then
 
     # create trac.ini
     cd $TOPDIR/var/trac-env
-    mkdir -p $WORKDIR-dev
-    ti=$WORKDIR-dev/trac.ini
-    subcat conf/trac.ini.tpl > $ti
+    mkdir -p $WORKDIR_DEV
+    ti=$WORKDIR_DEV/trac.ini
+    $confsub conf/trac.ini.tpl > $ti
     ln -s $ti conf/trac.ini
     chmod 664 $ti
     chgrp $GROUP $ti
@@ -345,7 +380,7 @@ then
     fi
 
     # adjust log file permissions
-    logfile=$WORKDIR-dev/trac.log
+    logfile=$WORKDIR_DEV/trac.log
     touch $logfile
     chmod 664 $logfile
     chgrp $GROUP $logfile
@@ -359,9 +394,8 @@ fi
 # buildbot
 #  http://pypi.python.org/pypi/virtualenv
 #  http://buildbot.net/buildbot/docs/current/manual/installation.html
-if [ -n "$BIBODIR" ]
+if $devinst
 then
-    easy_install --user virtualenv
     virtualenv --system-site-packages --distribute $BIBODIR
     (
         cd $BIBODIR
@@ -372,20 +406,20 @@ then
         buildslave create-slave buildslave localhost:9989 $HOSTNAME pass
     )
     cd $TOPDIR/var/conf-files
-    subcat buildbot-master.cfg > $BIBODIR/buildmaster/master.cfg
+    $confsub buildbot-master.cfg > $BIBODIR/buildmaster/master.cfg
 fi
 
 # apache and -worker daemon (su)
 cd $CURDIR
 a2conf=rna-seqlyze-a2conf${WORKDIR_DEV:+-dev}
-subcat $TOPDIR/var/conf-files/$a2conf > rna-seqlyze-a2conf
+$confsub $TOPDIR/var/conf-files/$a2conf > rna-seqlyze-a2conf
 apache_conf='
 mv rna-seqlyze-a2conf /etc/apache2/conf.d/rna-seqlyze
 chown root. /etc/apache2/conf.d/rna-seqlyze
 a2enmod proxy rewrite wsgi
 service apache2 restart
 '
-subcat $TOPDIR/var/conf-files/rna-seqlyze-service > rna-seqlyze-service
+$confsub $TOPDIR/var/conf-files/rna-seqlyze-service > rna-seqlyze-service
 service_conf='
 mv rna-seqlyze-service /etc/init.d/rna-seqlyze
 chown root. /etc/init.d/rna-seqlyze
@@ -426,6 +460,14 @@ then
     echo "$apache_conf$service_conf" > finish-installation
     echo "An error happend trying to issue the mentioned commands."
     echo "They have been written to a file called 'finish-installation'."
+fi
+
+# save confsub script
+if $devinst
+then
+    mv $confsub $WORKDIR_DEV/confsub
+else
+    rm $confsub
 fi
 
 # done
