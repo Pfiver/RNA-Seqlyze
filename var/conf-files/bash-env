@@ -165,6 +165,11 @@ re-cover ()
 # developper util commands
 ##########################
 
+rnas ()
+{
+    cd $rnas_topdir
+}
+
 sigint ()
 {
     curl localhost/${rnas_wwwbase:+${rnas_wwwbase}/}debug?sig_int
