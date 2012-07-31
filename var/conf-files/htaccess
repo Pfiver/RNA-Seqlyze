@@ -1,6 +1,6 @@
 # turn on mod_rewrite features
 RewriteEngine on
-RewriteBase /
+RewriteBase /@@WWWBASE@@
 
 # set the default url for the directory
 RewriteRule ^$ trac [R,L]

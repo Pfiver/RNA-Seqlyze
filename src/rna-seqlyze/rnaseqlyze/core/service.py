@@ -134,7 +134,7 @@ def get_analysis(db_session, attributes):
 def start_analysis(analysis):
     rq = RNASWorkerSTARTRequest(
             "http://127.0.0.1:%d/analyses/%d" % (
-                rnaseqlyze.worker.port, analysis.id))
+                rnaseqlyze.worker_port, analysis.id))
     opener = urllib2.build_opener(HTTRNASWorkerHandler())
     rsp = opener.open(rq)
     body = rsp.read()

@@ -1,10 +1,10 @@
 WSGIScriptAlias /@@WWWBASE@@ @@WWWDIR@@
 
 WSGIDaemonProcess rnaseqlyze \
-    python-path=@@PREFIX@@ umask=0002 threads=2 maximum-requests=500
+    python-path=@@PYTHON_PATH@@ umask=0002 threads=2 maximum-requests=500
 
 WSGIDaemonProcess rnaseqlyze-dev home=@@WORKDIR_DEV@@ \
-    python-path=@@PREFIX@@ umask=0002 threads=2 maximum-requests=500
+    python-path=@@PYTHON_PATH@@ umask=0002 threads=2 maximum-requests=500
 
 <Directory @@WWWDIR@@>
 	WSGIProcessGroup %{ENV:WSGI_PGRP}

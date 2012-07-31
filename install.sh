@@ -66,11 +66,17 @@ doc_jWORKER_USER='
    The unix user that the worker runs as;
    for example `www-data`.
 '
-doc_kTRAC_DB='
+doc_kWORKER_PORT='
+   The tcp listening port of the worker daemon
+'
+doc_lWORKER_PORT_DEV='
+   The tcp listening port of the development worker daemon
+'
+doc_mTRAC_DB='
    A database url for a database where trac will keep its data;
    for example `sqlite:///$WORKDIR_DEV/trac.db`.
 '
-doc_lBIBODIR='
+doc_nBIBODIR='
    A directory to hold one buildbot "master" and one buildbot
    "slave" base directory;
    for example `/home/user/buildbot`.
@@ -78,9 +84,6 @@ doc_lBIBODIR='
 
 # remember the current directory
 CURDIR=$PWD
-
-# use binaries in $PREFIX/bin
-PATH=$PREFIX/bin:$PATH
 
 # os check
 Debian= Ubuntu=
@@ -90,6 +93,9 @@ then
     echo Only Debian and Ubuntu OSs are supported so far.
     exit 1
 fi
+
+# 'python check'
+PYVER=$(python -c 'import sys; print sys.version[:3]')
 
 # if not manually configured at the top of the script,
 # print the documentation for and ask for the value of each variable
@@ -163,6 +169,18 @@ do
 done \
     >> $confsub
 
+# use binaries in $PREFIX/bin
+PATH=$PREFIX/bin:$PATH
+
+# use modules in and create directory
+# $PREFIX/lib/python$PYVER/lib/site-packages
+PYTHONPATH=$PREFIX/lib/python$PYVER/lib/site-packages
+mkdir -p $PYTHONPATH
+
+# @@PYTHON_PATH@@ confsub
+#  required in rna-seqlyze-a2conf*
+echo "s|@@PYTHON_PATH@@|$PYTHONPATH|" >> $confsub
+
 # su/sudo helper
 su() {
     if [ "$1" = -v ]
@@ -230,9 +248,6 @@ if ! python -c 'import setuptools' 2> /dev/null
 then
     curl -O http://python-distribute.org/distribute_setup.py
     python << END_OF_PYTHON
-import os, sys
-os.makedirs(os.path.join('$PREFIX', 'lib',
-    'python%d.%d' % sys.version_info[:2], 'site-packages'))
 import distribute_setup as ds
 ds._install(ds.download_setuptools(), ('--prefix', '$PREFIX'))
 END_OF_PYTHON
@@ -297,8 +312,8 @@ then
     $confsub htaccess > $WWWDIR/.htaccess
 else
     $confsub htaccess-dev >> $WWWDIR/.htaccess
-    sed "s|@@WORKDIR@@|${WORKDIR_DEV//|/\\|}|;" \
-        rna-seqlyze.wsgi > $WWWDIR/rna-seqlyze-dev.wsgi
+    sed "s|@@WORKDIR@@|@@WORKDIR_DEV@@|;" rna-seqlyze.wsgi |
+        $confsub > $WWWDIR/rna-seqlyze-dev.wsgi
 fi
 
 # utils
@@ -331,7 +346,8 @@ then
     rnas-init --group=$GROUP \
         --development $WORKDIR_DEV
     ln -s $WORKDIR/shared_data $WORKDIR_DEV
-    $confsub rnaseqlyze.ini > $WORKDIR_DEV/rnaseqlyze.ini
+    sed 's|@@WORKER_PORT@@|@@WORKER_PORT_DEV@@|g' rnaseqlyze.ini |
+        $confsub > $WORKDIR_DEV/rnaseqlyze.ini
 
     cd $TOPDIR/var/conf-files
     $confsub bash-env > $WORKDIR_DEV/bash-env

@@ -60,6 +60,7 @@ def main():
         args.extend([
             "--log-file=" + join(workdir, 'worker-daemon.log'),
             "--pid-file=" + join(workdir, 'worker-daemon.pid'),
+            "worker_port=" + rnaseqlyze.worker_port,
         ])
 
     conf_file = join(workdir, 'worker.ini')
