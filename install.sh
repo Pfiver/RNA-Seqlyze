@@ -174,12 +174,20 @@ PATH=$PREFIX/bin:$PATH
 
 # use modules in and create directory
 # $PREFIX/lib/python$PYVER/lib/site-packages
-PYTHONPATH=$PREFIX/lib/python$PYVER/site-packages
+PYSITE=lib/python$PYVER/site-packages
+PYTHONPATH=$PREFIX/$PYSITE
 mkdir -p $PYTHONPATH
 
 # @@PYTHON_PATH@@ confsub
 #  required in rna-seqlyze-a2conf*
-echo "s|@@PYTHON_PATH@@|$PYTHONPATH|" >> $confsub
+echo "s|@@PYTHON_PATH@@|${PYTHONPATH//|/\\|}|" >> $confsub
+
+# devinst PYTHON_PATH
+if $devinst
+then
+    PYTHONPATH_DEV=$PYTHONPATH:$WORKDIR_DEV/$PYSITE
+    echo "s|@@PYTHON_PATH_DEV@@|${PYTHONPATH_DEV//|/\\|}|" >> $confsub
+fi
 
 # su/sudo helper
 su() {
