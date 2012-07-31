@@ -5,7 +5,6 @@ import os
 import urllib2
 
 import rnaseqlyze
-import rnaseqlyze.worker
 from rnaseqlyze.core import security
 from rnaseqlyze.core.entities import Analysis, User, RNASeqRun, UploadSession
 
