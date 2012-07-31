@@ -185,7 +185,7 @@ echo "s|@@PYTHON_PATH@@|${PYTHONPATH//|/\\|}|" >> $confsub
 # devinst PYTHON_PATH
 if $devinst
 then
-    PYTHONPATH_DEV=$PYTHONPATH:$WORKDIR_DEV/$PYSITE
+    PYTHONPATH_DEV=$WORKDIR_DEV/$PYSITE:$PYTHONPATH
     echo "s|@@PYTHON_PATH_DEV@@|${PYTHONPATH_DEV//|/\\|}|" >> $confsub
 fi
 
