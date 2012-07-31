@@ -475,7 +475,7 @@ $confsub $TOPDIR/var/conf-files/$a2conf > rna-seqlyze-a2conf
 apache_conf='
 mv rna-seqlyze-a2conf /etc/apache2/conf.d/rna-seqlyze
 chown root. /etc/apache2/conf.d/rna-seqlyze
-a2enmod proxy rewrite wsgi
+a2enmod proxy proxy_http rewrite wsgi
 service apache2 restart
 '
 $confsub $TOPDIR/var/conf-files/rna-seqlyze-service > rna-seqlyze-service
