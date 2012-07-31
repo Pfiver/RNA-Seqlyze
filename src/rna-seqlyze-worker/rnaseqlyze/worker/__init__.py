@@ -113,36 +113,39 @@ class Waitress(object):
 
 
 @view_config(context=Exception)
-def error_view(error, request):
+def error_view(request):
     errdict = {
-        AnalysisAlreadyStartedException:    HTTPBadRequest,
-        ManagerBusyException:               HTTPInternalServerError,
+        AnalysisAlreadyStartedException:    HTTPRNASBadRequest,
+        ManagerBusyException:               HTTPRNASWorkerError,
     }
-    if isinstance(error, HTTPError):
-        return error
-    elif type(error) in errdict:
-        return errdict[type(error)](error)
-    else:
-        return HTTPInternalServerError(error)
+    type_ = type(request.exc_info[1])
+    return errdict.get(type_, HTTPRNASWorkerError)(request.exc_info)
 
+class HTTRNASError(HTTPError):
+    def __call__(self, environ, start_response):
+        # steer clear from WSGIHTTPException.__call__,
+        # which calls WSGIHTTPException.prepare,
+        # which sets content_type = 'text/html'
+        return Response.__call__(self, environ, start_response)
+    def __init__(self, error):
+        err = exc_info[1]
+        log.error(repr(err))
+        cls = e.__class__.__name__
+        if not e.args:
+            explanation = "%s" % cls
+        else:
+            explanation = "%s: %s" % (cls, e.args[0])
+        import traceback
+        detail = (str(err) +
+                  '\n\nStack trace:\n' +
+                  ''.join(traceback.format_tb(exc_info[2])))
+        log.debug(detail)
+        HTTPError.__init__(self, detail, content_type='text/plain')
 
-# monkey-patch some HTTPException classes to get simpler error messages
+class HTTRNASBadRequest(HTTRNASError):
+    code = 400
+    title = "Bad Request"
 
-from pyramid.response import Response
-def _WHE_init(self, arg=None):
-    Exception.__init__(self, arg)
-    if isinstance(arg, Exception):
-        if False: # production
-            e, t = arg, type(arg)
-            arg = "%s %s" % (t.__name__, e.args)
-        else: # debug
-            import traceback
-            arg = traceback.format_exc(999)
-    Response.__init__(self,
-        '%s %s\n\n%s' % (self.code, self.title, arg),
-        content_type='text/plain', status='%s %s' % (self.code, self.title))
-
-from pyramid.httpexceptions import WSGIHTTPException
-WSGIHTTPException.__init__ = _WHE_init
-del WSGIHTTPException.__call__
-del WSGIHTTPException.prepare
+class HTTRNASWorkerError(HTTRNASError):
+    code = 500
+    title = "RNA-Seqlyze Worker Error"
