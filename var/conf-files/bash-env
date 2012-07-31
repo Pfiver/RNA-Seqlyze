@@ -143,8 +143,7 @@ re-install ()
     for dir in "${rnas_pkgdirs[@]}"
     do (
         cd "$dir"
-        python setup.py develop --user
-        rm -rf build 
+        python setup.py egg_info
     ) done
 }
 
