@@ -15,6 +15,8 @@ WWWBASE=/rna-seqlyze/
 HOSTNAME=$(hostname -f)
 GROUP=www-data
 WORKER_USER=www-data
+WORKER_PORT=5433
+WORKER_PORT_DEV=6544
 BIBODIR=$WORKDIR_DEV/buildbot
 TRAC_DB=sqlite:///$WORKDIR_DEV/trac.db
 

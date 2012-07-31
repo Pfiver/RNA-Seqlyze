@@ -60,8 +60,10 @@ def main():
         args.extend([
             "--log-file=" + join(workdir, 'worker-daemon.log'),
             "--pid-file=" + join(workdir, 'worker-daemon.pid'),
-            "worker_port=" + rnaseqlyze.worker_port,
         ])
+    args.extend([
+        "worker_port=" + rnaseqlyze.worker_port,
+    ])
 
     conf_file = join(workdir, 'worker.ini')
     serve.ServeCommand("serve").run([conf_file] + args)
