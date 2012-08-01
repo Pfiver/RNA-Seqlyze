@@ -66,13 +66,13 @@ class Methods(object):
             log.error(problem)
             raise Exception(problem)
 
-        try:
-            local = open(self.sra_path, "w")
-            total = resp.length
-            read = 0
-            then = time()
-            log.info("transfering %d kb data..." % (total / 1024
+        local = open(self.sra_path, "w")
+        total = resp.length
+        read = 0
+        then = time()
+        log.info("transfering %d kb data..." % (total / 1024
                                                     if total else -1))
+        try:
             while True:
                 buf = resp.read(16*1024)
                 read += len(buf)

@@ -359,6 +359,9 @@ if $devinst
 then
     rnas-init --group=$GROUP \
         --development $WORKDIR_DEV
+    mkdir $WORKDIR/shared_data
+    chmod 775 $WORKDIR/shared_data
+    chgrp $GROUP $WORKDIR/shared_data
     ln -s $WORKDIR/shared_data $WORKDIR_DEV
     sed 's|@@WORKER_PORT@@|@@WORKER_PORT_DEV@@|g' rnaseqlyze.ini |
         $confsub > $WORKDIR_DEV/rnaseqlyze.ini
