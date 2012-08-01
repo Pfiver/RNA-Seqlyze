@@ -365,23 +365,25 @@ then
     # devinst virtualenv
     virtualenv --system-site-packages --distribute $WORKDIR_DEV
 # doesn't work as intended
-#    (
-#        . $WORKDIR_DEV/bin/activate
-#        for dir in $TOPDIR/src/rna-seqlyze*
-#        do
-#            (cd $dir && python setup.py develop)
-#        done
-#    )
+    (
+        . $WORKDIR_DEV/bin/activate
+        # work around a bug in virtualenv
+        easy_install --always-copy distribute
+        for dir in $TOPDIR/src/rna-seqlyze*
+        do
+            (cd $dir && python setup.py develop)
+        done
+    )
 # doing it by hand instead
-    cd $WORKDIR_DEV/lib/python$PYVER/site-packages
-    mv easy-install.pth{,~}
-    {
-        head -n-1 easy-install.pth~
-        ls -d1 $TOPDIR/src/rna-seqlyze*
-        tail -n-1 easy-install.pth~
-    } \
-        > easy-install.pth
-    rm easy-install.pth~
+#    cd $WORKDIR_DEV/lib/python$PYVER/site-packages
+#    mv easy-install.pth{,~}
+#    {
+#        head -n-1 easy-install.pth~
+#        ls -d1 $TOPDIR/src/rna-seqlyze*
+#        tail -n-1 easy-install.pth~
+#    } \
+#        > easy-install.pth
+#    rm easy-install.pth~
 fi
 
 # trac
@@ -459,6 +461,8 @@ then
     (
         cd $BIBODIR
         . bin/activate
+        # work around a bug in virtualenv
+        easy_install --always-copy distribute
         pip install buildbot
         pip install buildbot-slave
         buildbot create-master -r buildmaster
