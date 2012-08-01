@@ -103,6 +103,7 @@ class Waitress(object):
 
     @view_config(request_method='START')
     def start(self):
+	raise Exception("Bla!")
         self.manager.analysis_requested(self.analysis)
         return "started analysis #%d" % self.analysis.id
 
@@ -115,32 +116,23 @@ class Waitress(object):
 @view_config(context=Exception)
 def error_view(request):
     errdict = {
-        AnalysisAlreadyStartedException:    HTTPRNASBadRequest,
-        ManagerBusyException:               HTTPRNASWorkerError,
+        AnalysisAlreadyStartedException:    HTTRNASBadRequest,
+        ManagerBusyException:               HTTRNASWorkerError,
     }
     type_ = type(request.exc_info[1])
-    return errdict.get(type_, HTTPRNASWorkerError)(request.exc_info)
+    return errdict.get(type_, HTTRNASWorkerError)(request.exc_info)
 
 class HTTRNASError(HTTPError):
-    def __call__(self, environ, start_response):
-        # steer clear from WSGIHTTPException.__call__,
-        # which calls WSGIHTTPException.prepare,
-        # which sets content_type = 'text/html'
-        return Response.__call__(self, environ, start_response)
-    def __init__(self, error):
-        err = exc_info[1]
-        log.error(repr(err))
-        cls = e.__class__.__name__
-        if not e.args:
-            explanation = "%s" % cls
-        else:
-            explanation = "%s: %s" % (cls, e.args[0])
+    def __init__(self, exc_info):
         import traceback
-        detail = (str(err) +
-                  '\n\nStack trace:\n' +
-                  ''.join(traceback.format_tb(exc_info[2])))
-        log.debug(detail)
-        HTTPError.__init__(self, detail, content_type='text/plain')
+        err = exc_info[1]
+        message = [ self.title,
+                    " - ", repr(err),
+                    '\n\nStack trace:\n' ] + \
+		  traceback.format_tb(exc_info[2])
+        log.error(repr(err))
+        log.debug(''.join(message))
+        HTTPError.__init__(self, app_iter=message, content_type='text/plain')
 
 class HTTRNASBadRequest(HTTRNASError):
     code = 400
