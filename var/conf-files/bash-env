@@ -7,7 +7,7 @@ rnas_topdir=@@TOPDIR@@
 rnas_prefix=@@PREFIX@@
 rnas_workdir=@@WORKDIR@@
 rnas_workdir_dev=@@WORKDIR_DEV@@
-rnas_wwwbase=@@WWWBASE@@
+rnas_wwwbase=@@WWWBASE_@@
 rnas_bibodir=@@BIBODIR@@
 
 rnas_pkgs=("" -cli -web -worker)
@@ -90,7 +90,7 @@ update-available-list ()
     {
         echo '{{{#!html'
         echo '<table>'
-        base=/${rnas_wwwbase:+${rnas_wwwbase}/}rna-seqlyze/analyses/
+        base=/${rnas_wwwbase}rna-seqlyze/analyses/
         select="select"
         select+=" '<tr><td>'||'<a href=\"$base'||id||'\">'||id||'</a>',"
         select+="   org_accession,title,rnaseq_run_srr,error||'</td></tr>'"
@@ -172,7 +172,7 @@ rnas ()
 
 sigint ()
 {
-    curl localhost/${rnas_wwwbase:+${rnas_wwwbase}/}debug?sig_int
+    curl localhost/${rnas_wwwbase}debug?sig_int
 }
 
 auto-sigint ()
