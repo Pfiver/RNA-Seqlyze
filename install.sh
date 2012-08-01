@@ -152,6 +152,9 @@ END_OF_MESSAGE
     echo
 fi
 
+# use binaries in $PREFIX/bin
+PATH=$PREFIX/bin:$PATH
+
 # install dev env ?
 devinst=${WORKDIR_DEV:+true}
 : ${devinst:=false}
@@ -171,9 +174,6 @@ do
 done \
     >> $confsub
 
-# use binaries in $PREFIX/bin
-PATH=$PREFIX/bin:$PATH
-
 # use modules in and create directory
 # $PREFIX/lib/python$PYVER/lib/site-packages
 PYSITE=lib/python$PYVER/site-packages
@@ -183,6 +183,10 @@ mkdir -p $PYTHONPATH
 # @@PYTHON_PATH@@ confsub
 #  required in rna-seqlyze-a2conf*
 echo "s|@@PYTHON_PATH@@|${PYTHONPATH//|/\\|}|" >> $confsub
+
+# @@WWWBASE_@@ confsub
+#  WWWBASE with trailing slash if not empty, used in trac.ini
+echo "s|@@WWWBASE_@@|${WWWBASE:+${WWWBASE//|/\\|}/}" >> $confsub
 
 # devinst PYTHON_PATH
 if $devinst

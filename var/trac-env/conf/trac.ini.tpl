@@ -2,16 +2,16 @@
 
 [tractab]
 names = BuildBot, TestCoverage
-urls = @@WWWBASE@@buildbot/console, @@WWWBASE@@trac/chrome/site/files/coverage/index.html
+urls = /@@WWWBASE_@@buildbot/console, /@@WWWBASE_@@trac/chrome/site/files/coverage/index.html
 perms = WIKI_VIEW, WIKI_VIEW
 
 [navadd]
 add_items = app, apidocs
 app.title = Application
-app.url = @@WWWBASE@@rna-seqlyze/
+app.url = /@@WWWBASE_@@rna-seqlyze
 app.target = mainnav
 apidocs.title = Apidocs
-apidocs.url = @@WWWBASE@@trac/chrome/site/files/apidoc/index.html
+apidocs.url = /@@WWWBASE_@@trac/chrome/site/files/apidoc/index.html
 apidocs.target = mainnav
 
 [attachment]
@@ -199,7 +199,7 @@ authz_module_name =
 auto_preview_timeout = 2.0
 auto_reload = False
 backup_dir = db
-base_url = http://@@HOSTNAME@@@@WWWBASE@@/trac/
+base_url = http://@@HOSTNAME@@/@@WWWBASE_@@trac/
 check_auth_ip = false
 database = @@TRAC_DB@@
 debug_sql = False
