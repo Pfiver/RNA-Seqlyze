@@ -103,7 +103,6 @@ class Waitress(object):
 
     @view_config(request_method='START')
     def start(self):
-	raise Exception("Bla!")
         self.manager.analysis_requested(self.analysis)
         return "started analysis #%d" % self.analysis.id
 
@@ -129,7 +128,7 @@ class HTTRNASError(HTTPError):
         message = [ self.title,
                     " - ", repr(err),
                     '\n\nStack trace:\n' ] + \
-		  traceback.format_tb(exc_info[2])
+                  traceback.format_tb(exc_info[2])
         log.error(repr(err))
         log.debug(''.join(message))
         HTTPError.__init__(self, app_iter=message, content_type='text/plain')
