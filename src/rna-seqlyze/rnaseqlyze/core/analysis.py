@@ -10,7 +10,8 @@ from os.path import join, exists
 import datetime
 from urllib import quote
 
-from sqlalchemy.orm import declared_attr, validates
+from sqlalchemy.orm import validates
+from sqlalchemy.ext.declarative import declared_attr
 
 import rnaseqlyze
 from rnaseqlyze import galaxy
