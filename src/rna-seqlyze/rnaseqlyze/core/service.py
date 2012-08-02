@@ -1,11 +1,9 @@
 import logging
 log = logging.getLogger(__name__)
 
-import os
 import urllib2
 
 import rnaseqlyze
-from rnaseqlyze.core import security
 from rnaseqlyze.core.entities import Analysis, User, RNASeqRun, UploadSession
 
 def get_upload_session(db_session):

@@ -1,7 +1,5 @@
 from Bio import Entrez
 
-import rnaseqlyze
-
 nc_db = "nuccore"
 gb_type = "gb"
 gb_mode = "text"

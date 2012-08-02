@@ -10,12 +10,7 @@ from os.path import join, exists
 import datetime
 from urllib import quote
 
-from sqlalchemy import ForeignKey
-from sqlalchemy import Table, Column
-from sqlalchemy import Boolean, Integer, String, Text, DateTime
-from sqlalchemy.orm import relationship, backref, validates
-from sqlalchemy.orm.properties import RelationshipProperty
-from sqlalchemy.ext.declarative import declared_attr, declarative_base
+from sqlalchemy.orm import validates
 
 import rnaseqlyze
 from rnaseqlyze import galaxy

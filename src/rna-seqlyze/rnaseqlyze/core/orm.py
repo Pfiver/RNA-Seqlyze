@@ -3,17 +3,10 @@ This module declares and imports everyting needed to
 define the database entitiy classes in :mod:`.entities`.
 """
 
-from sqlalchemy import (
-        ForeignKey,
-        Table, Column,
-        Boolean, Integer,
-        String, Text, DateTime
+from sqlalchemy.ext.declarative import (
+    declared_attr,
+    declarative_base,
 )
-from sqlalchemy.orm import relationship, backref
-from sqlalchemy.ext.declarative import declared_attr
-
-from rnaseqlyze.core.analysis import Mixins as AnalysisMixins
-from rnaseqlyze.core.srr import Mixins as RNASeqRunMixins
 
 class _Entity(object):
 
@@ -30,6 +23,4 @@ class _Entity(object):
 
         super(_Entity, self).__setattr__(name, value)
 
-from sqlalchemy.ext.declarative import declarative_base
 Entity = declarative_base(cls=_Entity)
-del declarative_base

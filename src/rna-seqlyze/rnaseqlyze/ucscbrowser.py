@@ -13,7 +13,6 @@ from os import listdir, makedirs
 from os.path import join, dirname, isdir
 
 from lxml.html import parse
-from lxml.etree import dump
 
 import rnaseqlyze
 from rnaseqlyze.core import security
@@ -67,7 +66,7 @@ def get_org_list():
     for org in get_organisms(get_json_files()):
         for existing in orgs:
             if existing.title == org.title:
-                log.warn("'%s' already present (db: %s/%s)" % \
+                log.debug("'%s' already present (db: %s/%s)" % \
                                     (org.title, org.db, existing.db))
                 break
         else:

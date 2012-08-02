@@ -10,8 +10,6 @@ import csv
 import difflib
 from pkg_resources import resource_stream
 
-from Bio import Entrez
-
 from rnaseqlyze import ucscbrowser
 from rnaseqlyze.core.entities import UCSCOrganism
 

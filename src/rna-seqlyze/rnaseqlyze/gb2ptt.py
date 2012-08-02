@@ -1,8 +1,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-import sys
-
 from Bio import SeqIO
 from Bio.SeqFeature import ExactPosition
 

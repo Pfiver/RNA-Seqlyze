@@ -3,7 +3,6 @@ A module to run transterm_hp
 """
 
 import os, subprocess
-from subprocess import PIPE
 
 def run(args, out=None, err=None):
     """

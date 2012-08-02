@@ -8,7 +8,6 @@ log = logging.getLogger(__name__)
 import os
 from os import path
 from time import time
-from urllib2 import urlopen
 from urlparse import urlparse
 from httplib import HTTPConnection
 from socket import timeout
