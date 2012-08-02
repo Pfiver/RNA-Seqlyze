@@ -5,7 +5,17 @@ A nice tutorial showing how everything works is `here
     <http://docs.sqlalchemy.org/en/latest/orm/tutorial.html>`_.
 """
 
-from rnaseqlyze.core.orm import *
+from sqlalchemy import (
+        ForeignKey,
+        Table, Column,
+        Boolean, Integer,
+        String, Text, DateTime,
+)
+from sqlalchemy.orm import relationship, backref
+
+from rnaseqlyze.core.analysis import Mixins as AnalysisMixins
+from rnaseqlyze.core.srr import Mixins as RNASeqRunMixins
+from rnaseqlyze.core.orm import Entity
 
 class Analysis(AnalysisMixins, Entity):
 
