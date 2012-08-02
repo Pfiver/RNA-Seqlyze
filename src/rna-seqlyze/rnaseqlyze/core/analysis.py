@@ -10,7 +10,7 @@ from os.path import join, exists
 import datetime
 from urllib import quote
 
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import relationship, validates
 from sqlalchemy.ext.declarative import declared_attr
 
 import rnaseqlyze
