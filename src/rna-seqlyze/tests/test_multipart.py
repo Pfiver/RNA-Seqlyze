@@ -8,9 +8,12 @@ class Server(threading.Thread):
                 environ={'REQUEST_METHOD': 'POST'})
             for key in form:
                 print >> self.wfile, key, form[key].value,
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.hts = BaseHTTPServer.HTTPServer(
+                    ('localhost', 9123), self.Handler)
     def run(self):
-        BaseHTTPServer.HTTPServer(
-            ('localhost', 9123), self.Handler).handle_request()
+        self.hts.handle_request()
 
 from nose.tools import *
 def test_multipart():
