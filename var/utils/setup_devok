@@ -1,0 +1,33 @@
+#!/usr/bin/env python
+
+import sys
+from types import ModuleType
+
+from setuptools.package_index import PackageIndex
+from setuptools.command.develop import develop
+
+class DevelopOkPackageIndex(PackageIndex):
+    """
+    PackageIndex where the develop_ok argument to fetch_distribution
+    defaults to True. This means packages installed in 'develop' mode are
+    not skipped when checking requirements of other packages beeing installed.
+    """
+    def fetch_distribution(
+            self, requirement, tmpdir, force_scan=False,
+            source=False, develop_ok=True, local_index=None):
+        return PackageIndex.fetch_distribution(
+                        self, requirement, tmpdir, force_scan,
+                        source, develop_ok, local_index)
+
+class develop_devok(develop):
+    """
+    Extension to the develop command that uses
+    DevelopOkPackageIndex as its PackageIndex implementation.
+    """
+    create_index = DevelopOkPackageIndex
+
+sys.argv[1:1] = ["develop_devok"]
+m = ModuleType("distutils.command.develop_devok")
+m.develop_devok = develop_devok
+sys.modules[m.__name__] = m
+execfile("setup.py")

@@ -377,7 +377,7 @@ then
         easy_install --always-copy distribute
         for dir in $TOPDIR/src/rna-seqlyze*
         do
-            (cd $dir && python setup.py develop)
+            (cd $dir && setup_devok)
         done
     )
 fi
