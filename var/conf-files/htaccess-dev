@@ -34,7 +34,7 @@ RewriteRule ^trac.wsgi/login$ traclogin [R,L]
 RewriteRule ^traclogin.wsgi/logout$ trac [R,L]
 
 <Files 'traclogin'>
-        AuthUserFile /home/pat/public_html/.htpasswd.trac
+        AuthUserFile @@WWWDIR@@/.htpasswd.trac
         AuthName "Enter Password"
         AuthType Basic
         Require valid-user
