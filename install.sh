@@ -69,10 +69,12 @@ doc_jWORKER_USER='
    for example `www-data`.
 '
 doc_kWORKER_PORT='
-   The tcp listening port of the worker daemon
+   The tcp listening port of the worker daemon;
+   for example 5433.
 '
 doc_lWORKER_PORT_DEV='
-   The tcp listening port of the development worker daemon
+   The tcp listening port of the development worker daemon;
+   for example 6544.
 '
 doc_mTRAC_DB='
    A database url for a database where trac will keep its data;
