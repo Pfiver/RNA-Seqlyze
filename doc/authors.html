@@ -830,6 +830,7 @@
 <div class="x3">
  src/biopython/setup.py<br>
  src/samtools/AUTHORS<br>
+ src/samtools/COPYING<br>
  src/samtools/ChangeLog<br>
  src/samtools/INSTALL<br>
  src/sra_sdk/Makefile<br>
@@ -2026,6 +2027,7 @@
 <h3>Heng Li</h3>
 <div class="x3">
  src/samtools/AUTHORS<br>
+ src/samtools/COPYING<br>
  src/samtools/ChangeLog<br>
  src/samtools/ChangeLog.old<br>
  src/samtools/INSTALL<br>
@@ -2033,12 +2035,15 @@
  src/samtools/Makefile.mingw<br>
  src/samtools/NEWS<br>
  src/samtools/bam.c<br>
+ src/samtools/bam.h<br>
  src/samtools/bam2bcf.c<br>
+ src/samtools/bam2bcf.h<br>
  src/samtools/bam2bcf_indel.c<br>
  src/samtools/bam2depth.c<br>
  src/samtools/bam_aux.c<br>
  src/samtools/bam_cat.c<br>
  src/samtools/bam_color.c<br>
+ src/samtools/bam_endian.h<br>
  src/samtools/bam_import.c<br>
  src/samtools/bam_index.c<br>
  src/samtools/bam_lpileup.c<br>
@@ -2056,6 +2061,7 @@
  src/samtools/bcftools/Makefile<br>
  src/samtools/bcftools/README<br>
  src/samtools/bcftools/bcf.c<br>
+ src/samtools/bcftools/bcf.h<br>
  src/samtools/bcftools/bcf.tex<br>
  src/samtools/bcftools/bcf2qcall.c<br>
  src/samtools/bcftools/bcfutils.c<br>
@@ -2065,16 +2071,20 @@
  src/samtools/bcftools/index.c<br>
  src/samtools/bcftools/kfunc.c<br>
  src/samtools/bcftools/kmin.c<br>
+ src/samtools/bcftools/kmin.h<br>
  src/samtools/bcftools/main.c<br>
  src/samtools/bcftools/mut.c<br>
  src/samtools/bcftools/prob1.c<br>
+ src/samtools/bcftools/prob1.h<br>
  src/samtools/bcftools/vcf.c<br>
  src/samtools/bcftools/vcfutils.pl<br>
  src/samtools/bedidx.c<br>
  src/samtools/bgzf.c<br>
+ src/samtools/bgzf.h<br>
  src/samtools/bgzip.c<br>
  src/samtools/cut_target.c<br>
  src/samtools/errmod.c<br>
+ src/samtools/errmod.h<br>
  src/samtools/examples/00README.txt<br>
  src/samtools/examples/Makefile<br>
  src/samtools/examples/bam2bed.c<br>
@@ -2084,10 +2094,19 @@
  src/samtools/examples/toy.fa<br>
  src/samtools/examples/toy.sam<br>
  src/samtools/faidx.c<br>
+ src/samtools/faidx.h<br>
  src/samtools/kaln.c<br>
+ src/samtools/kaln.h<br>
+ src/samtools/khash.h<br>
+ src/samtools/klist.h<br>
  src/samtools/knetfile.c<br>
+ src/samtools/knetfile.h<br>
  src/samtools/kprobaln.c<br>
+ src/samtools/kprobaln.h<br>
+ src/samtools/kseq.h<br>
+ src/samtools/ksort.h<br>
  src/samtools/kstring.c<br>
+ src/samtools/kstring.h<br>
  src/samtools/misc/HmmGlocal.java<br>
  src/samtools/misc/Makefile<br>
  src/samtools/misc/blast2sam.pl<br>
@@ -2096,6 +2115,7 @@
  src/samtools/misc/interpolate_sam.pl<br>
  src/samtools/misc/maq2sam.c<br>
  src/samtools/misc/md5.c<br>
+ src/samtools/misc/md5.h<br>
  src/samtools/misc/md5fa.c<br>
  src/samtools/misc/novo2sam.pl<br>
  src/samtools/misc/psl2sam.pl<br>
@@ -2109,14 +2129,21 @@
  src/samtools/misc/zoom2sam.pl<br>
  src/samtools/phase.c<br>
  src/samtools/razf.c<br>
+ src/samtools/razf.h<br>
  src/samtools/razip.c<br>
  src/samtools/sam.c<br>
+ src/samtools/sam.h<br>
  src/samtools/sam_header.c<br>
+ src/samtools/sam_header.h<br>
  src/samtools/sam_view.c<br>
  src/samtools/sample.c<br>
+ src/samtools/sample.h<br>
  src/samtools/samtools.1<br>
  src/samtools/win32/libcurses.a<br>
  src/samtools/win32/libz.a<br>
+ src/samtools/win32/xcurses.h<br>
+ src/samtools/win32/zconf.h<br>
+ src/samtools/win32/zlib.h<br>
 </div></div>
 <div id="jim-kent" class="x">
 <h3>Jim Kent</h3>
@@ -6069,7 +6096,6 @@
  src/kent/src/hg/htdocs/style/floretStyle.css<br>
  src/kent/src/hg/htdocs/style/hgHubConnect.css<br>
  src/kent/src/hg/htdocs/style/images/ui-bg_flat_0_aaaaaa_40x100.png<br>
- src/kent/src/hg/htdocs/style/images/ui-bg_flat_75_ffffff_40x100.png<br>
  src/kent/src/hg/htdocs/style/images/ui-bg_glass_55_fbf9ee_1x400.png<br>
  src/kent/src/hg/htdocs/style/images/ui-bg_glass_65_ffffff_1x400.png<br>
  src/kent/src/hg/htdocs/style/images/ui-bg_glass_75_dadada_1x400.png<br>
@@ -9776,7 +9802,6 @@
  src/kent/src/hg/makeDb/trackDb/alpaca/vicPac1/description.html<br>
  src/kent/src/hg/makeDb/trackDb/alpaca/vicPac1/gap.html<br>
  src/kent/src/hg/makeDb/trackDb/alpaca/vicPac1/gold.html<br>
- src/kent/src/hg/makeDb/trackDb/alpaca/vicPac1/trackDb.ra<br>
  src/kent/src/hg/makeDb/trackDb/alpaca/vicVic1/description.html<br>
  src/kent/src/hg/makeDb/trackDb/alpaca/vicVic1/gap.html<br>
  src/kent/src/hg/makeDb/trackDb/alpaca/vicVic1/gold.html<br>
@@ -20012,12 +20037,6 @@
 <div id="patrick-pfeifer" class="x">
 <h3>Patrick Pfeifer</h3>
 <div class="x3">
- var/conf-files/htaccess<br>
-</div></div>
-<div id="patrick-pfeifer" class="x">
-<h3>Patrick Pfeifer</h3>
-<div class="x3">
- bash-env<br>
  doc/apidocs/Makefile<br>
  doc/apidocs/_static/rtd.css<br>
  doc/apidocs/_themes/rtd/theme.conf<br>
@@ -20060,8 +20079,16 @@
  src/rna-seqlyze-web/rnaseqlyze/web/errors.py<br>
  src/rna-seqlyze-web/rnaseqlyze/web/img/FHNW-logo-30.jpg<br>
  src/rna-seqlyze-web/rnaseqlyze/web/img/FHNW-logo-394.jpg<br>
+ src/rna-seqlyze-web/rnaseqlyze/web/img/FHNW_10mm.eps<br>
+ src/rna-seqlyze-web/rnaseqlyze/web/img/FHNW_10mm.jpg<br>
+ src/rna-seqlyze-web/rnaseqlyze/web/img/FHNW_HLS_10mm.eps<br>
+ src/rna-seqlyze-web/rnaseqlyze/web/img/FHNW_HLS_10mm.jpg<br>
  src/rna-seqlyze-web/rnaseqlyze/web/img/RNA-Seqlyze-icon.ico<br>
  src/rna-seqlyze-web/rnaseqlyze/web/img/RNA-Seqlyze.png<br>
+ src/rna-seqlyze-web/rnaseqlyze/web/img/fhnw_e_10mm.eps<br>
+ src/rna-seqlyze-web/rnaseqlyze/web/img/fhnw_e_10mm.jpg<br>
+ src/rna-seqlyze-web/rnaseqlyze/web/img/fhnw_hls_e_10mm.eps<br>
+ src/rna-seqlyze-web/rnaseqlyze/web/img/fhnw_hls_e_10mm.jpg<br>
  src/rna-seqlyze-web/rnaseqlyze/web/img/linux-powered.png<br>
  src/rna-seqlyze-web/rnaseqlyze/web/img/python-powered.png<br>
  src/rna-seqlyze-web/rnaseqlyze/web/js/bootstrap-scrollspy.js<br>
@@ -20090,6 +20117,7 @@
  src/rna-seqlyze-worker/setup.py<br>
  src/rna-seqlyze-worker/tests/data/SRR030761.sra<br>
  src/rna-seqlyze-worker/tests/data/SRR030762.fastq<br>
+ src/rna-seqlyze/rnaseqlyze.ini<br>
  src/rna-seqlyze/rnaseqlyze/__init__.py<br>
  src/rna-seqlyze/rnaseqlyze/build.py<br>
  src/rna-seqlyze/rnaseqlyze/core/__init__.py<br>
@@ -20102,11 +20130,11 @@
  src/rna-seqlyze/rnaseqlyze/efetch.py<br>
  src/rna-seqlyze/rnaseqlyze/galaxy.py<br>
  src/rna-seqlyze/rnaseqlyze/gb2ptt.py<br>
- src/rna-seqlyze/rnaseqlyze/install.py<br>
  src/rna-seqlyze/rnaseqlyze/multipart.py<br>
  src/rna-seqlyze/rnaseqlyze/org_cache.py<br>
  src/rna-seqlyze/rnaseqlyze/refseq-data/prokaryotes.txt<br>
  src/rna-seqlyze/rnaseqlyze/s3.py<br>
+ src/rna-seqlyze/rnaseqlyze/setup.py<br>
  src/rna-seqlyze/rnaseqlyze/transterm.py<br>
  src/rna-seqlyze/rnaseqlyze/ucscbrowser-data/archaealViruses_genomes.json<br>
  src/rna-seqlyze/rnaseqlyze/ucscbrowser-data/archaeal_genomes.json<br>
@@ -20127,19 +20155,20 @@
  src/trac/trac/db/mysql_backend.py<br>
  src/trac/trac/web/chrome.py<br>
  src/transterm_hp/seq.h<br>
+ var/conf-files/bash-env<br>
  var/conf-files/buildbot-master.cfg<br>
+ var/conf-files/crontab<br>
+ var/conf-files/debug.wsgi<br>
  var/conf-files/htaccess<br>
- var/fhnw-logos/FHNW_10mm.eps<br>
- var/fhnw-logos/FHNW_10mm.jpg<br>
- var/fhnw-logos/FHNW_HLS_10mm.eps<br>
- var/fhnw-logos/FHNW_HLS_10mm.jpg<br>
- var/fhnw-logos/fhnw_e_10mm.eps<br>
- var/fhnw-logos/fhnw_e_10mm.jpg<br>
- var/fhnw-logos/fhnw_hls_e_10mm.eps<br>
- var/fhnw-logos/fhnw_hls_e_10mm.jpg<br>
+ var/conf-files/htaccess-dev<br>
+ var/conf-files/rna-seqlyze-a2conf<br>
+ var/conf-files/rna-seqlyze-a2conf-dev<br>
+ var/conf-files/rna-seqlyze-service<br>
+ var/conf-files/rna-seqlyze.wsgi<br>
+ var/conf-files/trac.wsgi<br>
  var/trac-env/README<br>
  var/trac-env/VERSION<br>
- var/trac-env/conf/trac.ini<br>
+ var/trac-env/conf/trac.ini.tpl<br>
  var/trac-env/files/apidoc<br>
  var/trac-env/files/attachments/wiki/290/2908127e6d15edfe9192ed5fad4b26fe0444c266/3833b85f0ef9571014283b19990b947866795e4c.png<br>
  var/trac-env/files/attachments/wiki/290/2908127e6d15edfe9192ed5fad4b26fe0444c266/a99e97905ebc9c683eb7f3d4282a48c41d4e3871.svg<br>
@@ -20150,16 +20179,12 @@
  var/trac-env/files/authors.html<br>
  var/trac-env/files/bootstrap-docs<br>
  var/trac-env/files/coverage<br>
- var/trac-env/htdocs/FHNW-logo-30.jpg<br>
- var/trac-env/htdocs/FHNW-logo-394.jpg<br>
- var/trac-env/htdocs/RNA-Seqlyze-icon.ico<br>
- var/trac-env/htdocs/RNA-Seqlyze.png<br>
  var/trac-env/htdocs/files<br>
- var/trac-env/htdocs/linux-powered.png<br>
- var/trac-env/htdocs/python-powered.png<br>
+ var/trac-env/htdocs/img<br>
  var/trac-env/htdocs/style.css<br>
  var/trac-env/plugins/buildbot_status.py<br>
  var/trac-env/plugins/tractabplugin-0.11/tractab/templates/tractab.html<br>
+ var/trac-env/sqlite-db-backup.sql<br>
  var/trac-env/templates/about.html<br>
  var/trac-env/templates/layout.html<br>
  var/trac-env/templates/theme.html<br>
@@ -20167,7 +20192,10 @@
  var/trac-env/templates/wiki_page_path.html<br>
  var/trac-env/templates/wiki_view.html<br>
  var/utils/git-list-authors<br>
+ var/utils/setup_devok<br>
+ var/utils/trac-mysql-backup<br>
  var/utils/trac-repo-sync<br>
+ var/utils/trac-sqlite-backup<br>
 </div></div>
 <div id="radu-voicilas" class="x">
 <h3>Radu Voicilas</h3>
@@ -23263,7 +23291,6 @@
  src/rna-seqlyze-web/rnaseqlyze/web/less/utilities.less<br>
  src/rna-seqlyze-web/rnaseqlyze/web/less/variables.less<br>
  src/rna-seqlyze-web/rnaseqlyze/web/less/wells.less<br>
- src/rna-seqlyze-web/rnaseqlyze/web/templates/analysis.pt<br>
  src/rna-seqlyze-web/rnaseqlyze/web/views.py<br>
  src/samtools/Makefile<br>
 </div></div>
