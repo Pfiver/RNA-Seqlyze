@@ -154,11 +154,14 @@ re-cover ()
     #  --cover-package: restrict coverage report to packge
     #  --cover-html: generate html coverage report
     cd "$rnas_topdir"
-    nosetests --with-coverage       \
-        --cover-inclusive           \
-        --cover-package rnaseqlyze  \
-        --cover-html                \
-        --cover-html-dir=doc/coverage    "${rnas_pkgdirs[@]}"
+    nosetests                           \
+        --with-coverage                 \
+        --cover-inclusive               \
+        --cover-package rnaseqlyze      \
+        --cover-html                    \
+        --cover-html-dir=doc/coverage   \
+        --first-package-wins            \
+        "${rnas_pkgdirs[@]}"
     rm -f .coverage
 )
 
