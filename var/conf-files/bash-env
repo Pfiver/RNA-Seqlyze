@@ -136,6 +136,7 @@ re-apidoc ()
     rm -rf _build/{doctrees,html} rnaseqlyze*.rst
     rnas-apidoc ${rnas_pkgdirs[0]}
     make html
+    sed -i 's/&lt;no title&gt; &mdash; //' _build/html/index.html
 )
 
 re-install ()
