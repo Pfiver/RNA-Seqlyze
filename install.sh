@@ -444,10 +444,10 @@ then
     chmod 664 $logfile
     chgrp $GROUP $logfile
 
-    # adjust 'files' directory permissions
-    mkdir -p files
-    chmod 775 files
-    chgrp $GROUP files
+    # adjust 'attachments' directory permissions
+    attdir=$TOPDIR/var/trac-env/files/attachments
+    chgrp -R $GROUP $attdir
+    chmod -R g+w $attdir
 fi
 
 # buildbot
