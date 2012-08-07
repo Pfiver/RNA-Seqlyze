@@ -5,12 +5,15 @@ This command builds and installs all 3rd-party software
 components included with and required by the RNA-Seqlyze application.
 
 Usage:
-    rnas-setup
-    rnas-setup --prefix <dir>
+    rnas-setup [<part>...]
+    rnas-setup --prefix <dir> [<part>...]
     rnas-setup -h|--help
 
 Note:
     The command has must run from the top level RNA-Seqlyze source directory.
+
+Arguments:
+    <part>          Build and install this component only, not all.
 
 Options:
     --prefix <dir>
@@ -26,7 +29,7 @@ import os, re
 from os import environ as env
 from os.path import join, exists
 
-from rnaseqlyze.build import parts, phases
+from rnaseqlyze import build
 
 def main():
     import docopt
@@ -47,8 +50,10 @@ def main():
     env["ARCH"] = re.sub('i.86', 'i386', env["MACHTYPE"])
     env["NCPUS_ONLN"] = str(os.sysconf("SC_NPROCESSORS_ONLN"))
 
-    for part in parts:
-        for phase in phases:
+    for part in [getattr(build, name)() for name in opts['<part>']] \
+                if opts['<part>'] else \
+                build.parts:
+        for phase in build.phases:
             part.execute(phase)
 
     print """\
