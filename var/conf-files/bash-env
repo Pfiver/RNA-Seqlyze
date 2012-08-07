@@ -139,14 +139,15 @@ re-apidoc ()
     sed -i 's/&lt;no title&gt; &mdash; //' _build/html/index.html
 )
 
-re-install ()
-{
+re-develop ()
+(
+    . $rnas_workdir_dev/bin/activate
     for dir in "${rnas_pkgdirs[@]}"
     do (
         cd "$dir"
         setup_devok
     ) done
-}
+)
 
 re-cover ()
 (
