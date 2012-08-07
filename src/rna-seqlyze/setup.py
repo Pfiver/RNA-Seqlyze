@@ -17,6 +17,21 @@ git_out = git_proc.communicate()[0]
 if git_proc.returncode:
     raise Exception()
 
+setup_requirements = [
+    'nose >= 1.1.2',            # Unit testing
+    'distribute >= 0.6.14',     # Packaging (setuptools)
+    'setuptools_git >= 0.3',    # Packaging (include_package_data)
+]
+
+install_requirements = [
+    'sphinx',                   # Apidoc
+    'pyflakes',                 # Style checker
+    'SQLAlchemy',
+    'docopt > 0.4.1',
+    'pyramid >= 1.3.2',         # Web framework
+    'MarkupSafe >= 0.15',       # Syntax highlighting in Trac
+],
+
 setup(
     name=os.getcwd().split(os.sep)[-1],
     version=git_out.strip()[1:],
@@ -34,22 +49,11 @@ setup(
     data_files=[('', [
         'rnaseqlyze.ini',
     ])],
-    setup_requires=[
-        'nose >= 1.1.2',            # Unit testing
-        'distribute >= 0.6.14',     # Packaging (setuptools)
-        'setuptools_git >= 0.3',    # Packaging (include_package_data)
-    ],
-    install_requires=[
-        'sphinx',                   # Apidoc
-        'pyflakes',                 # Style checker
-        'SQLAlchemy',
-        'docopt > 0.4.1',
-        'pyramid >= 1.3.2',         # Web framework
-        'MarkupSafe >= 0.15',       # Syntax highlighting in Trac
-    ],
     entry_points={
         'console_scripts': [
             'rnas-setup = rnaseqlyze.setup:main',
         ],
     },
+    setup_requires=setup_requirements,
+    install_requires=setup_requirements + install_requirements,
 )
