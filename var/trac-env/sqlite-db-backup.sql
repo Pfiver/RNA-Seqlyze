@@ -274,7 +274,7 @@ CREATE TABLE "session" (
   "last_visit" int(11) DEFAULT NULL,
   PRIMARY KEY ("sid","authenticated")
 );
-INSERT INTO "session" VALUES('patrick',1,1344002907);
+INSERT INTO "session" VALUES('patrick',1,1344255123);
 INSERT INTO "session" VALUES('guest',1,1335378183);
 INSERT INTO "session" VALUES('ac606c55507bd743d82741f0',0,1343297112);
 INSERT INTO "session" VALUES('d44ab04ac33a6dc52757a3b1',0,1341996189);
@@ -312,7 +312,6 @@ INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.nextlastvisit','134
 INSERT INTO "session_attribute" VALUES('patrick',1,'wiki_editrows','8');
 INSERT INTO "session_attribute" VALUES('patrick',1,'query_href','/biopython/traclogin/report/3?asc=1&page=1');
 INSERT INTO "session_attribute" VALUES('patrick',1,'query_tickets','1 2 3 4 9 6 8');
-INSERT INTO "session_attribute" VALUES('patrick',1,'wiki_sidebyside','1');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.lastvisit','1343225983602913');
 CREATE TABLE "system" (
   "name" text  NOT NULL,
@@ -36811,6 +36810,291 @@ After the script has finished, the following URLs should be accessible:
 
  - Trac: .
  - The application configured in ${WORKDIR}: http://${HOSTNAME}/${WWWBASE}/rna-seqlyze
+','',0);
+INSERT INTO "wiki" VALUES('Analyses',19,1344249745281727,'trac','127.0.0.1','{{{#!html
+<table>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/34">34</a></td><td>NC_007777.1</td><td>Frankia sp. CcI3</td><td></td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/33">33</a></td><td>NC_007777.1</td><td>Frankia sp. CcI3</td><td></td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/32">32</a></td><td>NC_007777.1</td><td>Frankia sp. CcI3</td><td>SRR308711</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/31">31</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/30">30</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/29">29</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/28">28</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/27">27</a></td><td>NC_002754</td><td></td><td>SRR030765</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/26">26</a></td><td>NC_002754</td><td></td><td>SRR030764</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/25">25</a></td><td>NC_002754</td><td></td><td>SRR030767</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/24">24</a></td><td>NC_002754</td><td></td><td>SRR030766</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/23">23</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/22">22</a></td><td></td><td></td><td>SRR030768</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/21">21</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/20">20</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/19">19</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/18">18</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307054</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/17">17</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/16">16</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/15">15</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/14">14</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/13">13</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/12">12</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/11">11</a></td><td>METHANO</td><td></td><td>SRR073679</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/10">10</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/9">9</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/8">8</a></td><td>NC_000913.2</td><td>Escherichia coli K12 substr. MG1655</td><td>SRR427121</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/7">7</a></td><td>NC_000913.2</td><td>Escherichia coli K12 substr. MG1655</td><td>SRR427121</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/6">6</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR445260</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/5">5</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/4">4</a></td><td>NC_003997.3</td><td>Bacillus anthracis str. Ames</td><td>SRR445260</td><td>Exception(''Not a valid bam file'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/3">3</a></td><td>NC_003997.3</td><td>Bacillus anthracis str. Ames</td><td>SRR445259</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/2">2</a></td><td>NC_010554.1</td><td></td><td>SRR314890</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/1">1</a></td><td>NC_002754</td><td></td><td>SRR030768</td><td>
+</table>
+}}}
+',NULL,NULL);
+INSERT INTO "wiki" VALUES('Analyses',20,1344251525981503,'trac','127.0.0.1','{{{#!html
+<table>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/35">35</a></td><td>NC_002754</td><td></td><td>SRR030768</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/34">34</a></td><td>NC_007777.1</td><td>Frankia sp. CcI3</td><td></td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/33">33</a></td><td>NC_007777.1</td><td>Frankia sp. CcI3</td><td></td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/32">32</a></td><td>NC_007777.1</td><td>Frankia sp. CcI3</td><td>SRR308711</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/31">31</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/30">30</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/29">29</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/28">28</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/27">27</a></td><td>NC_002754</td><td></td><td>SRR030765</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/26">26</a></td><td>NC_002754</td><td></td><td>SRR030764</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/25">25</a></td><td>NC_002754</td><td></td><td>SRR030767</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/24">24</a></td><td>NC_002754</td><td></td><td>SRR030766</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/23">23</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/22">22</a></td><td></td><td></td><td>SRR030768</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/21">21</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/20">20</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/19">19</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/18">18</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307054</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/17">17</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/16">16</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/15">15</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/14">14</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/13">13</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/12">12</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/11">11</a></td><td>METHANO</td><td></td><td>SRR073679</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/10">10</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/9">9</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/8">8</a></td><td>NC_000913.2</td><td>Escherichia coli K12 substr. MG1655</td><td>SRR427121</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/7">7</a></td><td>NC_000913.2</td><td>Escherichia coli K12 substr. MG1655</td><td>SRR427121</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/6">6</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR445260</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/5">5</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/4">4</a></td><td>NC_003997.3</td><td>Bacillus anthracis str. Ames</td><td>SRR445260</td><td>Exception(''Not a valid bam file'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/3">3</a></td><td>NC_003997.3</td><td>Bacillus anthracis str. Ames</td><td>SRR445259</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/2">2</a></td><td>NC_010554.1</td><td></td><td>SRR314890</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/1">1</a></td><td>NC_002754</td><td></td><td>SRR030768</td><td>
+</table>
+}}}
+',NULL,NULL);
+INSERT INTO "wiki" VALUES('Analyses',21,1344254685947319,'trac','127.0.0.1','{{{#!html
+<table>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/32">32</a></td><td>NC_007777.1</td><td>Frankia sp. CcI3</td><td>SRR308711</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/31">31</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/30">30</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/29">29</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/28">28</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/27">27</a></td><td>NC_002754</td><td></td><td>SRR030765</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/26">26</a></td><td>NC_002754</td><td></td><td>SRR030764</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/25">25</a></td><td>NC_002754</td><td></td><td>SRR030767</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/24">24</a></td><td>NC_002754</td><td></td><td>SRR030766</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/23">23</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/22">22</a></td><td></td><td></td><td>SRR030768</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/21">21</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/20">20</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/19">19</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/18">18</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307054</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/17">17</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/16">16</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/15">15</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/14">14</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/13">13</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/12">12</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/11">11</a></td><td>METHANO</td><td></td><td>SRR073679</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/10">10</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/9">9</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/8">8</a></td><td>NC_000913.2</td><td>Escherichia coli K12 substr. MG1655</td><td>SRR427121</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/7">7</a></td><td>NC_000913.2</td><td>Escherichia coli K12 substr. MG1655</td><td>SRR427121</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/6">6</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR445260</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/5">5</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/4">4</a></td><td>NC_003997.3</td><td>Bacillus anthracis str. Ames</td><td>SRR445260</td><td>Exception(''Not a valid bam file'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/3">3</a></td><td>NC_003997.3</td><td>Bacillus anthracis str. Ames</td><td>SRR445259</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/2">2</a></td><td>NC_010554.1</td><td></td><td>SRR314890</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/1">1</a></td><td>NC_002754</td><td></td><td>SRR030768</td><td>
+</table>
+}}}
+',NULL,NULL);
+INSERT INTO "wiki" VALUES('Analyses',22,1344255122417985,'trac','127.0.0.1','{{{#!html
+<table>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/33">33</a></td><td>NC_002754</td><td></td><td>SRR030768</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/32">32</a></td><td>NC_007777.1</td><td>Frankia sp. CcI3</td><td>SRR308711</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/31">31</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/30">30</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/29">29</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/28">28</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/27">27</a></td><td>NC_002754</td><td></td><td>SRR030765</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/26">26</a></td><td>NC_002754</td><td></td><td>SRR030764</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/25">25</a></td><td>NC_002754</td><td></td><td>SRR030767</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/24">24</a></td><td>NC_002754</td><td></td><td>SRR030766</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/23">23</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/22">22</a></td><td></td><td></td><td>SRR030768</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/21">21</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/20">20</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/19">19</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/18">18</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307054</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/17">17</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/16">16</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/15">15</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/14">14</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/13">13</a></td><td>NC_009515.1</td><td>Methanobrevibacter smithii ATCC 35061</td><td>SRR073679</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/12">12</a></td><td>NC_002950.2</td><td>Porphyromonas gingivalis W83</td><td>SRR307055</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/11">11</a></td><td>METHANO</td><td></td><td>SRR073679</td><td>UnboundLocalError("local variable ''local'' referenced before assignment",)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/10">10</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/9">9</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/8">8</a></td><td>NC_000913.2</td><td>Escherichia coli K12 substr. MG1655</td><td>SRR427121</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/7">7</a></td><td>NC_000913.2</td><td>Escherichia coli K12 substr. MG1655</td><td>SRR427121</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/6">6</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR445260</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/5">5</a></td><td>NC_002570.2</td><td>Bacillus halodurans C-125</td><td>SRR359043</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/4">4</a></td><td>NC_003997.3</td><td>Bacillus anthracis str. Ames</td><td>SRR445260</td><td>Exception(''Not a valid bam file'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/3">3</a></td><td>NC_003997.3</td><td>Bacillus anthracis str. Ames</td><td>SRR445259</td><td>timeout(''timed out'',)</td></tr>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/2">2</a></td><td>NC_010554.1</td><td></td><td>SRR314890</td><td>
+<tr><td><a href="/biopython/rna-seqlyze/analyses/1">1</a></td><td>NC_002754</td><td></td><td>SRR030768</td><td>
+</table>
+}}}
+',NULL,NULL);
+INSERT INTO "wiki" VALUES('Deployment',44,1344255262272994,'patrick','10.194.165.18','[[PageOutline]]
+
+== Cloning the source code repository
+
+Clone the source code repository (~600MB) like so:
+
+{{{#!sh
+GIT_SSL_NO_VERIFY=true git clone https://[username]:[password]@mu15ns00002.adm.ds.fhnw.ch/git/biocalc $TOPDIR
+}}}
+
+Then, add this additional entry to `.git/config`:
+{{{#!ini
+[http]
+        sslVerify = false
+}}}
+
+== Configuration Variables
+
+Some configuration settings must be specified when running the installer script. The same settings can later on be changed by editing the .ini files created in the work-directory. Here is a short description what each setting means:
+
+ `ADMIN_EMAIL`::
+   The email address of the application administrator;
+   for example `admin@rna-seqlyze.com`.
+\\
+
+ `TOPDIR`::
+   The root of the project source tree cloned from
+   https://mu15ns00002.adm.ds.fhnw.ch/git/biocalc;
+   for example `/home/user/rna-seqlyze`.
+
+ `PREFIX`::
+   The project installation directory on the server;
+   for example `/home/user/.local` or `/usr/local`, `/opt/biocalc`, etc.
+
+ `WORKDIR`::
+   A directory on the server where lots of space should be available;
+   for example`/home/user/rna-seqlyze-workdir`.
+
+ `WORKDIR_DEV`::
+   A directory on the server where a second application instance
+   along with a virtualenv in which it is run, is hosted;
+   for example`/home/user/rna-seqlyze-workdir-dev`.
+\\
+
+ `WWWDIR`::
+   The directory on the server containing the
+   .htaccess file and the .wsgi scripts;
+   for example `/home/user/public_html`.
+
+ `WWWBASE`::
+   The path under which `WWWDIR` is accessible on the server
+   ''''from outside'''' (e.g. with HTTP on port 80);
+   for example `/rna-seqlyze/`.
+
+ `HOSTNAME`::
+   The hostname under which the server is accessible from outside;
+   for example `www.rna-seqlyze.com`.
+
+ `GROUP`::
+   The unix group that the web application and the worker run as;
+   for example `www-data`.
+
+ `WORKER_USER`::
+   The unix user that the worker runs as;
+   for example `www-data`.
+
+ `WORKER_PORT`::
+   The tcp listening port of the worker daemon;
+   for example 5433.
+
+ `WORKER_PORT_DEV`::
+   The tcp listening port of the development worker daemon;
+   for example 6544.
+
+ `TRAC_DB`::
+   A database url for a database where trac will keep its data;
+   for example `sqlite:///$WORKDIR_DEV/trac.db`.
+
+ `BIBODIR`::
+   A directory to hold one buildbot "master" and one buildbot
+   "slave" base directory;
+   for example `/home/user/buildbot`.
+
+=== The ''''workdir''''
+
+The application keeps the database, log files, up-, downloaded and generated data files in a ''''workdir''''.
+
+It is possible to create multiple ''''workdirs'''' to run multiple application instances in parallel. Note however, that each application instance must run in a **separate [https://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIProcessGroup WSGIProcessGroup]**. This is necessary because the `rnaseqlyze` module is globally bound to a workdir, which should probably be fixed once (binding the configuration to the current thread instead using [http://docs.python.org/library/threading.html#threading.local threading.local] or something like that), but this is how it is for now.
+
+=== development
+
+If the variable `WORKDIR_DEV` is set, the `install.sh` script will configure a second application instance, accessible at http://HOSTNAME/WWWBASE/rna-seqlyze-dev. This instance will run the most recent python code, directly from the local git repository, whenever it is reloaded by either `touch`ing the `rna-seqlyze-dev.wsgi` script in `WWWDIR` or accessing http://HOSTNAME/WWWBASE/debug?sig_int. The `shared_data` directory where data downloaded from the ncbi servers is cached, is symlinked to `WORKDIR/shared_data`. The instance is wrapped in a python [http://www.virtualenv.org/ virtualenv], which is created by the install.sh script inside `WORKDIR_DEV` as well.
+
+In addition to this, a trac project site will be configured in `TOPDIR/var/trac-env` that will be accessible under http://HOSTNAME/WWWBASE/trac. And last but not least, one [http://trac.buildbot.net buildbot] ''buildmaster'' and one ''buildslave'' will be configured under `BIBODIR`, which is located in `WORKDIR_DEV`/buildbot.
+
+=== buildbot
+
+Note that a separate copy of the whole rna-seqlyze git repository will be created under the "buildslave" base directory inside `BIBODIR`, therefore it will grow somewhat large (>500MB).
+
+There is a bash function called ''''buildbot'''' in bash-env. If that file is ''''sourced'''' in bash, with ''`. $WORKDIR_DEV/bash-env`'', the function can be used to start/stop both ''''buildbot'''' (master) and ''''buildslave'''' at the same time and inside the buildbot-virtualenv, by simply typing ''`buildbot start`'' or ''`buildbot stop`''.
+
+== Installation
+
+Execute the installation script in the top-level project directory:
+{{{#!sh
+cd $TOPDIR
+./install.sh
+}}}
+
+First, the script will ask for the values of the configuration variables listed above. You can keep the defaults for most of them.
+
+Then, it installs the rna-seqlyze (core), -cli, -web and -worker python packages and the various third-party software packages.
+
+Finally a bunch of custom configuration files are created and put into the right places on the host:
+||=Configuration File                        ||=Description                                 ||
+||`WORKDIR/rnaseqlyze.ini`                   ||the main configuration file                  ||
+||`WORKDIR/web.ini`                          ||-web package configuration                   ||
+||`WORKDIR/worker.ini`                       ||-worker package configuration                ||
+||`WORKDIR/trac.ini`                         ||the configuration file used by trac          ||
+||`WEBDIR/.htaccess`                         ||part of the apache/mod_wsgi configuration    ||
+||`WEBDIR/.htpasswd.trac`                    ||where trac account credentials are stored    ||
+||`WEBDIR/*.wsgi`                            ||the wsgi modules executed by mod_wsgi        ||
+||`/etc/init.d/rna-seqlyze`                  ||the -worker daemon''s SysV init script        ||
+||`/etc/apache2/conf.d/rna-seqlyze`          ||the apache/mod_wsgi configuration file       ||
+
+After the script has finished, the following URLs should be accessible:
+
+ - Trac: http://HOSTNAME/WWWBASE/trac
+ - The application configured in WORKDIR: http://HOSTNAME/WWWBASE/rna-seqlyze
+ - The application configured in WORKDIR_DEV: http://HOSTNAME/WWWBASE/rna-seqlyze-dev
 ','',0);
 CREATE INDEX "node_change_node_change_repos_rev_idx" ON "node_change" ("repos","rev");
 CREATE INDEX "ticket_ticket_time_idx" ON "ticket" ("time");
