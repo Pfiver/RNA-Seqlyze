@@ -144,7 +144,7 @@ re-install ()
     for dir in "${rnas_pkgdirs[@]}"
     do (
         cd "$dir"
-        python setup.py egg_info
+        setup_devok
     ) done
 }
 
