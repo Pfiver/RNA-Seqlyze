@@ -74,10 +74,36 @@
           </div>
         </div>
         <div id="pairendlenControls" class="control-group">
-          <label for="pairendlenInput" class="control-label">fragment length</label>
-          <div class="controls">
-            <input type="text" name="pairendlen" id="pairendlenInput"/>
-            <p class="help-block">maximum length of double stranded fragments the reads are taken from</p>
+          <label class="control-label">
+	    paired-end options
+	  </label>
+          <div class="controls subcontrols">
+            <label for="pairendminlen" class="control-label">
+	    min. length <sup>1)</sup>:
+	    </label>
+            <input class="span1" type="text" name="pairendminlen" id="pairendMinlenInput"/>
+            <label for="pairendmaxlen" class="control-label">
+	    max. length <sup>1)</sup>:
+	    </label>
+            <input class="span1" type="text" name="pairendmaxlen" id="pairendMaxlenInput"/>
+            <label for="pairendCfgInput" class="control-label">
+	    configuration <sup>2)</sup>:
+	    </label>
+	    <select class="span1" name="pairendcfg" id="pairendCfgInput">
+	      <option>forward/reverse</option>
+	      <option>reverse/forward</option>
+	      <option>forward/forward</option>
+	    </select>
+            <p class="help-block">
+	      <ol>
+		<li>minimum/meximum length of double stranded fragments the reads are taken from</li>
+		<li>upstream/downstream mate orientations of pair-ended reads in respect to the forward reference strand</li>
+	      </ol>
+	      see
+	      <i><a href="http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#paired-end-options">
+		  Bowtie2 Manual, Paired-end Options</a>
+	      </i>
+	    </p>
           </div>
         </div>
 
