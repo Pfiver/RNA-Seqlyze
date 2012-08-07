@@ -30,7 +30,7 @@ install_requirements = [
     'docopt > 0.4.1',
     'pyramid >= 1.3.2',         # Web framework
     'MarkupSafe >= 0.15',       # Syntax highlighting in Trac
-],
+]
 
 setup(
     name=os.getcwd().split(os.sep)[-1],
@@ -54,6 +54,6 @@ setup(
             'rnas-setup = rnaseqlyze.setup:main',
         ],
     },
-    setup_requires=setup_requirements,
-    install_requires=setup_requirements + install_requirements,
+    setup_requires=(setup_requirements),
+    install_requires=(setup_requirements + install_requirements),
 )
