@@ -81,6 +81,7 @@ def main(global_config, **settings):
 
     config = Configurator(settings=settings)
     config.add_route('analyses', '/analyses/{id}')
+    config.add_notfound_view(error_view)
     config.scan()
     return config.make_wsgi_app()
 
@@ -111,7 +112,6 @@ class Waitress(object):
         self.manager.analysis_requested(self.analysis, True)
         return "restarted analysis #%d" % self.analysis.id
 
-
 @view_config(context=Exception)
 def error_view(request):
     errdict = {
@@ -121,15 +121,16 @@ def error_view(request):
     type_ = type(request.exc_info[1])
     return errdict.get(type_, HTTRNASWorkerError)(request.exc_info)
 
+brep = BaseException.__repr__
 class HTTRNASError(HTTPError):
     def __init__(self, exc_info):
         import traceback
         err = exc_info[1]
         message = [ self.title,
-                    " - ", repr(err),
+                    " - ", brep(err),
                     '\n\nStack trace:\n' ] + \
                   traceback.format_tb(exc_info[2])
-        log.error(repr(err))
+        log.error(brep(err))
         log.debug(''.join(message))
         HTTPError.__init__(self, app_iter=message, content_type='text/plain')
 
