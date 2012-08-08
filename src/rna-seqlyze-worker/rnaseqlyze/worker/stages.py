@@ -242,7 +242,12 @@ class WorkerStages(object):
     def sam2bam(self):
         os.chdir(self.analysis.data_dir)
         self.log_cmd("samtools", "view", "-bS",
-            "-o", "mapped_reads.bam", "mapped_reads.sam")
+                     "-o", "tmp_reads.bam", "mapped_reads.sam")
+        os.unlink("mapped_reads.sam")
+        self.log_cmd("samtools", "sort",
+                     "tmp_reads.bam", "mapped_reads")
+        os.unlink("tmp_reads.bam")
+        self.log_cmd("samtools", "index", "mapped_reads.bam")
 
     @stage_cond
     def create_coverage_track(self):
