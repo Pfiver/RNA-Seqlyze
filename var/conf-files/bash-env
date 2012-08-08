@@ -46,7 +46,7 @@ cron-hourly ()
                 -m 'auto-commit doc/authors.html'
 
         # other things
-        re-install
+        re-develop
         re-apidoc
         re-cover
     }
