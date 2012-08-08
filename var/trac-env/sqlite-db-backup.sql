@@ -156,101 +156,6 @@ INSERT INTO "platform" VALUES(1,'Windows',NULL);
 INSERT INTO "platform" VALUES(2,'Linux',NULL);
 INSERT INTO "platform" VALUES(3,'MacOS',NULL);
 INSERT INTO "platform" VALUES(4,'other',NULL);
-CREATE TABLE "report" (
-  "id" int(10)  NOT NULL ,
-  "author" text ,
-  "title" text ,
-  "query" text ,
-  "description" text ,
-  PRIMARY KEY ("id")
-);
-INSERT INTO "report" VALUES(2,NULL,'RNA-Seqlyze Tickets by Milestone','SELECT p.value AS __color__,
-
--- MySQL:
---   IF(length(t.milestone),concat(from_unixtime(m.due/1000000), " | ", t.milestone),"No Milestone") AS __group__,
-
--- SQLite:
-   (CASE length(t.milestone) WHEN 0 THEN "No Milestone" ELSE datetime(m.due/1000000, ''unixepoch'')|" | "|t.milestone END) AS __group__,
-
-   (CASE status 
-      WHEN ''closed'' THEN ''text-decoration: line-through; color: #777; background: #ddd; border-color: #ccc;''
-    END) AS __style__,
-  
-  id AS ticket,
-  priority,
-  summary,
-  component,
-  t.type,
-  resolution,
-  t.description AS _description_
-
-  FROM ticket t
-  LEFT JOIN milestone m ON m.name = t.milestone
-  LEFT JOIN enum p ON p.name = t.priority AND p.type = ''priority''
---  WHERE component = "Software"
-  WHERE (status != ''closed'')
-  ORDER BY (t.milestone IS NULL), m.due, (status = ''closed''), 
-        (CASE status WHEN ''closed'' THEN changetime ELSE (-1) * CAST(p.value AS signed) END) DESC
-','');
-INSERT INTO "report" VALUES(1,NULL,'All Tickets','query:?status=accepted
-&
-status=assigned
-&
-status=new
-&
-status=reopened
-&
-group=version
-&
-col=id
-&
-col=summary
-&
-col=status
-&
-col=type
-&
-col=priority
-&
-col=milestone
-&
-col=component
-&
-col=version
-&
-report=1
-&
-order=priority','');
-INSERT INTO "report" VALUES(3,NULL,'RNA-Seqlyze Tickets by Milestone (including closed)','SELECT p.value AS __color__,
-
--- MySQL
---   IF(length(t.milestone),concat(from_unixtime(m.due/1000000), " | ", t.milestone),"No Milestone") AS __group__,
-
--- SQLite
--- (CASE length(t.milestone) WHEN 0 THEN "No Milestone" ELSE datetime(m.due/1000000, ''unixepoch'')|" | "|t.milestone END) AS __group__,
-
-   (CASE status 
-      WHEN ''closed'' THEN ''text-decoration: line-through; color: #777; background: #ddd; border-color: #ccc;''
-    END) AS __style__,
-  
-  id AS ticket,
-  priority,
-  summary,
-  component,
-  t.type,
-  resolution,
-  t.description AS _description_
-
-  FROM ticket t
-  LEFT JOIN milestone m ON m.name = t.milestone
-  LEFT JOIN enum p ON p.name = t.priority AND p.type = ''priority''
-
---  WHERE component = "Software"
---  WHERE (status != ''closed'')
-
-  ORDER BY (t.milestone IS NULL), m.due, (status = ''closed''), 
-        (CASE status WHEN ''closed'' THEN changetime ELSE (-1) * CAST(p.value AS signed) END) DESC
-','');
 CREATE TABLE "repository" (
   "id" int(11) NOT NULL DEFAULT '0',
   "name" text  NOT NULL,
@@ -274,9 +179,9 @@ CREATE TABLE "session" (
   "last_visit" int(11) DEFAULT NULL,
   PRIMARY KEY ("sid","authenticated")
 );
-INSERT INTO "session" VALUES('patrick',1,1344255123);
+INSERT INTO "session" VALUES('patrick',1,1344354494);
 INSERT INTO "session" VALUES('guest',1,1335378183);
-INSERT INTO "session" VALUES('ac606c55507bd743d82741f0',0,1343297112);
+INSERT INTO "session" VALUES('ac606c55507bd743d82741f0',0,1344354320);
 INSERT INTO "session" VALUES('d44ab04ac33a6dc52757a3b1',0,1341996189);
 INSERT INTO "session" VALUES('21056989e5bda76d1148ff1d',0,1343445213);
 CREATE TABLE "session_attribute" (
@@ -292,26 +197,24 @@ INSERT INTO "session_attribute" VALUES('d44ab04ac33a6dc52757a3b1',0,'timeline.ne
 INSERT INTO "session_attribute" VALUES('d44ab04ac33a6dc52757a3b1',0,'query_href','/biopython/trac/report/2?asc=1&page=1');
 INSERT INTO "session_attribute" VALUES('d44ab04ac33a6dc52757a3b1',0,'query_tickets','7 5 9 6 8');
 INSERT INTO "session_attribute" VALUES('d44ab04ac33a6dc52757a3b1',0,'timeline.lastvisit','1341996319000000');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_time','1343297269');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.daysback','30');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.authors','');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_constraints','[{u''status'': [u''!closed'']}]');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.nextlastvisit','1343296932444584');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_href','/biopython/trac/query?status=!closed&order=priority');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_tickets','9 6 8');
-INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.lastvisit','1343296932444584');
 INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'timeline.daysback','30');
 INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'timeline.authors','');
 INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'timeline.nextlastvisit','0');
 INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'query_href','/rna-seqlyze/trac/report/2?asc=1&page=1');
 INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'query_tickets','9 6 8');
 INSERT INTO "session_attribute" VALUES('21056989e5bda76d1148ff1d',0,'timeline.lastvisit','1343440654000000');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.daysback','30');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.authors','');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.nextlastvisit','1343296932444584');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_href','/biopython/trac/report/2?asc=1&page=1');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'query_tickets','9 6 8');
+INSERT INTO "session_attribute" VALUES('ac606c55507bd743d82741f0',0,'timeline.lastvisit','1343296932444584');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.daysback','30');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.authors','');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.nextlastvisit','1343033446629506');
 INSERT INTO "session_attribute" VALUES('patrick',1,'wiki_editrows','8');
-INSERT INTO "session_attribute" VALUES('patrick',1,'query_href','/biopython/traclogin/report/3?asc=1&page=1');
-INSERT INTO "session_attribute" VALUES('patrick',1,'query_tickets','1 2 3 4 9 6 8');
+INSERT INTO "session_attribute" VALUES('patrick',1,'query_href','/biopython/traclogin/report/2?asc=1&page=1');
+INSERT INTO "session_attribute" VALUES('patrick',1,'query_tickets','9 6 8');
 INSERT INTO "session_attribute" VALUES('patrick',1,'timeline.lastvisit','1343225983602913');
 CREATE TABLE "system" (
   "name" text  NOT NULL,
@@ -322,35 +225,6 @@ INSERT INTO "system" VALUES('database_version','27');
 INSERT INTO "system" VALUES('initial_database_version','27');
 INSERT INTO "system" VALUES('downloads_description','');
 INSERT INTO "system" VALUES('downloads_version','1');
-CREATE TABLE "ticket" (
-  "id" int(10)  NOT NULL ,
-  "type" text ,
-  "time" bigint(20) DEFAULT NULL,
-  "changetime" bigint(20) DEFAULT NULL,
-  "component" text ,
-  "severity" text ,
-  "priority" text ,
-  "owner" text ,
-  "reporter" text ,
-  "cc" text ,
-  "version" text ,
-  "milestone" text ,
-  "status" text ,
-  "resolution" text ,
-  "summary" text ,
-  "description" text ,
-  "keywords" text ,
-  PRIMARY KEY ("id")
-);
-INSERT INTO "ticket" VALUES(1,'defect',1335429203358122,1337929701905238,'Report',NULL,'low','somebody','patrick','','1.0','Road cleared','closed','fixed','There is no report template','A report template in LaTeX has to be created / found.','');
-INSERT INTO "ticket" VALUES(2,'defect',1335429407806058,1337929701905238,'Report',NULL,'low','patrick','patrick','','1.0','Road cleared','closed','fixed','The Poster template is not functional in OpenOffice / LibreOffice','','');
-INSERT INTO "ticket" VALUES(3,'task',1335429479247204,1338713376072857,'Software',NULL,'high','patrick','patrick','','1.0','Solution Conceptualized','closed','fixed','Software framework choice','It has to be decided which software frameworks should be used (and which not).
-','');
-INSERT INTO "ticket" VALUES(4,'defect',1335429534423696,1337929701905238,'Software',NULL,'low','patrick','patrick','','1.0','Solution Conceptualized','closed','fixed','There is no Software Requirement Specification document','','');
-INSERT INTO "ticket" VALUES(6,'defect',1337918070632711,1342771960001615,'Presentation',NULL,'low','patrick','patrick','','1.0',NULL,'assigned',NULL,'The SRS is still incomplete','Fill in the missing parts of the SRS (TBD)','');
-INSERT INTO "ticket" VALUES(9,'defect',1340948303381535,1342772594046063,'Software',NULL,'medium','patrick','patrick','','1.0',NULL,'new',NULL,'debug print the sql statements issued when "session.analysis = session.analysis" is executed','and then issue those directly instead of executing "session.analysis = session.analysis"
-','');
-INSERT INTO "ticket" VALUES(8,'task',1337935615287299,1342771966879792,'Report',NULL,'low','patrick','patrick','','',NULL,'new',NULL,'Add References to SRS','References to the project homepage as well as the Trac page should be added to the SRS in a "References" section in chapter one once these sites become publicly available.','');
 CREATE TABLE "ticket_change" (
   "ticket" int(11) NOT NULL DEFAULT '0',
   "time" bigint(20) NOT NULL DEFAULT '0',
@@ -37096,9 +36970,127 @@ After the script has finished, the following URLs should be accessible:
  - The application configured in WORKDIR: http://HOSTNAME/WWWBASE/rna-seqlyze
  - The application configured in WORKDIR_DEV: http://HOSTNAME/WWWBASE/rna-seqlyze-dev
 ','',0);
+CREATE TABLE "ticket" (
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "type" text ,
+  "time" bigint(20) DEFAULT NULL,
+  "changetime" bigint(20) DEFAULT NULL,
+  "component" text ,
+  "severity" text ,
+  "priority" text ,
+  "owner" text ,
+  "reporter" text ,
+  "cc" text ,
+  "version" text ,
+  "milestone" text ,
+  "status" text ,
+  "resolution" text ,
+  "summary" text ,
+  "description" text ,
+  "keywords" text 
+);
+INSERT INTO "ticket" VALUES(1,'defect',1335429203358122,1337929701905238,'Report',NULL,'low','somebody','patrick','','1.0','Road cleared','closed','fixed','There is no report template','A report template in LaTeX has to be created / found.','');
+INSERT INTO "ticket" VALUES(2,'defect',1335429407806058,1337929701905238,'Report',NULL,'low','patrick','patrick','','1.0','Road cleared','closed','fixed','The Poster template is not functional in OpenOffice / LibreOffice','','');
+INSERT INTO "ticket" VALUES(3,'task',1335429479247204,1338713376072857,'Software',NULL,'high','patrick','patrick','','1.0','Solution Conceptualized','closed','fixed','Software framework choice','It has to be decided which software frameworks should be used (and which not).
+','');
+INSERT INTO "ticket" VALUES(4,'defect',1335429534423696,1337929701905238,'Software',NULL,'low','patrick','patrick','','1.0','Solution Conceptualized','closed','fixed','There is no Software Requirement Specification document','','');
+INSERT INTO "ticket" VALUES(6,'defect',1337918070632711,1342771960001615,'Presentation',NULL,'low','patrick','patrick','','1.0',NULL,'assigned',NULL,'The SRS is still incomplete','Fill in the missing parts of the SRS (TBD)','');
+INSERT INTO "ticket" VALUES(8,'task',1337935615287299,1342771966879792,'Report',NULL,'low','patrick','patrick','','',NULL,'new',NULL,'Add References to SRS','References to the project homepage as well as the Trac page should be added to the SRS in a "References" section in chapter one once these sites become publicly available.','');
+INSERT INTO "ticket" VALUES(9,'defect',1340948303381535,1342772594046063,'Software',NULL,'medium','patrick','patrick','','1.0',NULL,'new',NULL,'debug print the sql statements issued when "session.analysis = session.analysis" is executed','and then issue those directly instead of executing "session.analysis = session.analysis"
+','');
+INSERT INTO "ticket" VALUES(10,'defect',1344363282549685,1344363282549685,'Software',NULL,'medium','patrick','patrick','','1.0','','new',NULL,'Beliebige Optionen an Bowtie übergeben','beliebige bowtie2 kommandozeilenoptionen, wie beispielsweise "--gbar 4" direkt im webinterface als text eingeben und dann beim bowtie2-aufruf verwenden','');
+CREATE TABLE "report" ( "id" integer PRIMARY KEY autoincrement, "author" text ,"title" text ,"query" text ,  "description" text);
+INSERT INTO "report" VALUES(1,NULL,'All Tickets','query:?status=accepted
+&
+status=assigned
+&
+status=new
+&
+status=reopened
+&
+group=version
+&
+col=id
+&
+col=summary
+&
+col=status
+&
+col=type
+&
+col=priority
+&
+col=milestone
+&
+col=component
+&
+col=version
+&
+report=1
+&
+order=priority','');
+INSERT INTO "report" VALUES(2,NULL,'RNA-Seqlyze Tickets by Milestone','SELECT p.value AS __color__,
+
+-- MySQL:
+--   IF(length(t.milestone),concat(from_unixtime(m.due/1000000), " | ", t.milestone),"No Milestone") AS __group__,
+
+-- SQLite:
+   (CASE length(t.milestone) WHEN 0 THEN "No Milestone" ELSE datetime(m.due/1000000, ''unixepoch'')|" | "|t.milestone END) AS __group__,
+
+   (CASE status 
+      WHEN ''closed'' THEN ''text-decoration: line-through; color: #777; background: #ddd; border-color: #ccc;''
+    END) AS __style__,
+  
+  id AS ticket,
+  priority,
+  summary,
+  component,
+  t.type,
+  resolution,
+  t.description AS _description_
+
+  FROM ticket t
+  LEFT JOIN milestone m ON m.name = t.milestone
+  LEFT JOIN enum p ON p.name = t.priority AND p.type = ''priority''
+--  WHERE component = "Software"
+  WHERE (status != ''closed'')
+  ORDER BY (t.milestone IS NULL), m.due, (status = ''closed''), 
+        (CASE status WHEN ''closed'' THEN changetime ELSE (-1) * CAST(p.value AS signed) END) DESC
+','');
+INSERT INTO "report" VALUES(3,NULL,'RNA-Seqlyze Tickets by Milestone (including closed)','SELECT p.value AS __color__,
+
+-- MySQL
+--   IF(length(t.milestone),concat(from_unixtime(m.due/1000000), " | ", t.milestone),"No Milestone") AS __group__,
+
+-- SQLite
+-- (CASE length(t.milestone) WHEN 0 THEN "No Milestone" ELSE datetime(m.due/1000000, ''unixepoch'')|" | "|t.milestone END) AS __group__,
+
+   (CASE status 
+      WHEN ''closed'' THEN ''text-decoration: line-through; color: #777; background: #ddd; border-color: #ccc;''
+    END) AS __style__,
+  
+  id AS ticket,
+  priority,
+  summary,
+  component,
+  t.type,
+  resolution,
+  t.description AS _description_
+
+  FROM ticket t
+  LEFT JOIN milestone m ON m.name = t.milestone
+  LEFT JOIN enum p ON p.name = t.priority AND p.type = ''priority''
+
+--  WHERE component = "Software"
+--  WHERE (status != ''closed'')
+
+  ORDER BY (t.milestone IS NULL), m.due, (status = ''closed''), 
+        (CASE status WHEN ''closed'' THEN changetime ELSE (-1) * CAST(p.value AS signed) END) DESC
+','');
+DELETE FROM sqlite_sequence;
+INSERT INTO "sqlite_sequence" VALUES('ticket',10);
+INSERT INTO "sqlite_sequence" VALUES('report',3);
 CREATE INDEX "node_change_node_change_repos_rev_idx" ON "node_change" ("repos","rev");
-CREATE INDEX "ticket_ticket_time_idx" ON "ticket" ("time");
-CREATE INDEX "ticket_ticket_status_idx" ON "ticket" ("status");
 CREATE INDEX "session_session_last_visit_idx" ON "session" ("last_visit");
 CREATE INDEX "session_session_authenticated_idx" ON "session" ("authenticated");
 CREATE INDEX "revision_revision_repos_time_idx" ON "revision" ("repos","time");
