@@ -147,7 +147,8 @@ class WorkerStages(object):
     @stage
     def convert_input_file(self):
         os.chdir(self.analysis.input_data_dir)
-        self.log_cmd("fastq-dump", "-B", self.analysis.inputfile_name)
+        self.log_cmd("fastq-dump",
+                "--split-files", "-B", self.analysis.inputfile_name)
         log.debug("created %s" % self.analysis.inputfile_fq_path)
 
     @stage_cond
@@ -197,8 +198,8 @@ class WorkerStages(object):
 
     @stage_cond
     def tophat(self):
-        return not exists(join(self.analysis.data_dir,
-                               "tophat-output", "accepted_hits.bam"))
+        return False
+        return not exists(join(self.analysis.data_dir, "mapped_reads.bam"))
     @stage
     def tophat(self):
         os.chdir(self.analysis.data_dir)
@@ -211,6 +212,37 @@ class WorkerStages(object):
                         "-o", "tophat-output",
                         "--segment-length", "999999999",
                         "--no-coverage-search", "--no-novel-juncs", gb, fq)
+        os.symlink("tophat-output/accepted_hits.bam", "mapped_reads.bam")
+
+    @stage_cond
+    def bowtie(self):
+        return not (
+                exists(join(self.analysis.data_dir, "mapped_reads.sam"))
+                or exists(join(self.analysis.data_dir, "mapped_reads.bam")))
+    @stage
+    def bowtie(self):
+        os.chdir(self.analysis.data_dir)
+        n_cpus = os.sysconf("SC_NPROCESSORS_ONLN")
+        fq = relpath(self.analysis.inputfile_fq_path)
+        gb = relpath(join(self.analysis.genbank_data_dir,
+                          self.analysis.genbankfile_base_name))
+        cmd = "bowtie2", "-p", str(n_cpus), \
+                "-x", gb, "-S", "mapped_reads.sam"
+        if self.analysis.pairended:
+            fq2 = relpath(self.analysis.inputfile_fq2_path)
+            cmd += "-1", fq, "-2", fq2
+        else:
+            cmd += "-U", fq
+        self.log_cmd(*cmd)
+
+    @stage_cond
+    def sam2bam(self):
+        return not exists(join(self.analysis.data_dir, "mapped_reads.bam"))
+    @stage
+    def sam2bam(self):
+        os.chdir(self.analysis.data_dir)
+        self.log_cmd("samtools", "view", "-bS",
+            "-o", "mapped_reads.bam", "mapped_reads.sam")
 
     @stage_cond
     def create_coverage_track(self):
@@ -220,8 +252,8 @@ class WorkerStages(object):
         os.chdir(self.analysis.data_dir)
         # the script automatically converts it's
         # output to bigwig if it finds kent's wigToBigWig
-        self.log_cmd("bam_to_wiggle.py", "-o", "coverage.bigwig",
-                                    "tophat-output/accepted_hits.bam")
+        self.log_cmd("bam_to_wiggle.py",
+                "-o", "coverage.bigwig", "mapped_reads.bam")
 
     @stage_cond
     def genbank_to_ptt(self):
@@ -280,8 +312,7 @@ class WorkerStages(object):
     def predict_operons(self):
 
         # extract the coverage data from the bam track created by tophat
-        bam_path = join(join(self.analysis.data_dir,
-                        "tophat-output", "accepted_hits.bam"))
+        bam_path = join(join(self.analysis.data_dir, "mapped_reads.bam"))
         if not exists(bam_path + ".bai"):
             pysam.index(bam_file)
 
@@ -364,9 +395,8 @@ class WorkerStages(object):
         # is "%s_%s" % (srr_name, self.analysis.org_accession) good enough ?
 
         if not self.analysis.galaxy_bam:
-            bam_path = join(self.analysis.data_dir, 
-                             "tophat-output", "accepted_hits.bam")
-            log.info("uploading accepted_hits.bam to galaxy")
+            bam_path = join(self.analysis.data_dir, "mapped_reads.bam")
+            log.info("uploading mapped_reads.bam to galaxy")
             self.analysis.galaxy_bam = GalaxyDataset(
                 id=galaxy.upload(open(bam_path), self.bam_name))
             log.info("...done - id: %s" % self.analysis.galaxy_bam.id)

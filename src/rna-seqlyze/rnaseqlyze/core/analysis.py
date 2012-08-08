@@ -130,11 +130,19 @@ class Properties(object):
 
     @property
     def inputfile_fq_name(self):
-        return self.inputfile_base_name + ".fastq"
+        return self.inputfile_base_name + "_1.fastq"
+
+    @property
+    def inputfile_fq2_name(self):
+        return self.inputfile_base_name + "_2.fastq"
 
     @property
     def inputfile_fq_path(self):
         return join(self.input_data_dir, self.inputfile_fq_name)
+
+    @property
+    def inputfile_fq2_path(self):
+        return join(self.input_data_dir, self.inputfile_fq2_name)
 
     @property
     def inputfile_header(self):
@@ -142,7 +150,7 @@ class Properties(object):
             return
         fq_file = open(self.inputfile_fq_path)
         lines = [fq_file.readline() for i in range(4)]
-        log.info("Header: %s" % lines[0])
+        log.debug("Header: %s..." % lines[0][:-1])
         fq_file.close()
         return "".join(lines)
 

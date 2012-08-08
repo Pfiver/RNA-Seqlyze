@@ -39,7 +39,9 @@ class Analysis(AnalysisMixins, Entity):
 
     strandspecific      = Column(Boolean)
     pairended           = Column(Boolean)
-    pairendlen          = Column(Integer)
+    pairendminlen       = Column(Integer)
+    pairendmaxlen       = Column(Integer)
+    pairendcfg          = Column(Integer)
 
     owner               = relationship("User", backref=backref("analyses"))
     owner_name          = Column(String, ForeignKey('user.name'))
