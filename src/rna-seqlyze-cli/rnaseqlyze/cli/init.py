@@ -4,11 +4,13 @@ RNA-Seqlyze Init
 (Re-)initialize an rnaseqlyze 'workdir'.
 
 Usage:
-    rnas-init [--group=<group>] [--recreatedb] <workdir>
-    rnas-init [--group=<group>] [--recreatedb] --development <workdir>
     rnas-init -h|--help
+    rnas-init [options] <workdir>
 
 Options:
+    --quick
+                    Omit updating of ucsc organisms.
+
     --group=<group>
                     The unix user group to that the directory and the
                     database and log-files within should belong to.
@@ -181,10 +183,18 @@ def main():
         log.info("initializing organism cache")
 
         # initialize UCSC Browser list of organisms
-        from rnaseqlyze import org_cache
-        with engine.begin() as conn:
-            session = Session(bind=conn)
-            org_cache.refresh(session)
-            session.commit()
+        if opts["--quick"]:
+            dump = pkg_resources.resource_stream(
+                    pkg_resources.Requirement.parse("rna-seqlyze"),
+                     "rnaseqlyze/ucscbrowser-data/ucscorganisms.sql")
+            with engine.begin() as conn:
+                for statement in dump:
+                    conn.execute(statement)
+        else:
+            from rnaseqlyze import org_cache
+            with engine.begin() as conn:
+                session = Session(bind=conn)
+                org_cache.refresh(session)
+                session.commit()
 
     log.info("workdir initialized")
